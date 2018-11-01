@@ -208,12 +208,13 @@ module.exports = {
     hot: true,
     quiet: true,
     https: abcJSON.devServer.https,
+    historyApiFallback: true,
+    disableHostCheck: true,
 
     // clientLogLevel: 'none',
     // historyApiFallback: {
     //   disableDotRule: true,
     // },
-    historyApiFallback: true,
 
     // if need HTML5 historyRouterAPI
     overlay: false,
