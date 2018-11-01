@@ -10,7 +10,7 @@ const {log, error} = util.msg;
 module.exports = function() {
   if (abcJSON) {
     const type = abcJSON.type;
-    const output = `${paths.currentPath}/${abcJSON.path.output}`;
+    const output = path.resolve(paths.currentPath,abcJSON.path.output);
 
     printCommanLog();
 

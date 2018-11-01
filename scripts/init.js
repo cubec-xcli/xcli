@@ -9,7 +9,7 @@ const download = require('download-git-repo');
 const {exec} = require('child_process');
 const {prompt} = require('inquirer');
 
-const paths = util.paths;
+const {paths} = util;
 const {log, warn, error} = util.msg;
 const pathChecker = /^([a-zA-Z0-9_]+)$/i;
 
@@ -73,25 +73,22 @@ module.exports = function(ProjectName) {
   log(`initialize: { ${projectName.red.bold} }`);
 
   if (initProjectName) {
-
     if (util.existDir(path)) {
       prompt([
         {
           type: 'confirm',
           name: 'overwritte',
-          message: `${projectName.blue
-            .bold} directory already exists, whether to perform overwrite operation??`,
+          message: `${
+            projectName.blue.bold
+          } directory already exists, whether to perform overwrite operation??`,
           default: false,
         },
       ]).then(({overwritte}) => {
         if (overwritte) initProject(path, true, true);
       });
     } else {
-
       initProject(path, true);
-
     }
-
   } else {
     const files = fs.readdirSync(path);
 
@@ -113,7 +110,6 @@ module.exports = function(ProjectName) {
         }
       });
     } else {
-
       initProject(path);
     }
   }

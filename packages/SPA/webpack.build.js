@@ -43,6 +43,7 @@ module.exports = {
     rules: [
       {
         test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
         use: [require.resolve('happypack/loader') + '?id=jsx'],
       },
       {
@@ -201,7 +202,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: `${currentPath}/src/index.html`,
-      inlineSource: ".css$",
+      inlineSource: '.css$',
       chunksSortMode: 'dependency',
       minify: {
         removeComments: true,
@@ -263,7 +264,7 @@ module.exports = {
     //   },
     // }),
     // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-    
+
     new HtmlWebpackInlineSourcePlugin(),
 
     new SimpleProgressWebpackPlugin(),

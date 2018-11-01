@@ -24,8 +24,8 @@ const mockApp = require(mockServer);
 module.exports = {
   entry: [
     `${currentPath}/src/index.js`,
-     require.resolve('webpack/hot/dev-server'),
-     require.resolve('webpack-dev-server/client') +
+    require.resolve('webpack/hot/dev-server'),
+    require.resolve('webpack-dev-server/client') +
       `?http://${ipadress}:${abcJSON.devServer.port}/`,
   ],
 
@@ -48,6 +48,7 @@ module.exports = {
     rules: [
       {
         test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
         use: [require.resolve('happypack/loader') + '?id=jsx'],
       },
       {
@@ -78,7 +79,13 @@ module.exports = {
     new webpack.ProvidePlugin(abcJSON.provide),
     new webpack.DefinePlugin({
       XISDEV: true,
-      ...abcJSON.define
+      ...abcJSON.define,
+    }),
+
+    new webpack.LoaderOptionsPlugin({
+      minimize: false,
+      sourceMap: true,
+      debug: true,
     }),
 
     new HappyPack({
@@ -209,8 +216,6 @@ module.exports = {
     disableHostCheck: true,
     historyApiFallback: true,
     https: abcJSON.devServer.https,
-    historyApiFallback: true,
-    disableHostCheck: true,
 
     // clientLogLevel: 'none',
     // historyApiFallback: {

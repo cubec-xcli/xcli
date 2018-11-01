@@ -7,12 +7,13 @@ const INFO = require('./package.json');
 
 const cli = require('commander');
 const colors = require('colors');
-const commands = ['init', 'dev', 'lint', 'build', 'preview'];
+const commands = ['init', 'dev', 'lint', 'build', 'preview', 'upgrade'];
 
 const cmd_init = require('./scripts/init');
 const cmd_dev = require('./scripts/dev');
 const cmd_build = require('./scripts/build');
 const cmd_preview = require('./scripts/preview');
+const cmd_upgrade = require('./scripts/upgrade');
 // const cmd_lint = require('./scripts/lint');
 
 cli
@@ -41,12 +42,15 @@ cli
   .description('building and preview'.red)
   .action(cmd_preview);
 
+cli
+  .command('upgrade')
+  .description('upgrade xcli'.red)
+  .action(cmd_upgrade);
+
 // cli
 //   .command('lint <path> [param]')
 //   .description('lint code style'.red)
 //   .action(cmd_lint);
-
-
 
 // cli
 //   .command('publish')
@@ -62,7 +66,5 @@ cli
 
 cli.parse(process.argv);
 
-if (!cli.args.length ||
-    !process.argv[2] ||
-    !commands.includes(process.argv[2]))
+if (!cli.args.length || !process.argv[2] || !commands.includes(process.argv[2]))
   cli.help();
