@@ -24,15 +24,15 @@ const mockApp = require(mockServer);
 module.exports = {
   entry: [
     `${currentPath}/src/index.js`,
-    require.resolve('webpack/hot/dev-server'),
-    require.resolve('webpack-dev-server/client') +
-      `?http://localhost:${abcJSON.devServer.port}/`,
+     require.resolve('webpack/hot/dev-server'),
+     require.resolve('webpack-dev-server/client') +
+      `?http://${ipadress}:${abcJSON.devServer.port}/`,
   ],
 
   output: {
     // options related to how webpack emits results
     path: path.resolve(currentPath, abcJSON.path.output),
-    filename: '[name].js',
+    filename: '[name].[hash:8].js',
     // publicPath: `http://${ipadress}:${abcJSON.devServer.port}/`,
   },
 
@@ -48,7 +48,6 @@ module.exports = {
     rules: [
       {
         test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
         use: [require.resolve('happypack/loader') + '?id=jsx'],
       },
       {
@@ -207,6 +206,8 @@ module.exports = {
   devServer: {
     hot: true,
     quiet: true,
+    disableHostCheck: true,
+    historyApiFallback: true,
     https: abcJSON.devServer.https,
     historyApiFallback: true,
     disableHostCheck: true,

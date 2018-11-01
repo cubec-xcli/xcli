@@ -13,8 +13,8 @@ module.exports = function() {
   if (abcJSON) {
     const type = abcJSON.type;
     const port = +abcJSON.devServer.port || 9001;
-    // const ipads = ip.address();
-    const ipads = "localhost";
+    const ipads = ip.address();
+    //const ipads = "localhost";
 
     printCommanLog();
 

@@ -14,6 +14,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
+const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 const HappyPack = require('happypack');
 const HappyThreadPool = HappyPack.ThreadPool({size: 8});
 
@@ -200,6 +201,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: `${currentPath}/src/index.html`,
+      inlineSource: ".css$",
       chunksSortMode: 'dependency',
       minify: {
         removeComments: true,
@@ -220,7 +222,8 @@ module.exports = {
       assetNameRegExp: /.css$/g,
       cssProcessor: require(require.resolve('cssnano')),
       cssProcessorPluginOptions: {
-        preset: ['default', {discardComments: {removeAll: true}}],
+        //preset: ['default', {discardComments: {removeAll: true}}],
+        preset: ['advanced', {discardComments: {removeAll: true}}],
       },
       canPrint: true,
     }),
@@ -260,6 +263,8 @@ module.exports = {
     //   },
     // }),
     // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    
+    new HtmlWebpackInlineSourcePlugin(),
 
     new SimpleProgressWebpackPlugin(),
 
