@@ -193,7 +193,7 @@ module.exports = {
           unsafe: true,
           warnings: false,
           hoist_vars: true,
-          drop_console: true,
+          drop_console: false,
         },
         sourceMap: false,
       },
