@@ -52,6 +52,11 @@ module.exports = {
         use: [require.resolve('happypack/loader') + '?id=jsx'],
       },
       {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: [require.resolve('happypack/loader') + '?id=sourcemap'],
+      },
+      {
         test: /\.(ax|cubec)$/,
         exclude: /node_modules/,
         use: [require.resolve('happypack/loader') + '?id=cubec'],
@@ -94,6 +99,20 @@ module.exports = {
       loaders: [
         {
           loader: require.resolve('ax-loader'),
+        },
+      ],
+    }),
+
+    new HappyPack({
+      id: 'sourcemap',
+      threadPool: HappyThreadPool,
+      loaders: [
+        {
+          loader: require.resolve('source-map-loader'),
+          options: {
+            sourceMap: true,
+            enforce: "pre"
+          },
         },
       ],
     }),
@@ -258,5 +277,5 @@ module.exports = {
   // devtool: 'cheap-module-eval-source-map',
   // devtool: 'inline-cheap-module-source-map',
   // devtool: 'cheap-module-eval-source-map',
-  devtool: 'cheap-module-source-map',
+  devtool: 'cheap-module-eval-source-map',
 };

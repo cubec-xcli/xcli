@@ -1,4 +1,5 @@
 const fs = require('fs');
+const fse = require('fs-extra');
 const colors = require('colors');
 const template = require('../config/initTemplate');
 
@@ -28,7 +29,7 @@ const initProject = function(path, create, clear) {
 
     if (clear) {
       log(`running path clear process`);
-      exec(`rm -rf ${path}`);
+      fse.removeSync(path);
     }
 
     return create

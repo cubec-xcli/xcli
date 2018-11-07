@@ -9,12 +9,16 @@ const ip = require('ip');
 const {preinstall, printCommanLog, paths, abcJSON} = util;
 const {log, error} = util.msg;
 
-module.exports = function() {
+module.exports = function(cpath, param) {
   if (abcJSON) {
     const type = abcJSON.type;
     const port = +abcJSON.devServer.port || 9001;
 
     printCommanLog();
+
+    if(param != "debug" && param != "d"){
+      preinstall();
+    }
 
     const webpack = require('webpack');
     const webpackDevServer = require('webpack-dev-server');
