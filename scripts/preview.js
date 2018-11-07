@@ -1,4 +1,5 @@
 const fs = require('fs');
+const fse = require('fs-extra');
 const colors = require('colors');
 const path = require('path');
 const util = require('../lib/util');
@@ -16,7 +17,9 @@ module.exports = function() {
 
     preinstall();
 
-    if (fs.existsSync(output)) exec(`rm -rf ${output}`);
+    if (fs.existsSync(output)){
+      fse.removeSync(output);
+    };
 
     const browserSync = require('browser-sync');
     const browserSyncConfig = require('../config/browserSync');
