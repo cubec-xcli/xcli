@@ -57,7 +57,7 @@ module.exports = {
           MiniCssExtractPlugin.loader,
           require.resolve('happypack/loader') + '?id=scss',
         ],
-      },
+      }
     ],
   },
 
@@ -194,6 +194,7 @@ module.exports = {
           warnings: false,
           hoist_vars: true,
           drop_console: false,
+          drop_debugger: true,
         },
         sourceMap: false,
       },
@@ -221,10 +222,9 @@ module.exports = {
 
     new OptimizeCssAssetsPlugin({
       assetNameRegExp: /.css$/g,
-      cssProcessor: require(require.resolve('cssnano')),
+      cssProcessor: require(require.resolve('clean-css')),
       cssProcessorPluginOptions: {
-        //preset: ['default', {discardComments: {removeAll: true}}],
-        preset: ['advanced', {discardComments: {removeAll: true}}],
+        autoprefixer: {}
       },
       canPrint: true,
     }),

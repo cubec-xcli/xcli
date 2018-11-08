@@ -22,7 +22,6 @@ module.exports = function(cpath, param) {
 
     const webpack = require('webpack');
     const webpackDevServer = require('webpack-dev-server');
-
     const webpackConfig = require(path.join(
       __dirname,
       `../packages/${type}/webpack.devServer`,

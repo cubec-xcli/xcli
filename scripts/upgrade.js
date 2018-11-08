@@ -11,6 +11,7 @@ const {log, error} = util.msg;
 module.exports = function() {
   printCommanLog();
 
+  // upgrade package
   preinstall(path.resolve(__dirname, "../"));
 
   const Git = simpleGitCreate(paths.xcliPath);

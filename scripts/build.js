@@ -22,7 +22,6 @@ module.exports = function() {
     };
 
     const webpack = require('webpack');
-
     const webpackConfig = require(path.join(
       __dirname,
       `../packages/${type}/webpack.build`,
