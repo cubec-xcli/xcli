@@ -51,11 +51,11 @@ module.exports = {
         exclude: /node_modules/,
         use: [require.resolve('happypack/loader') + '?id=jsx'],
       },
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: [require.resolve('happypack/loader') + '?id=sourcemap'],
-      },
+      // {
+      //   test: /\.js$/,
+      //   exclude: /node_modules/,
+      //   use: [require.resolve('happypack/loader') + '?id=sourcemap'],
+      // },
       {
         test: /\.(ax|cubec)$/,
         exclude: /node_modules/,
@@ -103,19 +103,19 @@ module.exports = {
       ],
     }),
 
-    new HappyPack({
-      id: 'sourcemap',
-      threadPool: HappyThreadPool,
-      loaders: [
-        {
-          loader: require.resolve('source-map-loader'),
-          options: {
-            sourceMap: true,
-            enforce: "pre"
-          },
-        },
-      ],
-    }),
+    // new HappyPack({
+    //   id: 'sourcemap',
+    //   threadPool: HappyThreadPool,
+    //   loaders: [
+    //     {
+    //       loader: require.resolve('source-map-loader'),
+    //       options: {
+    //         sourceMap: true,
+    //         enforce: "pre"
+    //       },
+    //     },
+    //   ],
+    // }),
 
     new HappyPack({
       id: 'jsx',
