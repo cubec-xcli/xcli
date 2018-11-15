@@ -12,12 +12,13 @@ module.exports = function() {
   printCommanLog();
 
   // upgrade package
-  preinstall(path.resolve(__dirname, "../"));
-
   const Git = simpleGitCreate(paths.xcliPath);
 
   Git.pull(function(){
     const packageJSON = require('../package.json');
     log(`xcli upgrade success - current version: ${packageJSON.version}`)
+    log(`xcli upgrade prepare upgrade npm packages...`)
+    preinstall(path.resolve(__dirname, "../"));
+    log(`xcli upgrade completed!`);
   });
 };
