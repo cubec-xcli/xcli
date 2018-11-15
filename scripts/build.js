@@ -3,7 +3,6 @@ const fse = require('fs-extra');
 const colors = require('colors');
 const path = require('path');
 const util = require('../lib/util');
-const {exec, execSync} = require('child_process');
 
 const {preinstall, printCommanLog, abcJSON, paths} = util;
 const {log, error} = util.msg;
@@ -19,7 +18,7 @@ module.exports = function() {
 
     if (fs.existsSync(output)){
       fse.removeSync(output);
-    };
+    }
 
     const webpack = require('webpack');
     const webpackConfig = require(path.join(

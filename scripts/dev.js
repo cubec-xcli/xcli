@@ -1,10 +1,7 @@
-const fs = require('fs');
 const colors = require('colors');
 const path = require('path');
 const util = require('../lib/util');
-const glob = require('glob');
 const opn = require('opn');
-const ip = require('ip');
 
 const {preinstall, printCommanLog, paths, abcJSON} = util;
 const {log, error} = util.msg;

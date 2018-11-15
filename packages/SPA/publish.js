@@ -5,12 +5,10 @@ const path = require('path');
 const util = require('../../lib/util');
 const struct = require('ax-struct-js');
 const axios = require('axios');
-const glob = require('glob');
 const {prompt} = require('inquirer');
 
 const _size = struct.size();
 const _merge = struct.merge();
-const _keys = struct.keys();
 const _one = struct.index("one");
 const _each = struct.each();
 
@@ -38,7 +36,7 @@ function walk(dir, done) {
       });
     });
   });
-};
+}
 
 function getToken(){
   if(fs.existsSync(paths.tokenPath)){
@@ -60,7 +58,7 @@ function processGitLabAPI(gitlab, api){
 }
 
 function pathCater(basepath, usepath){
-  return usepath.split(`${basepath}/`)[1];
+  return usepath.split(`${basepath}`)[1].substr(1);
 }
 
 function upCommitToGitLab(currentPubOption, token){
@@ -90,7 +88,7 @@ function upCommitToGitLab(currentPubOption, token){
         branch : currentPubOption.branch,
         commit_message : `${(new Date()).toLocaleString()} branch [${currentPubOption.branch}] xcli publish commit`,
         actions: []
-      }
+      };
 
       const fileList = res.data;
 
@@ -165,4 +163,4 @@ module.exports = function(currentPubOption){
     fs.writeFileSync(paths.tokenPath, token, 'utf8');
     upCommitToGitLab(currentPubOption, token);
   });
-}
+};

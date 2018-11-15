@@ -7,10 +7,8 @@ const util = require('../lib/util');
 const mkdirp = require('mkdirp');
 const Spinner = require('cli-spinner').Spinner;
 const download = require('download-git-repo');
-const {exec} = require('child_process');
 const {prompt} = require('inquirer');
 
-const {paths} = util;
 const {log, warn, error} = util.msg;
 const pathChecker = /^([a-zA-Z0-9_]+)$/i;
 
