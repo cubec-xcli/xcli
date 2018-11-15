@@ -29,7 +29,7 @@ module.exports = function() {
 
     const compiler = webpack(webpackConfig);
 
-    compiler.run(() => log('building completed!'));
+    compiler.run(() => log('webpack building completed!'));
   } else {
     error(`Can not find ${'abc.json'.bold} in current directory`.red);
   }

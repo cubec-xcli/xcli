@@ -7,13 +7,14 @@ const INFO = require('./package.json');
 
 const cli = require('commander');
 const colors = require('colors');
-const commands = ['init', 'dev', 'lint', 'build', 'preview', 'upgrade'];
+const commands = ['init', 'dev', 'lint', 'build', 'preview', 'upgrade', 'publish'];
 
 const cmd_init = require('./scripts/init');
 const cmd_dev = require('./scripts/dev');
 const cmd_build = require('./scripts/build');
 const cmd_preview = require('./scripts/preview');
 const cmd_upgrade = require('./scripts/upgrade');
+const cmd_publish = require('./scripts/publish');
 // const cmd_lint = require('./scripts/lint');
 
 cli
@@ -47,17 +48,15 @@ cli
   .description('upgrade xcli'.red)
   .action(cmd_upgrade);
 
+cli
+  .command('publish')
+  .description('publish current project'.red)
+  .action(cmd_publish);
+
 // cli
 //   .command('lint <path> [param]')
 //   .description('lint code style'.red)
 //   .action(cmd_lint);
-
-// cli
-//   .command('publish')
-//   .description('publish Project')
-//   .action(() => {
-//     console.log('publish to server');
-//   });
 
 cli
   .command('help')
