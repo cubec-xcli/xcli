@@ -57,8 +57,14 @@ function processGitLabAPI(gitlab, api){
   return `${gitlab}/api/v4/${api}`;
 }
 
-function pathCater(basepath, usepath){
-  return usepath.split(`${basepath}`)[1].substr(1);
+function pathCater(basepath, usepath, targetPath){
+  let exportPath = usepath.split(`${basepath}`)[1].substr(1);
+
+  if(targetPath){
+    exportPath = targetPath + (targetPath.substr(targetPath.length-1) === "/" ? "" : "/") + exportPath;
+  }
+
+  return exportPath;
 }
 
 function upCommitToGitLab(currentPubOption, token){
@@ -73,15 +79,20 @@ function upCommitToGitLab(currentPubOption, token){
     url: processGitLabAPI(gitlab, "projects"),
     headers: axiosHeaders
   }).then((res)=>{
+    // 获取到对应的ProjectId
     const project = _one(res.data, (item)=>{
       return item.path_with_namespace === currentPubOption.git
     });
-
     const projectId = project.id;
+    const targetPath = currentPubOption.target || "";
+
+    if(!projectId){
+      return error("publish process can not find remote host project on gitlab");
+    }
 
     axios({
       url: processGitLabAPI(gitlab, `projects/${projectId}/repository/tree`),
-      params: { ref: currentPubOption.branch } ,
+      params: _merge({ ref: currentPubOption.branch, recursive: true }, targetPath ? { path: targetPath } : {}) ,
       headers: axiosHeaders
     }).then((res)=>{
       const commits = {
@@ -92,7 +103,7 @@ function upCommitToGitLab(currentPubOption, token){
 
       const fileList = res.data;
 
-      _each(res.data, function(file, index){
+      _each(fileList, function(file, index){
         commits.actions.push({
           action: "delete",
           file_path: file.path
@@ -101,16 +112,18 @@ function upCommitToGitLab(currentPubOption, token){
 
       // 扫描目录中的文件
       walk(paths.outputPath, function(err, result){
-        if(result.length < 2){
-          return error("publish fail without build completed compress files in output dir");
+        if(result.length < 1){
+          return error("publish process fail without build completed compress files in output dir");
         }
 
         _each(result, function(filepath){
-          log(`prepare commit file: ${filepath.yellow}`);
+          const upFilePath = pathCater(paths.outputPath, filepath, targetPath);
+
+          log(`prepare commit file: ${filepath.yellow} -> ${upFilePath.red}`);
 
           commits.actions.push({
             action: "create",
-            file_path: pathCater(paths.outputPath, filepath),
+            file_path: upFilePath,
             content: fs.readFileSync(filepath, 'utf8')
           });
         });
@@ -118,9 +131,7 @@ function upCommitToGitLab(currentPubOption, token){
         axios({
           method: 'post',
           url: processGitLabAPI(gitlab, `projects/${projectId}/repository/commits`),
-          headers: _merge(axiosHeaders, {
-            "Content-Type": "application/json"
-          }),
+          headers: _merge(axiosHeaders, { "Content-Type": "application/json" }),
           data: commits
         }).then((res)=>{
           if(res && res.data){
@@ -129,7 +140,9 @@ function upCommitToGitLab(currentPubOption, token){
               fse.removeSync(paths.outputPath);
             }else{
               error(`publish upcommit fails with gitlab: ${currentPubOption.git}`);
+              fse.removeSync(paths.outputPath);
             }
+            process.exit();
           }
         });
 
