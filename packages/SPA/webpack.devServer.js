@@ -13,6 +13,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
 const errorOverlayMiddleware = require('react-dev-utils/errorOverlayMiddleware');
 const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMiddleware');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
+const DuplicatePackageCheckerPlugin = require("duplicate-package-checker-webpack-plugin");
 const HappyPack = require('happypack');
 const HappyThreadPool = HappyPack.ThreadPool({size: 8});
 
@@ -222,6 +223,8 @@ module.exports = {
     // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
 
     new webpack.HotModuleReplacementPlugin(),
+
+    new DuplicatePackageCheckerPlugin(),
 
     new SimpleProgressWebpackPlugin(),
 
