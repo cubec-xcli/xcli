@@ -13,7 +13,7 @@ const _one = struct.index("one");
 const _each = struct.each();
 
 const {abcJSON, paths} = util;
-const {log, warn, error} = util.msg;
+const {log, warn, error, loading} = util.msg;
 
 function walk(dir, done) {
   let results = [];
@@ -90,6 +90,8 @@ function upCommitToGitLab(currentPubOption, token){
       return error("publish process can not find remote host project on gitlab");
     }
 
+    const sp = loading("starting scan git repository tree");
+
     axios({
       url: processGitLabAPI(gitlab, `projects/${projectId}/repository/tree`),
       params: _merge({ ref: currentPubOption.branch, recursive: true }, targetPath ? { path: targetPath } : {}) ,
@@ -113,8 +115,11 @@ function upCommitToGitLab(currentPubOption, token){
       // 扫描目录中的文件
       walk(paths.outputPath, function(err, result){
         if(result.length < 1){
+          sp.fail("throw err [code 1]")
           return error("publish process fail without build completed compress files in output dir");
         }
+
+        sp.succeed("scan sucess and compare with commits file");
 
         _each(result, function(filepath){
           const upFilePath = pathCater(paths.outputPath, filepath, targetPath);
@@ -128,6 +133,8 @@ function upCommitToGitLab(currentPubOption, token){
           });
         });
 
+        const sp2 = loading("push commits merge to remote respository...");
+
         axios({
           method: 'post',
           url: processGitLabAPI(gitlab, `projects/${projectId}/repository/commits`),
@@ -136,9 +143,11 @@ function upCommitToGitLab(currentPubOption, token){
         }).then((res)=>{
           if(res && res.data){
             if(res.data.id && res.data.message){
+              sp2.succeed("push commits success");
               log(`publish upcommit success to gitlab: ${currentPubOption.git}`.green);
               fse.removeSync(paths.outputPath);
             }else{
+              sp2.fail("push throw error");
               error(`publish upcommit fails with gitlab: ${currentPubOption.git}`);
               fse.removeSync(paths.outputPath);
             }

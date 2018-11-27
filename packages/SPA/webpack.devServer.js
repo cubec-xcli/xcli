@@ -38,6 +38,8 @@ module.exports = {
 
   mode: 'development',
 
+  parallelism: 8,
+
   resolve: {
     alias: abcJSON.alias,
   },

@@ -5,11 +5,10 @@ const template = require('../config/initTemplate');
 
 const util = require('../lib/util');
 const mkdirp = require('mkdirp');
-const Spinner = require('cli-spinner').Spinner;
 const download = require('download-git-repo');
 const {prompt} = require('inquirer');
 
-const {log, warn, error} = util.msg;
+const {log, warn, error, loading} = util.msg;
 const pathChecker = /^([a-zA-Z0-9_]+)$/i;
 
 // Defined
@@ -39,19 +38,21 @@ const initProject = function(path, create, clear) {
 // create @type template
 const downloadProject = function(path, type) {
   if (template[type]) {
-    const spinner = new Spinner(
-      `${'info'.green.bold} init create ${type.red} %s`,
-    );
-
-    spinner.start();
-    spinner.setSpinnerString(3);
+    let sp = loading(`init create ${type.red}`);
 
     download(template[type], path, err => {
-      spinner.stop();
+
+      if (err){
+        sp.fail();
+        error('init error'.red);
+        throw err;
+      } else {
+        sp.succeed();
+        log('init complete');
+      }
+
       process.stdout.write('\n');
 
-      if (err) error('init error'.red);
-      else log('init complete');
     });
   } else {
     error('can not find typeof project template on remote gitsource'.red);
@@ -61,7 +62,7 @@ const downloadProject = function(path, type) {
 // Export init task
 module.exports = function(ProjectName) {
   const initProjectName = !!ProjectName;
-  const projectName = ProjectName || util.path.currentDir || '';
+  const projectName = ProjectName || util.paths.currentDir || '';
   const path = `${process.cwd()}${initProjectName ? `/${projectName}` : ''}`;
 
   if (!pathChecker.test(projectName))
