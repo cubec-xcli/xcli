@@ -135,6 +135,7 @@ module.exports = {
               require.resolve('@babel/preset-react'),
             ],
             plugins: [
+              'react-hot-loader/babel',
               require.resolve('@babel/plugin-proposal-object-rest-spread'),
               require.resolve('@babel/plugin-proposal-class-properties'),
               require.resolve('@babel/plugin-proposal-function-bind'),
@@ -194,7 +195,7 @@ module.exports = {
       generateStatsFile: false,
       statsFilename: 'stats.json',
       statsOptions: {
-        exclude: ['xcli', 'vendor'],
+        exclude: ['xcli', 'react-hot-loader', 'vendor'],
       },
       excludeAssets: ['xcli'],
       logLevel: 'info',
