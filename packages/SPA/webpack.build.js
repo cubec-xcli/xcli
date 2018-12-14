@@ -87,7 +87,7 @@ module.exports = {
       threadPool: HappyThreadPool,
       loaders: [
         {
-          loader: require.resolve('ax-loader'),
+          loader: require.resolve('cubec-loader'),
         },
       ],
     }),
