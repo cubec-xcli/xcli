@@ -15,6 +15,9 @@ const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const DuplicatePackageCheckerPlugin = require("duplicate-package-checker-webpack-plugin");
 const HappyPack = require('happypack');
 const HappyThreadPool = HappyPack.ThreadPool({size: 8});
+// for speed test
+// const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+// const smp = new SpeedMeasurePlugin();
 
 const {abcJSON, paths} = require('../../lib/util');
 const {currentPath, mockServer, ipadress} = paths;

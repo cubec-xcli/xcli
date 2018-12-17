@@ -15,12 +15,20 @@ const cmd_build = require('./scripts/build');
 const cmd_preview = require('./scripts/preview');
 const cmd_upgrade = require('./scripts/upgrade');
 const cmd_publish = require('./scripts/publish');
+const loger = `
+          ____  ___     .__  .__ 
+          \\   \\/  /____ |  | |__|
+           \\     // ___\\|  | |  |
+           /     \\  \\___|  |_|  |
+          /___/\\  \\___  >____/__|
+                \\_/   \\/         
+`;
 // const cmd_lint = require('./scripts/lint');
 
 cli
   .version(INFO.version)
   .usage('[command]'.green)
-  .description(INFO.description.red);
+  .description(loger.red + "\n" + INFO.description.red);
 
 // Register Command
 cli
