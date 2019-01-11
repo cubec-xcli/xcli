@@ -69,32 +69,41 @@ module.exports = function() {
         const type = abcJSON.type;
         const currentPubOption = abcJSON.publish.options[pubkey];
 
-        printCommanLog();
+        if(fs.existsSync(path.join(__dirname, `../packages/${type}/webpack.build.js`))){
+          printCommanLog();
+          preinstall();
+          if (fs.existsSync(paths.outputPath)){ fse.removeSync(paths.outputPath); };
 
-        preinstall();
+          const webpack = require('webpack');
+          const webpackConfig = require(path.join(
+            __dirname,
+            `../packages/${type}/webpack.build`,
+          ));
 
-        if (fs.existsSync(paths.outputPath)){ fse.removeSync(paths.outputPath); };
+          const compiler = webpack(webpackConfig);
 
-        const webpack = require('webpack');
-        const webpackConfig = require(path.join(
-          __dirname,
-          `../packages/${type}/webpack.build`,
-        ));
+          compiler.run(() =>{
+            log('webpack building completed!');
+            log(`start xcli[${type}] publish process...`);
 
-        const compiler = webpack(webpackConfig);
+            // 编译完成后，执行推送
+            const publisher = require(path.join(
+              __dirname,
+              `../packages/${type}/publish`,
+            ));
 
-        compiler.run(() =>{
-          log('webpack building completed!');
-          log(`start xcli[${type}] publish process...`);
-
-          // 编译完成后，执行推送
+            return publisher(currentPubOption);
+          });
+        }else if(fs.existsSync(path.join(__dirname, `../packages/${type}/build.js`))){
           const publisher = require(path.join(
             __dirname,
             `../packages/${type}/publish`,
           ));
 
           return publisher(currentPubOption);
-        });
+        }else{
+          error(`xcli can not find [${type}] typeof publish progass`);
+        }
       });
 
     }else{

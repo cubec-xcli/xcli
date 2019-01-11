@@ -1,7 +1,11 @@
 process.env.NODE_ENV = 'production';
 
+const fs = require('fs');
+const fse = require('fs-extra');
 const path = require('path');
 const webpack = require('webpack');
+const inquirer = require('inquirer');
+const struct = require('ax-struct-js');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
@@ -16,17 +20,44 @@ const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin
 const HappyPack = require('happypack');
 const HappyThreadPool = HappyPack.ThreadPool({size: 8});
 
-const {abcJSON, paths} = require('../../lib/util');
+const {abcJSON, paths, msg} = require('../../lib/util');
 const {currentPath} = paths;
+const regex = new RegExp(`${currentPath}`);
 
-module.exports = {
-  entry: `${currentPath}/src/index.js`,
+const webpackConfig = {
+  entry: {},
 
   output: {
     // options related to how webpack emits results
     path: path.resolve(currentPath, abcJSON.path.output),
-    filename: '[name].[hash:8].js',
+    filename: '[name]/[name].[contenthash:8].js',
+    chunkFilename: '_vendors/[name].bundle.js',
     publicPath: '/',
+  },
+
+  optimization: {
+    removeAvailableModules: false,
+    removeEmptyChunks: true,
+    splitChunks: {
+      cacheGroups: {
+        commons: {
+          chunks: "initial",
+          name: "commons",
+					minChunks: 2,
+					maxInitialRequests: 5,
+					minSize: 0
+				},
+          // In dev mode, we want all vendor (node_modules) to go into a chunk,
+          // so building main.js is faster.
+        vendors: {
+          chunks: "initial",
+          test: /[\\/]node_modules[\\/]/,
+          name: "vendors",
+          priority: 10,
+					enforce: true
+        }
+      }
+    }
   },
 
   mode: 'production',
@@ -57,13 +88,26 @@ module.exports = {
           MiniCssExtractPlugin.loader,
           require.resolve('happypack/loader') + '?id=scss',
         ],
-      }
+      },
     ],
   },
 
   plugins: [
     new webpack.NoEmitOnErrorsPlugin(),
     new webpack.NamedModulesPlugin(),
+    new webpack.NamedChunksPlugin(function(chunk) {
+      if (chunk.name) return chunk.name;
+      for (let m of chunk._modules) {
+        if (regex.test(m.context)) {
+          if (m.issuer && m.issuer.id) {
+            return path.basename(m.issuer.rawRequest);
+          } else {
+            return path.basename(m.rawRequest);
+          }
+        }
+      }
+    }),
+
     new CaseSensitivePathsPlugin(),
     new webpack.ProvidePlugin(abcJSON.provide),
     new webpack.DefinePlugin({
@@ -127,14 +171,33 @@ module.exports = {
     new HappyPack({
       id: 'scss',
       threadPool: HappyThreadPool,
-      loaders: [
+      loaders: (abcJSON.wap ? [
         {
           loader: require.resolve('css-loader'),
           options: {
-            sourceComments: false,
             sourceMap: false,
+            sourceComments: false,
+            importLoaders: 1
           },
         },
+        { 
+          loader: require.resolve('postcss-loader'),
+          options: {
+            sourceMap: false,
+            config: {
+              path: path.join(__dirname,"/")
+            }
+          }
+        },
+      ] : [
+        {
+          loader: require.resolve('css-loader'),
+          options: {
+            sourceMap: false,
+            sourceComments: false,
+          },
+        },
+      ]).concat([
         {
           loader: require.resolve('clean-css-loader'),
           options: {
@@ -143,12 +206,18 @@ module.exports = {
           },
         },
         {
-          loader: require.resolve('sass-loader'),
+          loader: require.resolve('resolve-url-loader'),
           options: {
             sourceMap: false,
           },
         },
-      ],
+        {
+          loader: require.resolve('sass-loader'),
+          options: {
+            sourceMap: false,
+          },
+        }
+      ]),
     }),
 
     new BabelMinifyPlugin(
@@ -205,37 +274,17 @@ module.exports = {
       },
     }),
 
-    new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: `${currentPath}/src/index.html`,
-      inlineSource: '.css$',
-      chunksSortMode: 'dependency',
-      minify: {
-        removeComments: true,
-        collapseWhitespace: true,
-        removeStyleLinkTypeAttributes: true,
-        removeRedundantAttributes: true,
-        removeAttributeQuotes: true,
-        removeEmptyAttributes: true,
-        removeTagWhitespace: true,
-        useShortDoctype: true,
-        keepClosingSlash: true,
-        minifyURLs: true,
-        minifyCSS: true,
-      },
-    }),
-
     new OptimizeCssAssetsPlugin({
       assetNameRegExp: /.css$/g,
       cssProcessor: require(require.resolve('clean-css')),
       cssProcessorPluginOptions: {
-        autoprefixer: {}
+        autoprefixer: {},
       },
       canPrint: true,
     }),
 
     new MiniCssExtractPlugin({
-      filename: '[name].[hash:8].css',
+      filename: '[name]/[name].[hash:8].css',
       chunkFilename: '[id].css',
     }),
 
@@ -269,12 +318,6 @@ module.exports = {
     //   },
     // }),
     // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-
-    new HtmlWebpackInlineSourcePlugin(),
-
-    new SimpleProgressWebpackPlugin(),
-
-    new FriendlyErrorsWebpackPlugin(),
   ],
 
   devServer: {
@@ -282,4 +325,83 @@ module.exports = {
   },
 
   devtool: false,
+};
+
+const build = function({ entry }, callback){
+  const _each = struct.each();
+  const _isFn = struct.type("func");
+  const {log, error} = msg;
+  const output = `${currentPath}/${abcJSON.path.output}`;
+
+  if (entry.length) {
+    _each(entry, page => {
+      const entryOutputDir = `${output}/${page}`;
+
+      if (fs.existsSync(entryOutputDir)){
+        log(`webpack remove prevs exist [${page.red}] output directory - ${entryOutputDir.red}`);
+        fse.removeSync(entryOutputDir);
+      }
+
+      webpackConfig.entry[page] = `${currentPath}/src/${page}/index.js`;
+    
+      webpackConfig.plugins.push(
+        new HtmlWebpackPlugin({
+          inject: true,
+          filename: `${page}/index.html`,
+          template: `${currentPath}/src/${page}/index.html`,
+          chunks: ["vendors","commons",page],
+          inlineSource: '.css$',
+          chunksSortMode: 'dependency',
+          minify: {
+            removeComments: true,
+            collapseWhitespace: true,
+            removeStyleLinkTypeAttributes: true,
+            removeRedundantAttributes: true,
+            removeAttributeQuotes: true,
+            removeEmptyAttributes: true,
+            removeTagWhitespace: true,
+            useShortDoctype: true,
+            keepClosingSlash: true,
+            minifyURLs: true,
+            minifyCSS: true,
+          },
+        }),
+      );
+    });
+
+    webpackConfig.plugins = webpackConfig.plugins.concat([
+      new HtmlWebpackInlineSourcePlugin(),
+      new SimpleProgressWebpackPlugin(),
+      new FriendlyErrorsWebpackPlugin(),
+    ]);
+
+    const compiler = webpack(webpackConfig);
+    compiler.run(() =>{ 
+      log('webpack building completed!');
+      (callback && _isFn(callback)) && callback(entry)
+    });
+  } else {
+    return error('must choice less than one entry for build!');
+  }
+}
+
+module.exports = function(entrys, callback) {
+
+  if(entrys){
+    return build(entrys, callback);
+  }
+
+  let list = fs.readdirSync(`${currentPath}/src`);
+  list = list.filter(function(val){ return val[0] == "." ? false : val });
+
+  return inquirer.prompt([
+      {
+        type: 'checkbox',
+        name: 'entry',
+        message: 'Choice the project entry for development',
+        choices: list,
+      },
+    ]).then(function(entryes){
+      return build(entryes, callback);
+    });
 };

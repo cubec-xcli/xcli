@@ -26,7 +26,7 @@ module.exports = {
     // options related to how webpack emits results
     path: path.resolve(currentPath, abcJSON.path.output),
     filename: '[name].[hash:8].js',
-    publicPath: '/',
+    publicPath: abcJSON.path.public || "/",
   },
 
   mode: 'production',
@@ -98,6 +98,9 @@ module.exports = {
       loaders: [
         {
           loader: require.resolve('cache-loader'),
+          options: {
+            cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
+          }
         },
         {
           loader: require.resolve('babel-loader'),
@@ -107,6 +110,8 @@ module.exports = {
               require.resolve('@babel/preset-react'),
             ],
             plugins: [
+              require.resolve('@babel/plugin-syntax-dynamic-import'),
+              require.resolve('@babel/plugin-proposal-object-rest-spread'),
               require.resolve('@babel/plugin-proposal-class-properties'),
               require.resolve('@babel/plugin-proposal-function-bind'),
             ],

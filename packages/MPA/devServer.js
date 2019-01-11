@@ -1,18 +1,24 @@
 process.env.NODE_ENV = 'development';
 
+const fs = require('fs');
 const path = require('path');
+const opn = require('opn');
 const webpack = require('webpack');
+const webpackDevServer = require('webpack-dev-server');
+const inquirer = require('inquirer');
+const struct = require('ax-struct-js');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // const AutoDLLPlugin = require('autodll-webpack-plugin');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin;
 const errorOverlayMiddleware = require('react-dev-utils/errorOverlayMiddleware');
 const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMiddleware');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-const DuplicatePackageCheckerPlugin = require("duplicate-package-checker-webpack-plugin");
+const DuplicatePackageCheckerPlugin = require('duplicate-package-checker-webpack-plugin');
 const HappyPack = require('happypack');
 const HappyThreadPool = HappyPack.ThreadPool({size: 8});
 // for speed test
@@ -21,20 +27,23 @@ const HappyThreadPool = HappyPack.ThreadPool({size: 8});
 
 const {abcJSON, paths} = require('../../lib/util');
 const {currentPath, mockServer, ipadress} = paths;
+const regex = new RegExp(`${currentPath}`);
 const mockApp = require(mockServer);
 
-module.exports = {
-  entry: [
-    `${currentPath}/src/index.js`,
-    require.resolve('webpack/hot/dev-server'),
-    require.resolve('webpack-dev-server/client') +
-      `?http://${ipadress}:${abcJSON.devServer.port}/`,
-  ],
+const webpackConfig = {
+  // entry: [
+  //   `${currentPath}/src/index.js`,
+  //   require.resolve('webpack/hot/dev-server'),
+  //   require.resolve('webpack-dev-server/client') +
+  //     `?http://${ipadress}:${abcJSON.devServer.port}/`,
+  // ],
+  entry: {},
 
   output: {
     // options related to how webpack emits results
     path: path.resolve(currentPath, abcJSON.path.output),
-    filename: '[name].[hash:8].js',
+    filename: '[name]/[name].[hash:8].js',
+    chunkFilename: '_vendors/[name].bundle.js',
     // publicPath: `http://${ipadress}:${abcJSON.devServer.port}/`,
   },
 
@@ -169,13 +178,31 @@ module.exports = {
     new HappyPack({
       id: 'scss',
       threadPool: HappyThreadPool,
-      loaders: [
+      loaders: (abcJSON.wap ? [
         {
           loader: require.resolve('css-loader'),
           options: {
             sourceMap: true,
+            importLoaders: 1
           },
         },
+        { 
+          loader: require.resolve('postcss-loader'),
+          options: {
+            sourceMap: true,
+            config: {
+              path: path.join(__dirname,"/")
+            }
+          }
+        },
+      ] : [
+        {
+          loader: require.resolve('css-loader'),
+          options: {
+            sourceMap: true
+          },
+        },
+      ]).concat([
         {
           loader: require.resolve('resolve-url-loader'),
           options: {
@@ -187,8 +214,8 @@ module.exports = {
           options: {
             sourceMap: true,
           },
-        },
-      ],
+        }
+      ]),
     }),
 
     new BundleAnalyzerPlugin({
@@ -201,17 +228,17 @@ module.exports = {
       generateStatsFile: false,
       statsFilename: 'stats.json',
       statsOptions: {
-        exclude: ['xcli', 'vendor'],
+        exclude: ['xcli', 'vendor', 'webpack','hot'],
       },
-      excludeAssets: ['xcli'],
+      excludeAssets: ['xcli,webpack','hot'],
       logLevel: 'info',
     }),
 
-    new HtmlWebpackPlugin({
-      inject: true,
-      filename: 'index.html',
-      template: `${currentPath}/src/index.html`,
-    }),
+    // new HtmlWebpackPlugin({
+    //   inject: true,
+    //   filename: 'index.html',
+    //   template: `${currentPath}/src/index.html`,
+    // }),
 
     // new AutoDLLPlugin({
     //   debug: false,
@@ -223,7 +250,7 @@ module.exports = {
     // }),
 
     new MiniCssExtractPlugin({
-      filename: '[name].css',
+      filename: '[name]/[name].css',
       chunkFilename: '[id].css',
     }),
 
@@ -242,7 +269,7 @@ module.exports = {
     hot: true,
     quiet: true,
     disableHostCheck: true,
-    historyApiFallback: true,
+    // historyApiFallback: true,
     https: abcJSON.devServer.https || false,
 
     // clientLogLevel: 'none',
@@ -287,4 +314,67 @@ module.exports = {
   // devtool: 'inline-cheap-module-source-map',
   // devtool: 'cheap-module-eval-source-map',
   devtool: 'cheap-module-eval-source-map',
+};
+
+module.exports = function(util) {
+  const _each = struct.each();
+
+  const {log, error} = util.msg;
+  let list = fs.readdirSync(`${currentPath}/src`);
+  list = list.filter(function(val){ return val[0] == "." ? false : val });
+
+  return inquirer
+    .prompt([
+      {
+        type: 'checkbox',
+        name: 'entry',
+        message: 'Choice the project entry for development',
+        choices: list,
+      },
+    ])
+    .then(({entry}) => {
+      if (entry.length) {
+
+        _each(entry, page => {
+          webpackConfig.entry[page] = [
+            `${currentPath}/src/${page}/index.js`,
+            require.resolve('webpack/hot/dev-server'),
+            require.resolve('webpack-dev-server/client') +
+              `?http://0.0.0.0:${abcJSON.devServer.port}/`,
+          ];
+
+          webpackConfig.plugins.push(
+            new HtmlWebpackPlugin({
+              inject: true,
+              filename: `${page}/index.html`,
+              template: `${currentPath}/src/${page}/index.html`,
+              chunks: [page],
+            }),
+          );
+        });
+
+        const compiler = webpack(webpackConfig);
+        const server = new webpackDevServer(compiler, webpackConfig.devServer);
+        const port = +abcJSON.devServer.port || 9001;
+        const entryOpen = entry[0];
+
+        log(`Webpack DevServer Host on ${`${ipadress}:${port}`.red}`.green);
+
+        return server.listen(port, "0.0.0.0", () => {
+          log('------------------------------');
+          log('Webpack DevServer Start!'.green);
+
+          opn(
+            `${
+              abcJSON.devServer.https ? 'https' : 'http'
+            }://${ipadress}:${port}/${entryOpen}`,
+            {
+              app: ['google chrome', '--incognito'],
+            },
+          );
+        });
+      } else {
+        return error('must choice less than one entry for devServer!');
+      }
+    });
 };
