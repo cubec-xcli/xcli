@@ -3,7 +3,6 @@ const fse = require('fs-extra');
 const colors = require('colors');
 const path = require('path');
 const util = require('../lib/util');
-const {prompt} = require('inquirer');
 const struct = require('ax-struct-js');
 
 const _isString = struct.type("string");

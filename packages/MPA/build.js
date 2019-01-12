@@ -4,7 +4,7 @@ const fs = require('fs');
 const fse = require('fs-extra');
 const path = require('path');
 const webpack = require('webpack');
-const inquirer = require('inquirer');
+const {MultiSelect} = require('enquirer');
 const struct = require('ax-struct-js');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -41,23 +41,23 @@ const webpackConfig = {
     splitChunks: {
       cacheGroups: {
         commons: {
-          chunks: "initial",
-          name: "commons",
-					minChunks: 2,
-					maxInitialRequests: 5,
-					minSize: 0
-				},
-          // In dev mode, we want all vendor (node_modules) to go into a chunk,
-          // so building main.js is faster.
+        chunks: 'initial',
+          name: 'commons',
+          minChunks: 2,
+          maxInitialRequests: 5,
+          minSize: 0,
+        },
+        // In dev mode, we want all vendor (node_modules) to go into a chunk,
+        // so building main.js is faster.
         vendors: {
-          chunks: "initial",
+          chunks: 'initial',
           test: /[\\/]node_modules[\\/]/,
-          name: "vendors",
+          name: 'vendors',
           priority: 10,
-					enforce: true
-        }
-      }
-    }
+          enforce: true,
+        },
+      },
+    },
   },
 
   mode: 'production',
@@ -143,8 +143,8 @@ const webpackConfig = {
         {
           loader: require.resolve('cache-loader'),
           options: {
-            cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
-          }
+            cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`,
+          },
         },
         {
           loader: require.resolve('babel-loader'),
@@ -171,33 +171,37 @@ const webpackConfig = {
     new HappyPack({
       id: 'scss',
       threadPool: HappyThreadPool,
-      loaders: (abcJSON.wap ? [
-        {
-          loader: require.resolve('css-loader'),
-          options: {
-            sourceMap: false,
-            sourceComments: false,
-            importLoaders: 1
-          },
-        },
-        { 
-          loader: require.resolve('postcss-loader'),
-          options: {
-            sourceMap: false,
-            config: {
-              path: path.join(__dirname,"/")
-            }
-          }
-        },
-      ] : [
-        {
-          loader: require.resolve('css-loader'),
-          options: {
-            sourceMap: false,
-            sourceComments: false,
-          },
-        },
-      ]).concat([
+      loaders: (abcJSON.wap
+        ? [
+            {
+              loader: require.resolve('css-loader'),
+              options: {
+                sourceMap: false,
+                sourceComments: false,
+                minimize: true,
+                importLoaders: 2,
+              },
+            },
+            {
+              loader: require.resolve('postcss-loader'),
+              options: {
+                sourceMap: false,
+                config: {
+                  path: path.join(__dirname, '/'),
+                },
+              },
+            },
+          ]
+        : [
+            {
+              loader: require.resolve('css-loader'),
+              options: {
+                sourceMap: false,
+                sourceComments: false,
+              },
+            },
+          ]
+      ).concat([
         {
           loader: require.resolve('clean-css-loader'),
           options: {
@@ -216,7 +220,7 @@ const webpackConfig = {
           options: {
             sourceMap: false,
           },
-        }
+        },
       ]),
     }),
 
@@ -327,9 +331,9 @@ const webpackConfig = {
   devtool: false,
 };
 
-const build = function({ entry }, callback){
+const build = function(entry, callback) {
   const _each = struct.each();
-  const _isFn = struct.type("func");
+  const _isFn = struct.type('func');
   const {log, error} = msg;
   const output = `${currentPath}/${abcJSON.path.output}`;
 
@@ -337,19 +341,23 @@ const build = function({ entry }, callback){
     _each(entry, page => {
       const entryOutputDir = `${output}/${page}`;
 
-      if (fs.existsSync(entryOutputDir)){
-        log(`webpack remove prevs exist [${page.red}] output directory - ${entryOutputDir.red}`);
+      if (fs.existsSync(entryOutputDir)) {
+        log(
+          `webpack remove prevs exist [${page.red}] output directory - ${
+            entryOutputDir.red
+          }`,
+        );
         fse.removeSync(entryOutputDir);
       }
 
       webpackConfig.entry[page] = `${currentPath}/src/${page}/index.js`;
-    
+
       webpackConfig.plugins.push(
         new HtmlWebpackPlugin({
           inject: true,
           filename: `${page}/index.html`,
           template: `${currentPath}/src/${page}/index.html`,
-          chunks: ["vendors","commons",page],
+          chunks: ['vendors', 'commons', page],
           inlineSource: '.css$',
           chunksSortMode: 'dependency',
           minify: {
@@ -376,32 +384,32 @@ const build = function({ entry }, callback){
     ]);
 
     const compiler = webpack(webpackConfig);
-    compiler.run(() =>{ 
+    compiler.run(() => {
       log('webpack building completed!');
-      (callback && _isFn(callback)) && callback(entry)
+      callback && _isFn(callback) && callback(entry);
     });
   } else {
     return error('must choice less than one entry for build!');
   }
-}
+};
 
 module.exports = function(entrys, callback) {
-
-  if(entrys){
+  if (entrys) {
     return build(entrys, callback);
   }
 
   let list = fs.readdirSync(`${currentPath}/src`);
-  list = list.filter(function(val){ return val[0] == "." ? false : val });
+  list = list.filter(function(val) {
+    return val[0] == '.' ? false : val;
+  }).map(function(val){
+    return {name:val, value:val};
+  });
 
-  return inquirer.prompt([
-      {
-        type: 'checkbox',
-        name: 'entry',
-        message: 'Choice the project entry for development',
-        choices: list,
-      },
-    ]).then(function(entryes){
-      return build(entryes, callback);
-    });
+  return new MultiSelect({
+    name: 'value',
+    message: 'Choice the project entry for development',
+    choices: list,
+  }).run().then((entrys)=>{
+    return build(entrys, callback);
+  });
 };

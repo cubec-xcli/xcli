@@ -5,12 +5,12 @@ const path = require('path');
 const opn = require('opn');
 const webpack = require('webpack');
 const webpackDevServer = require('webpack-dev-server');
-const inquirer = require('inquirer');
 const struct = require('ax-struct-js');
+const {MultiSelect} = require('enquirer');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+//const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // const AutoDLLPlugin = require('autodll-webpack-plugin');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
@@ -27,7 +27,6 @@ const HappyThreadPool = HappyPack.ThreadPool({size: 8});
 
 const {abcJSON, paths} = require('../../lib/util');
 const {currentPath, mockServer, ipadress} = paths;
-const regex = new RegExp(`${currentPath}`);
 const mockApp = require(mockServer);
 
 const webpackConfig = {
@@ -78,7 +77,7 @@ const webpackConfig = {
         test: /\.(css|scss)$/,
         use: [
           require.resolve('css-hot-loader'),
-          MiniCssExtractPlugin.loader,
+          //MiniCssExtractPlugin.loader,
           require.resolve('happypack/loader') + '?id=scss',
         ],
       },
@@ -137,8 +136,8 @@ const webpackConfig = {
         {
           loader: require.resolve('cache-loader'),
           options: {
-            cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
-          }
+            cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`,
+          },
         },
         {
           loader: require.resolve('babel-loader'),
@@ -178,31 +177,45 @@ const webpackConfig = {
     new HappyPack({
       id: 'scss',
       threadPool: HappyThreadPool,
-      loaders: (abcJSON.wap ? [
-        {
-          loader: require.resolve('css-loader'),
-          options: {
-            sourceMap: true,
-            importLoaders: 1
-          },
-        },
-        { 
-          loader: require.resolve('postcss-loader'),
-          options: {
-            sourceMap: true,
-            config: {
-              path: path.join(__dirname,"/")
-            }
-          }
-        },
-      ] : [
-        {
-          loader: require.resolve('css-loader'),
-          options: {
-            sourceMap: true
-          },
-        },
-      ]).concat([
+      loaders: (abcJSON.wap
+        ? [
+            {
+              loader: require.resolve('style-loader'),
+              options: {
+                sourceMap: true,
+              },
+            },
+            {
+              loader: require.resolve('css-loader'),
+              options: {
+                sourceMap: true,
+              },
+            },
+            {
+              loader: require.resolve('postcss-loader'),
+              options: {
+                sourceMap: 'inline',
+                config: {
+                  path: path.join(__dirname, '/'),
+                },
+              },
+            },
+          ]
+        : [
+            {
+              loader: require.resolve('style-loader'),
+              options: {
+                sourceMap: true,
+              },
+            },
+            {
+              loader: require.resolve('css-loader'),
+              options: {
+                sourceMap: true,
+              },
+            },
+          ]
+      ).concat([
         {
           loader: require.resolve('resolve-url-loader'),
           options: {
@@ -212,9 +225,10 @@ const webpackConfig = {
         {
           loader: require.resolve('sass-loader'),
           options: {
+            outputStyle: 'expanded',
             sourceMap: true,
           },
-        }
+        },
       ]),
     }),
 
@@ -228,9 +242,9 @@ const webpackConfig = {
       generateStatsFile: false,
       statsFilename: 'stats.json',
       statsOptions: {
-        exclude: ['xcli', 'vendor', 'webpack','hot'],
+        exclude: ['xcli', 'vendor', 'webpack', 'hot'],
       },
-      excludeAssets: ['xcli,webpack','hot'],
+      excludeAssets: ['xcli,webpack', 'hot'],
       logLevel: 'info',
     }),
 
@@ -249,10 +263,10 @@ const webpackConfig = {
     //   },
     // }),
 
-    new MiniCssExtractPlugin({
-      filename: '[name]/[name].css',
-      chunkFilename: '[id].css',
-    }),
+    // new MiniCssExtractPlugin({
+    //   filename: '[name]/[name].css',
+    //   chunkFilename: '[id].css',
+    // }),
 
     // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
 
@@ -321,20 +335,21 @@ module.exports = function(util) {
 
   const {log, error} = util.msg;
   let list = fs.readdirSync(`${currentPath}/src`);
-  list = list.filter(function(val){ return val[0] == "." ? false : val });
+  list = list.filter(function(val) {
+    return val[0] == '.' ? false : val;
+  });
+  list = list.map(function(val) {
+    return {name: val, value: val};
+  });
 
-  return inquirer
-    .prompt([
-      {
-        type: 'checkbox',
-        name: 'entry',
-        message: 'Choice the project entry for development',
-        choices: list,
-      },
-    ])
-    .then(({entry}) => {
+  return new MultiSelect({
+    name: 'value',
+    message: 'Choice the project entry for development',
+    choices: list,
+  })
+    .run()
+    .then(entry => {
       if (entry.length) {
-
         _each(entry, page => {
           webpackConfig.entry[page] = [
             `${currentPath}/src/${page}/index.js`,
@@ -360,7 +375,7 @@ module.exports = function(util) {
 
         log(`Webpack DevServer Host on ${`${ipadress}:${port}`.red}`.green);
 
-        return server.listen(port, "0.0.0.0", () => {
+        return server.listen(port, '0.0.0.0', () => {
           log('------------------------------');
           log('Webpack DevServer Start!'.green);
 
@@ -376,5 +391,6 @@ module.exports = function(util) {
       } else {
         return error('must choice less than one entry for devServer!');
       }
-    });
+    })
+    .catch(console.error);
 };

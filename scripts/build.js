@@ -22,14 +22,14 @@ module.exports = function() {
         __dirname,
         `../packages/${type}/webpack.build`,
       ));
-  
+
       const compiler = webpack(webpackConfig);
 
       if (fs.existsSync(output)){
         log(`webpack remove prevs exist output directory. ${output.red}`);
         fse.removeSync(output);
       }
-  
+
       compiler.run(() => log('webpack building completed!'));
     }else{
       // 自定义发布方法

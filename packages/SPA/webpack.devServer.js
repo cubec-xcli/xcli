@@ -5,7 +5,7 @@ const webpack = require('webpack');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+//const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // const AutoDLLPlugin = require('autodll-webpack-plugin');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
@@ -69,7 +69,7 @@ module.exports = {
         test: /\.(css|scss)$/,
         use: [
           require.resolve('css-hot-loader'),
-          MiniCssExtractPlugin.loader,
+          //MiniCssExtractPlugin.loader,
           require.resolve('happypack/loader') + '?id=scss',
         ],
       },
@@ -171,6 +171,12 @@ module.exports = {
       threadPool: HappyThreadPool,
       loaders: [
         {
+          loader: require.resolve('style-loader'),
+          options: {
+            sourceMap: true,
+          },
+        },
+        {
           loader: require.resolve('css-loader'),
           options: {
             sourceMap: true,
@@ -222,10 +228,10 @@ module.exports = {
     //   },
     // }),
 
-    new MiniCssExtractPlugin({
-      filename: '[name].css',
-      chunkFilename: '[id].css',
-    }),
+    // new MiniCssExtractPlugin({
+    //   filename: '[name].css',
+    //   chunkFilename: '[id].css',
+    // }),
 
     // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
 

@@ -5,7 +5,7 @@ const path = require('path');
 const util = require('../../lib/util');
 const struct = require('ax-struct-js');
 const axios = require('axios');
-const {prompt} = require('inquirer');
+const {Input} = require('enquirer');
 
 const _size = struct.size();
 const _merge = struct.merge();
@@ -141,25 +141,13 @@ function upCommitToGitLab(currentPubOption, token){
 module.exports = function(currentPubOption){
   const token = getToken();
 
-  if(token)
-    return upCommitToGitLab(currentPubOption, token);
+  if(token) return upCommitToGitLab(currentPubOption, token);
 
-  prompt([
-    {
-      type: 'input',
-      name: 'token',
-      message: "GitLab Personal access tokens",
-      validate: function(value) {
-        if(value && _size(value)>8){
-          return true;
-        }
-
-        return 'Please enter a valid Personal access tokens';
-      }
-    }
-  ]).then(({ token }) => {
+  return new Input({
+    message: "GitLab Personal access tokens",
+  }).run().then(token=>{
     fse.ensureFileSync(paths.tokenPath);
     fs.writeFileSync(paths.tokenPath, token, 'utf8');
     upCommitToGitLab(currentPubOption, token);
-  });
+  }).catch(console.error);
 };
