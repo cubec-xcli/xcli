@@ -74,6 +74,11 @@ const webpackConfig = {
         use: [require.resolve('happypack/loader') + '?id=cubec'],
       },
       {
+        test: /\.(jpe?g|png|svg|gif)$/,
+        exclude: /node_modules/,
+        use: [require.resolve('happypack/loader') + '?id=image'],
+      },
+      {
         test: /\.(css|scss)$/,
         use: [
           require.resolve('css-hot-loader'),
@@ -113,6 +118,19 @@ const webpackConfig = {
           loader: require.resolve('cubec-loader'),
         },
       ],
+    }),
+
+    new HappyPack({
+      id: 'image',
+      threadPool: HappyThreadPool,
+      loaders: [
+        {
+           loader: require.resolve('url-loader'),
+           options: {
+             limit: 8192
+           }
+        }
+      ]
     }),
 
     // new HappyPack({

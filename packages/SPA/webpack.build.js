@@ -52,6 +52,11 @@ module.exports = {
         use: [require.resolve('happypack/loader') + '?id=cubec'],
       },
       {
+        test: /\.(jpe?g|png|svg|gif)$/,
+        exclude: /node_modules/,
+        use: [require.resolve('happypack/loader') + '?id=image'],
+      },
+      {
         test: /\.(css|scss)$/,
         use: [
           MiniCssExtractPlugin.loader,
@@ -90,6 +95,19 @@ module.exports = {
           loader: require.resolve('cubec-loader'),
         },
       ],
+    }),
+
+    new HappyPack({
+      id: 'image',
+      threadPool: HappyThreadPool,
+      loaders: [
+        {
+           loader: require.resolve('url-loader'),
+           options: {
+             limit: 8192
+           }
+        }
+      ]
     }),
 
     new HappyPack({
@@ -139,6 +157,21 @@ module.exports = {
           loader: require.resolve('clean-css-loader'),
           options: {
             level: 2,
+            sourceMap: false,
+          },
+        },
+        {
+          loader: require.resolve('postcss-loader'),
+          options: {
+            sourceMap: false,
+            config: {
+              path: path.join(__dirname, '/'),
+            },
+          },
+        },
+        {
+          loader: require.resolve('resolve-url-loader'),
+          options: {
             sourceMap: false,
           },
         },
