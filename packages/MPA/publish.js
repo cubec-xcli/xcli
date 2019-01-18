@@ -82,7 +82,7 @@ function upCommitToGitLab(currentPubOption, token){
 
     return build(entryes, function(){
 
-      log(`prepared for release ${entryes.entry}`);
+      log(`prepared for release ${entryes}`);
 
       axios({
         url: processGitLabAPI(gitlab, "projects"),
@@ -106,7 +106,6 @@ function upCommitToGitLab(currentPubOption, token){
           params: _merge({ ref: currentPubOption.branch, recursive: true }, targetPath ? { path: targetPath } : {}) ,
           headers: axiosHeaders
         }).then((res)=>{
-          entryes.entry.push(["_vendors"]);
 
           const commits = {
             branch : currentPubOption.branch,
@@ -116,7 +115,7 @@ function upCommitToGitLab(currentPubOption, token){
 
           // 先删除对应entry中已存在的文件
           _each(res.data, function(file, index){
-            if(file.type === "blob" && findInEntry(entryes.entry, file.path, targetPath)){
+            if(file.type === "blob" && findInEntry(entryes, file.path, targetPath)){
               commits.actions.unshift({
                 action: "delete",
                 file_path: file.path
@@ -124,8 +123,10 @@ function upCommitToGitLab(currentPubOption, token){
             }
           });
 
+          entryes.push(["_vendors"]);
+
           // 发布entry中的文件
-          _each(entryes.entry, function(entry){
+          _each(entryes, function(entry){
             _each(glob.sync(`${paths.outputPath}/${entry}/*.*`), function(filepath){
               const upFilePath = pathCater(paths.outputPath, filepath, targetPath)
 

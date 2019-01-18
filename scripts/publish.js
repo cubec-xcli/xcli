@@ -4,6 +4,7 @@ const colors = require('colors');
 const path = require('path');
 const util = require('../lib/util');
 const struct = require('ax-struct-js');
+const {Select} = require('enquirer');
 
 const _isString = struct.type("string");
 const _isFn = struct.type('func');
@@ -26,7 +27,7 @@ module.exports = function() {
           return error("abc.json custom publish runner path is not a moudle exports like available function");
         }
 
-        printCommanLog();
+        // printCommanLog();
 
         preinstall();
 
@@ -49,28 +50,29 @@ module.exports = function() {
       }
 
       const gitlab = abcJSON.publish.gitlab;
-      const promptKeys = _keys(abcJSON.publish.options);
+      const pubEntrys = _keys(abcJSON.publish.options);
 
       if(!gitlab){
         return error(`${'abc.json'.bold} publish config missing [gitlab] url`);
       }
 
-      if(!_size(promptKeys)){
+      if(!_size(pubEntrys)){
         return error(`${'abc.json'.bold} publish config missing [options] key entry`);
       }
 
-      prompt([{
-        type: "list",
-        name: "pubkey",
-        message: "Choice the publish option",
-        choices: promptKeys
-      }]).then(({ pubkey }) =>{
+      new Select({
+        name: "entry",
+        message: "Choice the publish option for branch entry",
+        choices: pubEntrys
+      }).run().then((pubkey) =>{
         const type = abcJSON.type;
         const currentPubOption = abcJSON.publish.options[pubkey];
 
         if(fs.existsSync(path.join(__dirname, `../packages/${type}/webpack.build.js`))){
-          printCommanLog();
+          // printCommanLog();
+
           preinstall();
+          
           if (fs.existsSync(paths.outputPath)){ fse.removeSync(paths.outputPath); };
 
           const webpack = require('webpack');

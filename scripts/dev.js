@@ -7,14 +7,15 @@ const opn = require('opn');
 const {preinstall, printCommanLog, paths, abcJSON} = util;
 const {log, error} = util.msg;
 
-module.exports = function(cpath, param) {
+module.exports = function(param) {
+
   if (abcJSON) {
     const type = abcJSON.type;
     const port = +abcJSON.devServer.port || 9001;
 
-    printCommanLog();
+    // printCommanLog();
 
-    if(param != "debug" && param != "d"){
+    if(!param && param != "debug" && param != "d"){
       preinstall();
     }
 

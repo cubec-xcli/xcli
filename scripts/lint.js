@@ -6,7 +6,7 @@ const {log, error} = util.msg;
 
 module.exports = function(path, param) {
   if (abcJSON) {
-    printCommanLog();
+    // printCommanLog();
 
     const type = abcJSON.type;
 

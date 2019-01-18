@@ -15,7 +15,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
+//const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 const HappyPack = require('happypack');
 const HappyThreadPool = HappyPack.ThreadPool({size: 8});
@@ -31,7 +31,7 @@ const webpackConfig = {
     // options related to how webpack emits results
     path: path.resolve(currentPath, abcJSON.path.output),
     filename: '[name]/[name].[contenthash:8].js',
-    chunkFilename: '_vendors/[name].bundle.js',
+    chunkFilename: `_vendors/${abcJSON.name}.[name].bundle.js`,
     publicPath: '/',
   },
 
@@ -412,6 +412,11 @@ const build = function(entry, callback) {
 };
 
 module.exports = function(entrys, callback) {
+  if(typeof entrys === 'function'){
+    callback = entrys;
+    entrys = null;
+  }
+
   if (entrys) {
     return build(entrys, callback);
   }

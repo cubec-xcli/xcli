@@ -12,7 +12,7 @@ module.exports = function() {
     const type = abcJSON.type;
     const output = `${paths.currentPath}/${abcJSON.path.output}`;
 
-    printCommanLog();
+    // printCommanLog();
 
     preinstall();
 

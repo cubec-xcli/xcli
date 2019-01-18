@@ -2,6 +2,7 @@ process.env.NODE_ENV = 'development';
 
 const path = require('path');
 const webpack = require('webpack');
+const struct = require('ax-struct-js');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
@@ -19,6 +20,7 @@ const HappyThreadPool = HappyPack.ThreadPool({size: 8});
 // const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 // const smp = new SpeedMeasurePlugin();
 
+const _merge = struct.merge();
 const {abcJSON, paths} = require('../../lib/util');
 const {currentPath, mockServer, ipadress} = paths;
 const mockApp = require(mockServer);
@@ -35,6 +37,7 @@ module.exports = {
     // options related to how webpack emits results
     path: path.resolve(currentPath, abcJSON.path.output),
     filename: '[name].[hash:8].js',
+    publicPath: "/",
     // publicPath: `http://${ipadress}:${abcJSON.devServer.port}/`,
   },
 
@@ -160,6 +163,8 @@ module.exports = {
             ],
             plugins: [
               require.resolve('@babel/plugin-syntax-dynamic-import'),
+              //require.resolve('@babel/plugin-transform-modules-commonjs'),
+              //require.resolve('babel-plugin-add-module-exports'),
               require.resolve('@babel/plugin-proposal-object-rest-spread'),
               require.resolve('@babel/plugin-proposal-class-properties'),
               require.resolve('@babel/plugin-proposal-function-bind'),
@@ -272,12 +277,12 @@ module.exports = {
     new FriendlyErrorsWebpackPlugin(),
   ],
 
-  devServer: {
+  devServer: _merge({
     hot: true,
     quiet: true,
     disableHostCheck: true,
     historyApiFallback: true,
-    https: abcJSON.devServer.https || false,
+    https: false,
 
     // clientLogLevel: 'none',
     // historyApiFallback: {
@@ -289,7 +294,6 @@ module.exports = {
 
     headers: {'Access-Control-Allow-Origin': '*'},
 
-    proxy: abcJSON.devServer.proxy,
     // proxy: {
     //   [config.proxyUri]: {
     //     target: config.proxyTarget,
@@ -315,7 +319,8 @@ module.exports = {
       // setup mock server App
       mockApp(app);
     },
-  },
+
+  }, abcJSON.devServer),
 
   // devtool: 'cheap-module-eval-source-map',
   // devtool: 'inline-cheap-module-source-map',
