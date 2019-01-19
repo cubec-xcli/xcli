@@ -15,6 +15,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 //const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 const HappyPack = require('happypack');
@@ -41,7 +42,7 @@ const webpackConfig = {
     splitChunks: {
       cacheGroups: {
         commons: {
-        chunks: 'initial',
+          chunks: 'initial',
           name: 'commons',
           minChunks: 2,
           maxInitialRequests: 5,
@@ -50,7 +51,7 @@ const webpackConfig = {
         // In dev mode, we want all vendor (node_modules) to go into a chunk,
         // so building main.js is faster.
         vendors: {
-          chunks: 'initial',
+          chunks: 'all',
           test: /[\\/]node_modules[\\/]/,
           name: 'vendors',
           priority: 10,
@@ -168,7 +169,16 @@ const webpackConfig = {
           loader: require.resolve('babel-loader'),
           options: {
             presets: [
-              require.resolve('@babel/preset-env'),
+              [require.resolve('@babel/preset-env'),{
+                "targets": {
+                  "chrome": 40,
+                  "browsers": ["last 2 versions", "safari 7", "android > 4.4", "ie > 10"]
+                },
+                "modules": false,
+                "useBuiltIns": false,
+                "debug": false
+              }],
+              //require.resolve('@babel/preset-env'),
               require.resolve('@babel/preset-react'),
             ],
             plugins: [
@@ -220,13 +230,6 @@ const webpackConfig = {
             },
           ]
       ).concat([
-        {
-          loader: require.resolve('clean-css-loader'),
-          options: {
-            level: 2,
-            sourceMap: false,
-          },
-        },
         {
           loader: require.resolve('resolve-url-loader'),
           options: {
@@ -299,9 +302,7 @@ const webpackConfig = {
     new OptimizeCssAssetsPlugin({
       assetNameRegExp: /.css$/g,
       cssProcessor: require(require.resolve('clean-css')),
-      cssProcessorPluginOptions: {
-        autoprefixer: {},
-      },
+      cssProcessorPluginOptions: {},
       canPrint: true,
     }),
 
@@ -310,35 +311,6 @@ const webpackConfig = {
       chunkFilename: '[id].css',
     }),
 
-    // new HardSourceWebpackPlugin({
-    //   // Either an absolute path or relative to webpack's options.context.
-    //   cacheDirectory: path.resolve(
-    //     currentPath,
-    //     'node_modules/.cache/hard-source/[confighash]',
-    //   ),
-    //   // Either false, a string, an object, or a project hashing function.
-    //   environmentHash: {
-    //     root: currentPath,
-    //     files: ['package-lock.json', 'yarn.lock'],
-    //   },
-    //   // An object.
-    //   info: {
-    //     // 'none' or 'test'.
-    //     mode: 'none',
-    //     // 'debug', 'log', 'info', 'warn', or 'error'.
-    //     level: 'debug',
-    //   },
-    //   // Clean up large, old caches automatically.
-    //   cachePrune: {
-    //     // Caches younger than `maxAge` are not considered for deletion. They must
-    //     // be at least this (default: 2 days) old in milliseconds.
-    //     maxAge: 2 * 24 * 60 * 60 * 1000,
-    //     // All caches together must be larger than `sizeThreshold` before any
-    //     // caches will be deleted. Together they must be at least this
-    //     // (default: 50 MB) big in bytes.
-    //     sizeThreshold: 50 * 1024 * 1024,
-    //   },
-    // }),
     // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
   ],
 
@@ -397,6 +369,9 @@ const build = function(entry, callback) {
 
     webpackConfig.plugins = webpackConfig.plugins.concat([
       new HtmlWebpackInlineSourcePlugin(),
+      // new ScriptExtHtmlWebpackPlugin({
+      //   async: /(!bundle)/
+      // }),
       new SimpleProgressWebpackPlugin(),
       new FriendlyErrorsWebpackPlugin(),
     ]);

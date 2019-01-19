@@ -8,6 +8,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
 //const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // const AutoDLLPlugin = require('autodll-webpack-plugin');
+const CircularDependencyPlugin = require('circular-dependency-plugin')
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const errorOverlayMiddleware = require('react-dev-utils/errorOverlayMiddleware');
@@ -37,11 +38,31 @@ module.exports = {
     // options related to how webpack emits results
     path: path.resolve(currentPath, abcJSON.path.output),
     filename: '[name].[hash:8].js',
+    chunkFilename: `[name].[contenthash:8].bundle.js`,
     publicPath: "/",
     // publicPath: `http://${ipadress}:${abcJSON.devServer.port}/`,
   },
 
   mode: 'development',
+
+  optimization: {
+    removeAvailableModules: false,
+    removeEmptyChunks: true,
+    splitChunks: {
+      cacheGroups: {
+        // In dev mode, we want all vendor (node_modules) to go into a chunk,
+        // so building main.js is faster.
+        vendors: {
+          chunks: 'all',
+          test: /[\\/]node_modules[\\/].*\.js/,
+          name: 'vendors',
+          reuseExistingChunk: true,
+          priority: 10,
+          enforce: true,
+        },
+      },
+    },
+  },
 
   parallelism: 8,
 
@@ -162,9 +183,12 @@ module.exports = {
               require.resolve('@babel/preset-react'),
             ],
             plugins: [
+              //require.resolve('@babel/plugin-transform-runtime'),
               require.resolve('@babel/plugin-syntax-dynamic-import'),
               //require.resolve('@babel/plugin-transform-modules-commonjs'),
               //require.resolve('babel-plugin-add-module-exports'),
+              //require.resolve('@babel/plugin-transform-regenerator'),
+              require.resolve('@babel/plugin-transform-async-to-generator'),
               require.resolve('@babel/plugin-proposal-object-rest-spread'),
               require.resolve('@babel/plugin-proposal-class-properties'),
               require.resolve('@babel/plugin-proposal-function-bind'),
@@ -175,19 +199,6 @@ module.exports = {
         },
       ],
     }),
-
-    // new HappyPack({
-    //   id: 'file',
-    //   threadPool: HappyThreadPool,
-    //   loaders: [
-    //     {
-    //       loader: require.resolve('url-loader'),
-    //       options: {
-    //         limit: 1024
-    //       }
-    //     },
-    //   ],
-    // }),
 
     new HappyPack({
       id: 'scss',
@@ -202,13 +213,15 @@ module.exports = {
         {
           loader: require.resolve('css-loader'),
           options: {
+            //modules: true,
             sourceMap: true,
+            importLoader: 2
           },
         },
         {
           loader: require.resolve('postcss-loader'),
           options: {
-            sourceMap: 'inline',
+            sourceMap: true,
             config: {
               path: path.join(__dirname, '/'),
             },
@@ -246,27 +259,29 @@ module.exports = {
       logLevel: 'info',
     }),
 
+    new CircularDependencyPlugin({
+      // exclude detection of files based on a RegExp
+      exclude: /node_modules/,
+      // add errors to webpack instead of warnings
+      failOnError: true,
+      // allow import cycles that include an asyncronous import,
+      // e.g. via import(/* webpackMode: "weak" */ './file.js')
+      allowAsyncCycles: false,
+      // set the current working directory for displaying module paths
+      cwd: process.cwd(),
+    }),
+
     new HtmlWebpackPlugin({
       inject: true,
       filename: 'index.html',
       template: `${currentPath}/src/index.html`,
     }),
 
-    // new AutoDLLPlugin({
-    //   debug: false,
-    //   inject: true,
-    //   filename: '[name].dll.js',
-    //   entry: {
-    //     vendor: ['cubec'],
-    //   },
-    // }),
-
-    // new MiniCssExtractPlugin({
-    //   filename: '[name].css',
-    //   chunkFilename: '[id].css',
-    // }),
-
     // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    // new webpack.SourceMapDevToolPlugin({
+    //   filename: '[name].js.map',
+    //   exclude: ['vendor']
+    // }),
 
     new webpack.HotModuleReplacementPlugin(),
 
@@ -320,10 +335,11 @@ module.exports = {
       mockApp(app);
     },
 
-  }, abcJSON.devServer),
+  }, abcJSON.devServer || {}),
 
-  // devtool: 'cheap-module-eval-source-map',
-  // devtool: 'inline-cheap-module-source-map',
-  // devtool: 'cheap-module-eval-source-map',
+  //devtool: 'cheap-eval-source-map',
   devtool: 'cheap-module-eval-source-map',
+  //devtool: 'inline-cheap-source-map',
+  //devtool: 'inline-cheap-module-source-map'
+  //devtool: 'source-map'
 };

@@ -15,7 +15,7 @@ module.exports = function(param) {
 
     // printCommanLog();
 
-    if(!param && param != "debug" && param != "d"){
+    if(!param || (param != "debug" && param != "d")){
       preinstall();
     }
 

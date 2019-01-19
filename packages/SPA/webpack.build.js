@@ -11,13 +11,16 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+//const CleanWebpackPlugin = require('clean-after-emit-webpack-plugin');
+//const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 //const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
+//const CircularDependencyPlugin = require('circular-dependency-plugin')
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 const HappyPack = require('happypack');
 const HappyThreadPool = HappyPack.ThreadPool({size: 8});
 
 const {abcJSON, paths} = require('../../lib/util');
-const {currentPath} = paths;
+const {currentPath,ipadress} = paths;
 
 module.exports = {
   entry: `${currentPath}/src/index.js`,
@@ -26,6 +29,7 @@ module.exports = {
     // options related to how webpack emits results
     path: path.resolve(currentPath, abcJSON.path.output),
     filename: '[name].[hash:8].js',
+    chunkFilename: `[name].[contenthash:8].bundle.js`,
     publicPath: abcJSON.path.public || "/",
   },
 
@@ -35,6 +39,38 @@ module.exports = {
 
   resolve: {
     alias: abcJSON.alias,
+  },
+
+  optimization: {
+    removeAvailableModules: false,
+    removeEmptyChunks: true,
+    splitChunks: {
+      cacheGroups: {
+        commons: {
+          chunks: 'initial',
+          minChunks: 2,
+          maxInitialRequests: 5,
+          minSize: 0,
+        },
+        // In dev mode, we want all vendor (node_modules) to go into a chunk,
+        // so building main.js is faster.
+        vendors: {
+          chunks: 'all',
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          reuseExistingChunk: true,
+          priority: 10,
+          enforce: true,
+        },
+        
+        styles: {
+          name: 'styles',
+          test: /\.css$/,
+          chunks: 'all',
+          enforce: true,
+        },
+      },
+    },
   },
 
   // stats: 'minimal',
@@ -124,11 +160,25 @@ module.exports = {
           loader: require.resolve('babel-loader'),
           options: {
             presets: [
-              require.resolve('@babel/preset-env'),
+              [require.resolve('@babel/preset-env'),{
+                "targets": {
+                  "chrome": 40,
+                  "browsers": ["last 2 versions", "safari 7", "android > 4.4", "ie > 10"]
+                },
+                "modules": false,
+                "useBuiltIns": false,
+                "debug": false
+              }],
+              //require.resolve('@babel/preset-env'),
               require.resolve('@babel/preset-react'),
             ],
             plugins: [
+              //require.resolve('@babel/plugin-transform-runtime'),
               require.resolve('@babel/plugin-syntax-dynamic-import'),
+              //require.resolve('@babel/plugin-transform-modules-commonjs'),
+              //require.resolve('babel-plugin-add-module-exports'),
+              //require.resolve('@babel/plugin-transform-regenerator'),
+              require.resolve('@babel/plugin-transform-async-to-generator'),
               require.resolve('@babel/plugin-proposal-object-rest-spread'),
               require.resolve('@babel/plugin-proposal-class-properties'),
               require.resolve('@babel/plugin-proposal-function-bind'),
@@ -150,13 +200,6 @@ module.exports = {
           loader: require.resolve('css-loader'),
           options: {
             sourceComments: false,
-            sourceMap: false,
-          },
-        },
-        {
-          loader: require.resolve('clean-css-loader'),
-          options: {
-            level: 2,
             sourceMap: false,
           },
         },
@@ -261,15 +304,13 @@ module.exports = {
     new OptimizeCssAssetsPlugin({
       assetNameRegExp: /.css$/g,
       cssProcessor: require(require.resolve('clean-css')),
-      cssProcessorPluginOptions: {
-        autoprefixer: {}
-      },
+      cssProcessorPluginOptions: {},
       canPrint: true,
     }),
 
     new MiniCssExtractPlugin({
       filename: '[name].[hash:8].css',
-      chunkFilename: '[id].css',
+      chunkFilename: '[id].[hash:8].css',
     }),
 
     // new HardSourceWebpackPlugin({
@@ -303,11 +344,31 @@ module.exports = {
     // }),
     // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
 
+    // new BundleAnalyzerPlugin({
+    //   analyzerMode: 'server',
+    //   analyzerHost: ipadress,
+    //   analyzerPort: abcJSON.devServer.port + 1,
+    //   reportFilename: 'report.html',
+    //   defaultSizes: 'parsed',
+    //   openAnalyzer: false,
+    //   generateStatsFile: false,
+    //   statsFilename: 'stats.json',
+    //   statsOptions: {
+    //     exclude: ['xcli', 'vendor'],
+    //   },
+    //   excludeAssets: ['xcli'],
+    //   logLevel: 'info',
+    // }),
+
     new HtmlWebpackInlineSourcePlugin(),
 
     new SimpleProgressWebpackPlugin(),
 
     new FriendlyErrorsWebpackPlugin(),
+
+    // new CleanWebpackPlugin({
+    //   paths: [path.resolve(currentPath, abcJSON.path.output)+"/*.css"]
+    // })
   ],
 
   devServer: {

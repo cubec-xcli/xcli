@@ -12,6 +12,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
 //const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // const AutoDLLPlugin = require('autodll-webpack-plugin');
+const CircularDependencyPlugin = require('circular-dependency-plugin')
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin;
@@ -28,6 +29,7 @@ const HappyThreadPool = HappyPack.ThreadPool({size: 8});
 const {abcJSON, paths} = require('../../lib/util');
 const {currentPath, mockServer, ipadress} = paths;
 const mockApp = require(mockServer);
+const _merge = struct.merge();
 
 const webpackConfig = {
   // entry: [
@@ -266,20 +268,17 @@ const webpackConfig = {
       logLevel: 'info',
     }),
 
-    // new HtmlWebpackPlugin({
-    //   inject: true,
-    //   filename: 'index.html',
-    //   template: `${currentPath}/src/index.html`,
-    // }),
-
-    // new AutoDLLPlugin({
-    //   debug: false,
-    //   inject: true,
-    //   filename: '[name].dll.js',
-    //   entry: {
-    //     vendor: ['cubec'],
-    //   },
-    // }),
+    new CircularDependencyPlugin({
+      // exclude detection of files based on a RegExp
+      exclude: /node_modules/,
+      // add errors to webpack instead of warnings
+      failOnError: true,
+      // allow import cycles that include an asyncronous import,
+      // e.g. via import(/* webpackMode: "weak" */ './file.js')
+      allowAsyncCycles: false,
+      // set the current working directory for displaying module paths
+      cwd: process.cwd(),
+    }),
 
     // new MiniCssExtractPlugin({
     //   filename: '[name]/[name].css',
@@ -297,12 +296,12 @@ const webpackConfig = {
     new FriendlyErrorsWebpackPlugin(),
   ],
 
-  devServer: {
+  devServer: _merge({
     hot: true,
     quiet: true,
     disableHostCheck: true,
-    // historyApiFallback: true,
-    https: abcJSON.devServer.https || false,
+    historyApiFallback: true,
+    https: false,
 
     // clientLogLevel: 'none',
     // historyApiFallback: {
@@ -314,7 +313,6 @@ const webpackConfig = {
 
     headers: {'Access-Control-Allow-Origin': '*'},
 
-    proxy: abcJSON.devServer.proxy,
     // proxy: {
     //   [config.proxyUri]: {
     //     target: config.proxyTarget,
@@ -340,7 +338,8 @@ const webpackConfig = {
       // setup mock server App
       mockApp(app);
     },
-  },
+
+  }, abcJSON.devServer || {}),
 
   // devtool: 'cheap-module-eval-source-map',
   // devtool: 'inline-cheap-module-source-map',

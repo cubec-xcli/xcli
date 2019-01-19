@@ -1,15 +1,19 @@
-//console.log(process.env.NODE_ENV);
 const {abcJSON} = require("../../lib/util");
-
 const postcss_preset = require(require.resolve("postcss-preset-env"))({
-  browsers: ['last 2 versions', 'iOS >= 6', "Android >= 4.4", "not ie <= 10"]
+  browsers: ['last 2 versions', 'iOS >= 6', "Android >= 4.3", "not ie <= 10"]
 });
+const postcss_clean = require(require.resolve("postcss-clean"))({ level: 2 });
+const postcss_momentum_scrolling = require(require.resolve("postcss-momentum-scrolling"));
+const postcss_no_important = require(require.resolve('postcss-no-important'))({});
+//const postcss_uncss= require(require.resolve("postcss-uncss"))({ html: ['*.html','**/*.html']});
 
-const postcss_production_plugins = process.env.NODE_ENV !== "production" ? [
-  postcss_preset
-] : 
+const postcss_production_plugins = process.env.NODE_ENV !== "production" ? [] : 
 (abcJSON.wap ? [
   postcss_preset,
+  postcss_clean,
+  postcss_momentum_scrolling,
+  postcss_no_important,
+  //postcss_uncss,
   require(require.resolve("postcss-pxtorem"))({
     rootValue: 37.5,
     unitPrecision: 5,
@@ -20,14 +24,15 @@ const postcss_production_plugins = process.env.NODE_ENV !== "production" ? [
     minPixelValue: 1
   })
 ] : [
-  postcss_preset
+  postcss_preset,
+  postcss_clean,
+  postcss_momentum_scrolling,
+  postcss_no_important,
+  //postcss_uncss
 ]);
 
 module.exports = {
   ident: 'postcss',
   syntax: require.resolve('postcss-scss'),
-  plugins: [
-    require(require.resolve("postcss-import"))({}),
-    require(require.resolve('postcss-no-important'))({}),
-  ].concat(postcss_production_plugins),
+  plugins: postcss_production_plugins,
 };

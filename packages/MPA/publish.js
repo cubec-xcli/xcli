@@ -52,7 +52,8 @@ function findInEntry(entryes, path, targetPath){
   let find = false;
 
   _each(entryes, function(entry){
-    if(path.match(targetPath ? `${targetPath}/${entry}` : entry))
+    let isVendor = entry === "_vendors";
+    if(path.match(targetPath ? `${targetPath}/${entry}/${isVendor? "/"+abcJSON.name : ""}` : entry))
       find = true;
   })
 
@@ -106,6 +107,7 @@ function upCommitToGitLab(currentPubOption, token){
           params: _merge({ ref: currentPubOption.branch, recursive: true }, targetPath ? { path: targetPath } : {}) ,
           headers: axiosHeaders
         }).then((res)=>{
+          entryes.unshift(["_vendors"]);
 
           const commits = {
             branch : currentPubOption.branch,
@@ -122,8 +124,6 @@ function upCommitToGitLab(currentPubOption, token){
               });
             }
           });
-
-          entryes.push(["_vendors"]);
 
           // 发布entry中的文件
           _each(entryes, function(entry){
