@@ -16,6 +16,7 @@ const _each = struct.each();
 const _has = struct.has();
 
 const {printCommanLog, preinstall,abcJSON, paths, walk} = util;
+const {currentPath} = paths;
 const {log, warn, error, loading} = util.msg;
 
 function getToken(){
@@ -125,10 +126,18 @@ function upCommitToGitLab(currentPubOption, token){
             }
           });
 
+          sp.succeed("scan sucess and compare with commits file");
+
           // 发布entry中的文件
+          log("");
+
           _each(entryes, function(entry){
+            log(`scan entry = ${("["+entry+"]").green.bold}`);
+
             _each(glob.sync(`${paths.outputPath}/${entry}/*.*`), function(filepath){
-              const upFilePath = pathCater(paths.outputPath, filepath, targetPath)
+              const upFilePath = pathCater(paths.outputPath, filepath, targetPath);
+
+              log(`prepare commit file: ${filepath.split(currentPath)[1].yellow} -> ${upFilePath.red}`);
 
               commits.actions.push({
                 action: "create",
@@ -137,8 +146,6 @@ function upCommitToGitLab(currentPubOption, token){
               });
             });
           });
-
-          sp.succeed("scan sucess and compare with commits file");
 
           const sp2 = loading("push commits merge to remote respository...");
 

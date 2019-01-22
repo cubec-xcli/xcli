@@ -13,6 +13,7 @@ const _one = struct.index("one");
 const _each = struct.each();
 
 const {abcJSON, paths, walk} = util;
+const {currentPath} = paths;
 const {log, warn, error, loading} = util.msg;
 
 function getToken(){
@@ -101,7 +102,7 @@ function upCommitToGitLab(currentPubOption, token){
         _each(result, function(filepath){
           const upFilePath = pathCater(paths.outputPath, filepath, targetPath);
 
-          log(`prepare commit file: ${filepath.yellow} -> ${upFilePath.red}`);
+          log(`prepare commit file: ${filepath.split(currentPath)[1].yellow} -> ${upFilePath.red}`);
 
           commits.actions.push({
             action: "create",
