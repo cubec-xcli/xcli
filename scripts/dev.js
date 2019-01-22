@@ -2,9 +2,11 @@ const fs = require('fs');
 const colors = require('colors');
 const path = require('path');
 const util = require('../lib/util');
+const CONSTANT = require('../lib/constant');
 const opn = require('opn');
+const os = require('os');
 
-const {preinstall, printCommanLog, paths, abcJSON} = util;
+const {preinstall, paths, abcJSON} = util;
 const {log, error} = util.msg;
 
 module.exports = function(param) {
@@ -12,8 +14,6 @@ module.exports = function(param) {
   if (abcJSON) {
     const type = abcJSON.type;
     const port = +abcJSON.devServer.port || 9001;
-
-    // printCommanLog();
 
     if(!param || (param != "debug" && param != "d")){
       preinstall();
@@ -37,7 +37,7 @@ module.exports = function(param) {
         log('Webpack DevServer Start!'.green);
 
         opn(`${abcJSON.devServer.https ? 'https' : 'http'}://${paths.ipadress}:${port}`, {
-          app: ['google chrome', '--incognito'],
+          app: CONSTANT.BROWSER_SYSTEM_MAPPING[os.type()],
         });
       });
     }else{

@@ -11,7 +11,7 @@ const _isFn = struct.type('func');
 const _keys = struct.keys();
 const _size = struct.size();
 
-const {preinstall, printCommanLog, abcJSON, paths} = util;
+const {preinstall, abcJSON, paths} = util;
 const {log, error} = util.msg;
 
 module.exports = function() {
