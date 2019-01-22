@@ -20,6 +20,7 @@ const errorOverlayMiddleware = require('react-dev-utils/errorOverlayMiddleware')
 const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMiddleware');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const DuplicatePackageCheckerPlugin = require('duplicate-package-checker-webpack-plugin');
+const WebpackBuildNotifierPlugin = require('webpack-build-notifier');
 const HappyPack = require('happypack');
 const HappyThreadPool = HappyPack.ThreadPool({size: 8});
 // for speed test
@@ -290,6 +291,12 @@ const webpackConfig = {
     new webpack.HotModuleReplacementPlugin(),
 
     new DuplicatePackageCheckerPlugin(),
+
+    new WebpackBuildNotifierPlugin({
+      title: `xcli devServer boot [${abcJSON.name}]`,
+      //logo: path.resolve("./img/favicon.png"),
+      suppressSuccess: true
+    }),
 
     new SimpleProgressWebpackPlugin(),
 

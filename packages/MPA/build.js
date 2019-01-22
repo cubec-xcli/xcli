@@ -3,6 +3,7 @@ process.env.NODE_ENV = 'production';
 const fs = require('fs');
 const fse = require('fs-extra');
 const path = require('path');
+const glob = require('glob');
 const webpack = require('webpack');
 const {MultiSelect} = require('enquirer');
 const struct = require('ax-struct-js');
@@ -15,7 +16,10 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
+const PurifyCSSPlugin = require('purifycss-webpack');
+const WebpackBuildNotifierPlugin = require('webpack-build-notifier');
+//const PrepackWebpackPlugin = require('prepack-webpack-plugin').default;
+//const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 //const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
 const HappyPack = require('happypack');
@@ -37,8 +41,9 @@ const webpackConfig = {
   },
 
   optimization: {
-    removeAvailableModules: false,
+    concatenateModules: false,
     removeEmptyChunks: true,
+    mergeDuplicateChunks: true,
     splitChunks: {
       cacheGroups: {
         commons: {
@@ -46,7 +51,7 @@ const webpackConfig = {
           name: 'commons',
           minChunks: 2,
           maxInitialRequests: 5,
-          minSize: 0,
+          minSize: 1,
         },
         // In dev mode, we want all vendor (node_modules) to go into a chunk,
         // so building main.js is faster.
@@ -178,7 +183,6 @@ const webpackConfig = {
                 "useBuiltIns": false,
                 "debug": false
               }],
-              //require.resolve('@babel/preset-env'),
               require.resolve('@babel/preset-react'),
             ],
             plugins: [
@@ -275,6 +279,8 @@ const webpackConfig = {
       },
     ),
 
+    //new PrepackWebpackPlugin(),
+
     new UglifyJSPlugin({
       test: /.(js|jsx)$/,
       exclude: /node_modules/,
@@ -326,6 +332,12 @@ const build = function(entry, callback) {
   const _isFn = struct.type('func');
   const {log, error} = msg;
   const output = `${currentPath}/${abcJSON.path.output}`;
+  // const purifycssConfig = {
+  //   paths: glob.sync(`${currentPath}/{*,!(node_modules|${abcJSON.path.output})/}**/*.+(html|cubec|js)`),
+  //   styleExtensions: ['.css', '.scss'],
+  //   minimize: true,
+  //   moduleExtensions: ['.cubec', '.html', '.js','.jsx']
+  // }
 
   if (entry.length) {
     _each(entry, page => {
@@ -341,6 +353,10 @@ const build = function(entry, callback) {
       }
 
       webpackConfig.entry[page] = `${currentPath}/src/${page}/index.js`;
+
+      // purifycssConfig.paths[page] = 
+      // glob.sync(`${currentPath}/{*,!(node_modules|${abcJSON.path.output})/}**/*.+(html|cubec|js)`);
+      //console.log(purifycssConfig.paths[page]);
 
       webpackConfig.plugins.push(
         new HtmlWebpackPlugin({
@@ -369,9 +385,12 @@ const build = function(entry, callback) {
 
     webpackConfig.plugins = webpackConfig.plugins.concat([
       new HtmlWebpackInlineSourcePlugin(),
-      // new ScriptExtHtmlWebpackPlugin({
-      //   async: /(!bundle)/
-      // }),
+      //new PurifyCSSPlugin(purifycssConfig),
+      new WebpackBuildNotifierPlugin({
+        title: `xcli Building [${abcJSON.name}]`,
+        //logo: path.resolve("./img/favicon.png"),
+        suppressSuccess: true
+      }),
       new SimpleProgressWebpackPlugin(),
       new FriendlyErrorsWebpackPlugin(),
     ]);
@@ -379,7 +398,7 @@ const build = function(entry, callback) {
     const compiler = webpack(webpackConfig);
     compiler.run(() => {
       log('webpack building completed!');
-      callback && _isFn(callback) && callback(entry);
+      _isFn(callback) && callback(entry);
     });
   } else {
     return error('must choice less than one entry for build!');

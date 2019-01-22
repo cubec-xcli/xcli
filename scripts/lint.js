@@ -1,21 +1,30 @@
 const fs = require('fs');
+const path = require('path');
 const util = require('../lib/util');
 const colors = require('colors');
-const {printCommanLog, paths, abcJSON} = util;
+const {paths, abcJSON} = util;
 const {log, error} = util.msg;
+const {currentPath} = paths;
 
-module.exports = function(path, param) {
+module.exports = function(shouldfix) {
+
   if (abcJSON) {
     // printCommanLog();
 
-    const type = abcJSON.type;
+    let startPath = `${currentPath}/**/*.js`;
 
-    let startPath = `${process.cwd()}/`;
+    // 优先使用项目自带的 eslintrc 配置
+    let eslintConfig;
+    if(fs.existsSync(`${currentPath}/.eslintrc.js`)){
+      eslintConfig = require(`${currentPath}/.eslintrc.js`);
+    }else if(fs.existsSync(path.join(__dirname, `../packages/${abcJSON.type}/.eslintrc.js`))){
+      log("use packages eslint config");
+      eslintConfig = require(path.join(__dirname, `../packages/${abcJSON.type}/.eslintrc.js`));
+    }else{
+      return error(`type of [${abcJSON.type}] project missing eslintrc config`);
+    }
+    //console.log(eslintConfig);
 
-    if (path === '.') startPath = `${startPath}**/*.js`;
-    else startPath = `${startPath}${path}/**/*.js`;
-
-    const eslintConfig = {};
     const eslint = require('eslint');
     const cli = new eslint.CLIEngine(eslintConfig);
 
@@ -29,7 +38,7 @@ module.exports = function(path, param) {
 
     console.log(formatter(report.results));
 
-    if (param === 'fix') eslint.CLIEngine.outputFixes(report);
+    if (shouldfix === 'fix') eslint.CLIEngine.outputFixes(report);
   } else {
     error(`Can not find ${'abc.json'.bold} in current directory`.red);
   }

@@ -2,6 +2,7 @@ process.env.NODE_ENV = 'production';
 
 const path = require('path');
 const webpack = require('webpack');
+//const glob = require('glob');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
@@ -11,6 +12,9 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const WebpackBuildNotifierPlugin = require('webpack-build-notifier');
+//const PrepackWebpackPlugin = require('prepack-webpack-plugin').default;
+//const PurifyCSSPlugin = require('purifycss-webpack');
 //const CleanWebpackPlugin = require('clean-after-emit-webpack-plugin');
 //const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 //const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
@@ -35,7 +39,7 @@ module.exports = {
 
   mode: 'production',
 
-  parallelism: 8,
+  parallelism: 12,
 
   resolve: {
     alias: abcJSON.alias,
@@ -257,6 +261,8 @@ module.exports = {
       },
     ),
 
+    //new PrepackWebpackPlugin(),
+
     new UglifyJSPlugin({
       test: /.(js|jsx)$/,
       exclude: /node_modules/,
@@ -361,6 +367,13 @@ module.exports = {
     // }),
 
     new HtmlWebpackInlineSourcePlugin(),
+
+    //new PurifyCSSPlugin(purifycssConfig),
+    new WebpackBuildNotifierPlugin({
+      title: `xcli Building [${abcJSON.name}]`,
+      //logo: path.resolve("./img/favicon.png"),
+      suppressSuccess: true
+    }),
 
     new SimpleProgressWebpackPlugin(),
 
