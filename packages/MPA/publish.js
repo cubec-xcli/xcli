@@ -25,10 +25,9 @@ function getToken(){
 
     if(token && _size(token) > 8){
       return token;
-    }else{
-      warn("The token is not being validate");
-      return false;
     }
+    warn("The token is not being validate");
+    return false;
   }
 
   return false;

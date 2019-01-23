@@ -10,7 +10,6 @@ module.exports = {
   extends: ['eslint:recommended', 'google', 'plugin:react/recommended'],
   settings: {
     react: {
-      createClass: 'createReactClass',
       pragma: 'React',
       version: 'latest',
     },

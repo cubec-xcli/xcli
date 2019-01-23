@@ -171,7 +171,7 @@ const webpackConfig = {
             ],
             plugins: [
               require.resolve('@babel/plugin-syntax-dynamic-import'),
-              require.resolve('@babel/plugin-proposal-object-rest-spread'),
+              [require.resolve('@babel/plugin-proposal-object-rest-spread'),{ loose: true }],
               require.resolve('@babel/plugin-proposal-class-properties'),
               require.resolve('@babel/plugin-proposal-function-bind'),
             ],

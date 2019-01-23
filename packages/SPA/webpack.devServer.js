@@ -190,7 +190,7 @@ module.exports = {
               //require.resolve('babel-plugin-add-module-exports'),
               //require.resolve('@babel/plugin-transform-regenerator'),
               require.resolve('@babel/plugin-transform-async-to-generator'),
-              require.resolve('@babel/plugin-proposal-object-rest-spread'),
+              [require.resolve('@babel/plugin-proposal-object-rest-spread'),{ loose: true }],
               require.resolve('@babel/plugin-proposal-class-properties'),
               require.resolve('@babel/plugin-proposal-function-bind'),
             ],
