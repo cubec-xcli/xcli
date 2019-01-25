@@ -28,8 +28,8 @@ const HappyThreadPool = HappyPack.ThreadPool({size: 8});
 // const smp = new SpeedMeasurePlugin();
 
 const {abcJSON, paths} = require('../../lib/util');
-const {currentPath, mockServer, ipadress} = paths;
-const mockApp = require(mockServer);
+const mockServer = require("../../lib/mockserver");
+const {currentPath, ipadress} = paths;
 const _merge = struct.merge();
 
 const webpackConfig = {
@@ -342,9 +342,12 @@ const webpackConfig = {
     before(app) {
       app.use(errorOverlayMiddleware());
       app.use(noopServiceWorkerMiddleware());
-      // setup mock server App
-      mockApp(app);
     },
+
+    after(app, serve){
+      // setup mock server App
+      app.use(mockServer(abcJSON.mockServer));
+    }
 
   }, abcJSON.devServer || {}),
 

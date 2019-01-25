@@ -38,7 +38,7 @@
     "babel-plugin-add-module-exports": "^1.0.0",
     "browser-sync": "^2.26.3",
     "cache-loader": "^1.2.5",
-    "case-sensitive-paths-webpack-plugin": "^2.1.2",
+    "case-sensitive-paths-webpack-plugin": "^2.2.0",
     "circular-dependency-plugin": "^5.0.2",
     "clean-after-emit-webpack-plugin": "0.0.3",
     "clean-css": "^4.2.1",
@@ -100,7 +100,9 @@
     "webpack-build-notifier": "^0.1.30",
     "webpack-bundle-analyzer": "^3.0.3",
     "webpack-cli": "^3.2.1",
+    "webpack-dev-middleware": "^3.5.1",
     "webpack-dev-server": "^3.1.14",
+    "webpack-hot-middleware": "^2.24.3",
     "webpack-manifest-plugin": "^2.0.4",
     "webpack-messages": "^2.0.4"
   }
