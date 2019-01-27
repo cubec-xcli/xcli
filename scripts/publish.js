@@ -72,7 +72,7 @@ module.exports = function() {
           // printCommanLog();
 
           preinstall();
-          
+
           if (fs.existsSync(paths.outputPath)){ fse.removeSync(paths.outputPath); };
 
           const webpack = require('webpack');

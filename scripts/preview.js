@@ -32,10 +32,9 @@ module.exports = function() {
         fse.removeSync(output);
       }
 
-      compiler.run(() =>{ 
+      compiler.run(() =>{
         log('building completed!'.blue);
         log('start BrowserSync preview server: \n'.blue);
-  
         browserSync.init(browserSyncConfig);
       });
     }else{
@@ -48,7 +47,6 @@ module.exports = function() {
       return customBuildServer(function(){
         log('building completed!'.blue);
         log('start BrowserSync preview server: \n'.blue);
-  
         browserSync.init(browserSyncConfig);
       });
     }
