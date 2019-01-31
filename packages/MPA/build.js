@@ -36,7 +36,7 @@ const webpackConfig = {
     // options related to how webpack emits results
     path: path.resolve(currentPath, abcJSON.path.output),
     filename: '[name]/[name].[contenthash:8].js',
-    chunkFilename: `_vendors/${abcJSON.name}.[name].bundle.js`,
+    chunkFilename: `_vendors/${abcJSON.name}.[name].[contenthash:8].bundle.js`,
     publicPath: '/',
   },
 
