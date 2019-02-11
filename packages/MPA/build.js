@@ -420,14 +420,17 @@ module.exports = function(entrys, callback) {
   list = list.filter(function(val) {
     return val[0] == '.' ? false : val;
   }).map(function(val){
-    return {name:val, value:val};
+    // return {name:val, value:val};
+    return val;
   });
 
-  return new MultiSelect({
-    name: 'value',
-    message: 'Choice the project entry for development',
-    choices: list,
-  }).run().then((entrys)=>{
-    return build(entrys, callback);
-  });
+  // return new MultiSelect({
+  //   name: 'value',
+  //   message: 'Choice the project entry for development',
+  //   choices: list,
+  // }).run().then((entrys)=>{
+  //   return build(entrys, callback);
+  // });
+
+  return build(list, callback);
 };
