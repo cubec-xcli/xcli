@@ -24,7 +24,6 @@ const loger = `
           /___/\\  \\___  >____/__|
                 \\_/   \\/         
 `;
-// const cmd_lint = require('./scripts/lint');
 
 cli
   .version(INFO.version)
