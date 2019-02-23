@@ -10,7 +10,7 @@ const {MultiSelect} = require('enquirer');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
-//const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+// const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // const AutoDLLPlugin = require('autodll-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin')
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
@@ -309,6 +309,7 @@ const webpackConfig = {
     disableHostCheck: true,
     historyApiFallback: true,
     https: false,
+    //lazy: true,
 
     // clientLogLevel: 'none',
     // historyApiFallback: {
@@ -342,6 +343,7 @@ const webpackConfig = {
     before(app) {
       app.use(errorOverlayMiddleware());
       app.use(noopServiceWorkerMiddleware());
+      //app.use(mockServer(abcJSON.mockServer));
     },
 
     after(app, serve){

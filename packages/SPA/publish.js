@@ -1,7 +1,6 @@
 const fs = require('fs');
 const fse = require('fs-extra');
 const colors = require('colors');
-const path = require('path');
 const util = require('../../lib/util');
 const struct = require('ax-struct-js');
 const axios = require('axios');

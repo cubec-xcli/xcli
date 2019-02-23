@@ -3,9 +3,7 @@ process.env.NODE_ENV = 'production';
 const fs = require('fs');
 const fse = require('fs-extra');
 const path = require('path');
-const glob = require('glob');
 const webpack = require('webpack');
-const {MultiSelect} = require('enquirer');
 const struct = require('ax-struct-js');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');

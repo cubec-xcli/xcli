@@ -6,7 +6,7 @@ const struct = require('ax-struct-js');
 
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const SimpleProgressWebpackPlugin = require('simple-progress-webpack-plugin');
-//const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+// const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // const AutoDLLPlugin = require('autodll-webpack-plugin');
 const CircularDependencyPlugin = require('circular-dependency-plugin')
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
@@ -306,6 +306,7 @@ module.exports = {
     disableHostCheck: true,
     historyApiFallback: true,
     https: false,
+    //lazy: true,
 
     // clientLogLevel: 'none',
     // historyApiFallback: {
@@ -339,6 +340,7 @@ module.exports = {
     before(app) {
       app.use(errorOverlayMiddleware());
       app.use(noopServiceWorkerMiddleware());
+      //app.use(mockServer(abcJSON.mockServer));
     },
 
     after(app, serve){
