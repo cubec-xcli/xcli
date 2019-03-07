@@ -71,7 +71,7 @@ function upCommitToGitLab(currentPubOption, token){
 
     axios({
       url: processGitLabAPI(gitlab, `projects/${projectId}/repository/tree`),
-      params: _merge({ ref: currentPubOption.branch, recursive: true }, targetPath ? { path: targetPath } : {}) ,
+      params: _merge({ ref: currentPubOption.branch, recursive: true, per_page: 1000 }, targetPath ? { path: targetPath } : {}) ,
       headers: axiosHeaders
     }).then((res)=>{
       const commits = {

@@ -94,7 +94,7 @@ function upCommitToGitLab(currentPubOption, token){
 
       axios({
         url: processGitLabAPI(gitlab, `projects/${projectId}/repository/tree`),
-        params: _merge({ ref: currentPubOption.branch, recursive: true }, targetPath ? { path: targetPath } : {}) ,
+        params: _merge({ ref: currentPubOption.branch, recursive: true, per_page: 1000 }, targetPath ? { path: targetPath } : {}) ,
         headers: axiosHeaders
       }).then((res)=>{
         entryes.unshift(["_vendors"]);
@@ -107,6 +107,8 @@ function upCommitToGitLab(currentPubOption, token){
 
         // 先删除对应entry中已存在的文件
         _each(res.data, function(file, index){
+          //console.log(file);
+
           if(file.type === "blob" && findInEntry(entryes, file.path, targetPath)){
             commits.actions.unshift({
               action: "delete",
@@ -116,6 +118,8 @@ function upCommitToGitLab(currentPubOption, token){
         });
 
         sp.succeed("scan sucess and compare with commits file");
+
+        //return console.log(commits.actions);
 
         // 发布entry中的文件
         log("");
