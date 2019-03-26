@@ -8,7 +8,7 @@ const postcss_no_important = require(require.resolve('postcss-no-important'))({}
 const postcss_pxtorem = require(require.resolve("postcss-pxtorem"))({
   rootValue: 75,
   unitPrecision: 5,
-  propList: ['*','!border*'],
+  propList: ['*','!border*','!box-shadow'],
   selectorBlackList: [],
   replace: true,
   mediaQuery: false,
