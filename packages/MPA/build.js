@@ -35,7 +35,7 @@ const webpackConfig = {
     path: path.resolve(currentPath, abcJSON.path.output),
     filename: '[name]/[name].[contenthash:8].js',
     chunkFilename: `_vendors/${abcJSON.name}.[name].[contenthash:8].bundle.js`,
-    publicPath: '/',
+    publicPath: abcJSON.path.public || "/",
   },
 
   optimization: {
@@ -362,6 +362,7 @@ const build = function(entry, callback) {
           inject: true,
           filename: `${page}/index.html`,
           template: `${currentPath}/src/${page}/index.html`,
+          publicPath: abcJSON.path.public || "/",
           chunks: ['vendors', 'commons', page],
           inlineSource: '.css$',
           chunksSortMode: 'dependency',

@@ -46,6 +46,7 @@ const webpackConfig = {
     path: path.resolve(currentPath, abcJSON.path.output),
     filename: '[name]/[name].[hash:8].js',
     chunkFilename: `_vendors/[name].bundle.js`,
+    publicPath: "/",
     // publicPath: `http://${ipadress}:${abcJSON.devServer.port}/`,
   },
 

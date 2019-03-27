@@ -290,6 +290,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: `${currentPath}/src/index.html`,
+      publicPath: abcJSON.path.public || "/",
       inlineSource: '.css$',
       chunksSortMode: 'dependency',
       minify: {
