@@ -77,13 +77,13 @@ function upCommitToGitLab(currentPubOption, token){
 
     axios({
       url: processGitLabAPI(gitlab, "projects"),
+      params: { per_page: 1000, recursive: true },
       headers: axiosHeaders
     }).then((res)=>{
       // 获取到对应的ProjectId
-      const project = _one(res.data, (item)=>{
-        return item.path_with_namespace === currentPubOption.git;
-      });
-      const projectId = project.id;
+      const project = _one(res.data, item=>item.path_with_namespace === currentPubOption.git);
+
+      const projectId = project ? project.id : null;
       const targetPath = currentPubOption.target || "";
 
       if(!projectId){
