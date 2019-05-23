@@ -295,7 +295,6 @@ const webpackConfig = {
         },
         compress: {
           unsafe: true,
-          warnings: false,
           hoist_vars: true,
           drop_console: false,
           drop_debugger: true,
