@@ -1,6 +1,6 @@
 const {abcJSON} = require("../../lib/util");
 const postcss_preset = require(require.resolve("postcss-preset-env"))({
-  browsers: ['last 2 versions', 'iOS >= 6', "Android >= 4.3", "not ie <= 10"]
+  // browsers: ['last 2 versions', 'iOS >= 6', "Android >= 4.3", "not ie <= 10"]
 });
 const postcss_clean = require(require.resolve("postcss-clean"))({ level: 2 });
 const postcss_momentum_scrolling = require(require.resolve("postcss-momentum-scrolling"));
