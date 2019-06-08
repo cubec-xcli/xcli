@@ -15,7 +15,7 @@ const port = +abcJSON.devServer.port || 9001;
 const webpack = require('webpack');
 const webpackDevServer = require('webpack-dev-server');
 
-if(fs.existsSync(path.join(__dirname, `../packages/${type}/webpack.devServer.js`))){
+if(fs.existsSync(path.join(__dirname, `../../packages/${type}/webpack.devServer.js`))){
   const webpackConfig = require(path.join(
     __dirname,
     `../../packages/${type}/webpack.devServer`,
