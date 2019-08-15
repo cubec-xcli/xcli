@@ -208,16 +208,12 @@ module.exports = {
       loaders: [
         {
           loader: require.resolve('style-loader'),
-          options: {
-            sourceMap: true,
-          },
         },
         {
           loader: require.resolve('css-loader'),
           options: {
             //modules: true,
             sourceMap: true,
-            importLoader: 2
           },
         },
         {

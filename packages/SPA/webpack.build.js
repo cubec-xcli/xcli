@@ -203,7 +203,6 @@ module.exports = {
         {
           loader: require.resolve('css-loader'),
           options: {
-            sourceComments: false,
             sourceMap: false,
           },
         },

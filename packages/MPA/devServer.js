@@ -78,6 +78,10 @@ const webpackConfig = {
         use: [require.resolve('happypack/loader') + '?id=cubec'],
       },
       {
+        test: /\.(?:ico|proto|png|gif|mp4|m4a|mp3|jpg|svg|ttf|otf|eot|woff|woff2)$/,
+        use: [require.resolve('happypack/loader') + '?id=file'],
+      },
+      {
         test: /\.(jpe?g|png|svg|gif)$/,
         exclude: /node_modules/,
         use: [require.resolve('happypack/loader') + '?id=image'],
@@ -133,6 +137,20 @@ const webpackConfig = {
            options: {
              limit: 8192
            }
+        }
+      ]
+    }),
+
+    new HappyPack({
+      id: 'file',
+      threadPool: HappyThreadPool,
+      loaders: [
+        {
+           loader: require.resolve('file-loader'),
+           options: {
+            name: '[name].[ext]',
+            emitFile: true,
+          }
         }
       ]
     }),
@@ -203,9 +221,6 @@ const webpackConfig = {
         ? [
             {
               loader: require.resolve('style-loader'),
-              options: {
-                sourceMap: true,
-              },
             },
             {
               loader: require.resolve('css-loader'),
@@ -225,10 +240,7 @@ const webpackConfig = {
           ]
         : [
             {
-              loader: require.resolve('style-loader'),
-              options: {
-                sourceMap: true,
-              },
+              loader: require.resolve('style-loader')
             },
             {
               loader: require.resolve('css-loader'),

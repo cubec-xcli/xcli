@@ -92,6 +92,10 @@ const webpackConfig = {
         use: [require.resolve('happypack/loader') + '?id=image'],
       },
       {
+        test: /\.(?:ico|proto|png|gif|mp4|m4a|mp3|jpg|svg|ttf|otf|eot|woff|woff2)$/,
+        use: [require.resolve('happypack/loader') + '?id=file'],
+      },
+      {
         test: /\.(css|scss)$/,
         use: [
           MiniCssExtractPlugin.loader,
@@ -143,6 +147,20 @@ const webpackConfig = {
           loader: require.resolve('cubec-loader'),
         },
       ],
+    }),
+
+    new HappyPack({
+      id: 'file',
+      threadPool: HappyThreadPool,
+      loaders: [
+        {
+           loader: require.resolve('file-loader'),
+           options: {
+            name: '[name].[ext]',
+            emitFile: true,
+          }
+        }
+      ]
     }),
 
     new HappyPack({
@@ -208,8 +226,6 @@ const webpackConfig = {
               loader: require.resolve('css-loader'),
               options: {
                 sourceMap: false,
-                sourceComments: false,
-                minimize: true,
                 importLoaders: 2,
               },
             },
@@ -227,8 +243,7 @@ const webpackConfig = {
             {
               loader: require.resolve('css-loader'),
               options: {
-                sourceMap: false,
-                sourceComments: false,
+                sourceMap: false
               },
             },
           ]
