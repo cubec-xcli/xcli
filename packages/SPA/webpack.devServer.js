@@ -212,7 +212,7 @@ module.exports = {
         {
           loader: require.resolve('css-loader'),
           options: {
-            //modules: true,
+            modules: abcJSON.css ? !!abcJSON.css.modules : false,
             sourceMap: true,
           },
         },
@@ -234,7 +234,6 @@ module.exports = {
         {
           loader: require.resolve('sass-loader'),
           options: {
-            outputStyle: 'expanded',
             sourceMap: true,
           },
         },

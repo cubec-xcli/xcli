@@ -53,7 +53,7 @@ function findInEntry(entryes, path, targetPath){
     let isVendor = entry === "_vendors";
     if(path.match(targetPath ? `${targetPath}/${entry}/${isVendor? "/"+abcJSON.name : ""}` : entry))
       find = true;
-  })
+  });
 
   return find;
 }

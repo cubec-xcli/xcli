@@ -226,6 +226,7 @@ const webpackConfig = {
               loader: require.resolve('css-loader'),
               options: {
                 sourceMap: false,
+                modules: abcJSON.css ? !!abcJSON.css.modules : false,
                 importLoaders: 2,
               },
             },
@@ -243,7 +244,8 @@ const webpackConfig = {
             {
               loader: require.resolve('css-loader'),
               options: {
-                sourceMap: false
+                sourceMap: false,
+                modules: abcJSON.css ? !!abcJSON.css.modules : false,
               },
             },
           ]
@@ -309,7 +311,7 @@ const webpackConfig = {
           beautify: false,
         },
         compress: {
-          unsafe: true,
+          unsafe: false,
           hoist_vars: true,
           drop_console: false,
           drop_debugger: true,

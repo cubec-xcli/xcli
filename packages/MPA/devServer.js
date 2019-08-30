@@ -226,6 +226,8 @@ const webpackConfig = {
               loader: require.resolve('css-loader'),
               options: {
                 sourceMap: true,
+                modules: abcJSON.css ? !!abcJSON.css.modules : false,
+                importLoaders: 2,
               },
             },
             {
@@ -246,6 +248,8 @@ const webpackConfig = {
               loader: require.resolve('css-loader'),
               options: {
                 sourceMap: true,
+                modules: abcJSON.css ? !!abcJSON.css.modules : false,
+                importLoaders: 2,
               },
             },
           ]
@@ -259,8 +263,7 @@ const webpackConfig = {
         {
           loader: require.resolve('sass-loader'),
           options: {
-            outputStyle: 'expanded',
-            sourceMap: true,
+            sourceMap: true
           },
         },
       ]),

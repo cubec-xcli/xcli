@@ -66,7 +66,7 @@ module.exports = {
           priority: 10,
           enforce: true,
         },
-        
+
         styles: {
           name: 'styles',
           test: /\.css$/,
@@ -203,6 +203,7 @@ module.exports = {
         {
           loader: require.resolve('css-loader'),
           options: {
+            modules: abcJSON.css ? !!abcJSON.css.modules : false,
             sourceMap: false,
           },
         },
@@ -276,7 +277,7 @@ module.exports = {
           beautify: false,
         },
         compress: {
-          unsafe: true,
+          unsafe: false,
           hoist_vars: true,
           drop_console: false,
           drop_debugger: true,
