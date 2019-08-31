@@ -20,12 +20,71 @@ const WebpackBuildNotifierPlugin = require('webpack-build-notifier');
 //const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 //const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin');
-const HappyPack = require('happypack');
-const HappyThreadPool = HappyPack.ThreadPool({size: 8});
 
-const {abcJSON, paths, msg} = require('../../lib/util');
+const threadLoader = require("thread-loader");
+// const HappyPack = require('happypack');
+// const HappyThreadPool = HappyPack.ThreadPool({size: 8});
+
+const {abcJSON, paths, msg, os} = require('../../lib/util');
 const {currentPath} = paths;
 const regex = new RegExp(`${currentPath}`);
+const _extend = struct.extend();
+
+const workerDefaultOptions = {
+  workers: os.threads - 1,
+  workerParallelJobs: 50,
+  poolRespawn: true,
+  poolTimeout: 2000,
+  poolParallelJobs: 400
+};
+
+const workerPoolJSX = _extend(
+  {
+    name: "JSX"
+  },
+  workerDefaultOptions
+);
+
+const workerPoolCubec = _extend(
+  {
+    name: "CUBEC"
+  },
+  workerDefaultOptions
+);
+
+const workerPoolFile = _extend(
+  {
+    name: "FILE"
+  },
+  workerDefaultOptions
+);
+
+const workerPoolScss = _extend(
+  {
+    name: "SCSS"
+  },
+  workerDefaultOptions
+);
+
+threadLoader.warmup(workerPoolJSX, [
+  require.resolve("cache-loader"),
+  require.resolve("babel-loader"),
+  require.resolve("@babel/preset-env"),
+  require.resolve("@babel/preset-react")
+]);
+threadLoader.warmup(workerPoolCubec, [
+  require.resolve("cache-loader"),
+  require.resolve("cubec-loader")
+]);
+threadLoader.warmup(workerPoolFile, [require.resolve("file-loader")]);
+threadLoader.warmup(workerPoolScss, [
+  require.resolve("cache-loader"),
+  require.resolve("style-loader"),
+  require.resolve("css-loader"),
+  require.resolve("postcss-loader"),
+  require.resolve("resolve-url-loader"),
+  require.resolve("sass-loader"),
+]);
 
 const webpackConfig = {
   entry: {},
@@ -33,9 +92,9 @@ const webpackConfig = {
   output: {
     // options related to how webpack emits results
     path: path.resolve(currentPath, abcJSON.path.output),
-    filename: '[name]/[name].[contenthash:8].js',
+    filename: "[name]/[name].[contenthash:8].js",
     chunkFilename: `_vendors/${abcJSON.name}.[name].[contenthash:8].bundle.js`,
-    publicPath: abcJSON.path.public || "/",
+    publicPath: abcJSON.path.public || "/"
   },
 
   optimization: {
@@ -45,31 +104,31 @@ const webpackConfig = {
     splitChunks: {
       cacheGroups: {
         commons: {
-          chunks: 'initial',
-          name: 'commons',
+          chunks: "initial",
+          name: "commons",
           minChunks: 2,
           maxInitialRequests: 5,
-          minSize: 1,
+          minSize: 1
         },
         // In dev mode, we want all vendor (node_modules) to go into a chunk,
         // so building main.js is faster.
         vendors: {
-          chunks: 'all',
+          chunks: "all",
           test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
+          name: "vendors",
           priority: 10,
-          enforce: true,
-        },
-      },
-    },
+          enforce: true
+        }
+      }
+    }
   },
 
-  mode: 'production',
+  mode: "production",
 
   parallelism: 8,
 
   resolve: {
-    alias: abcJSON.alias,
+    alias: abcJSON.alias
   },
 
   // stats: 'minimal',
@@ -79,30 +138,150 @@ const webpackConfig = {
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: [require.resolve('happypack/loader') + '?id=jsx'],
+        use: [
+          {
+            loader: require.resolve("cache-loader"),
+            options: {
+              cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
+            }
+          },
+          {
+            loader: require.resolve("babel-loader"),
+            options: {
+              presets: [
+                [
+                  require.resolve("@babel/preset-env"),
+                  {
+                    targets: {
+                      chrome: 38,
+                      browsers: [
+                        "last 2 versions",
+                        "safari 7",
+                        "android > 4.4",
+                        "ie > 10"
+                      ]
+                    },
+                    modules: false,
+                    useBuiltIns: false,
+                    debug: false
+                  }
+                ],
+                require.resolve("@babel/preset-react")
+              ],
+              plugins: [
+                require.resolve("@babel/plugin-syntax-dynamic-import"),
+                [
+                  require.resolve("@babel/plugin-proposal-object-rest-spread"),
+                  { loose: true }
+                ],
+                require.resolve("@babel/plugin-proposal-class-properties"),
+                require.resolve("@babel/plugin-proposal-function-bind")
+              ],
+              babelrc: false,
+              compact: true,
+              sourceMap: false,
+              cacheDirectory: true
+            }
+          }
+        ]
       },
       {
         test: /\.(ax|cubec)$/,
         exclude: /node_modules/,
-        use: [require.resolve('happypack/loader') + '?id=cubec'],
-      },
-      {
-        test: /\.(jpe?g|png|svg|gif)$/,
-        exclude: /node_modules/,
-        use: [require.resolve('happypack/loader') + '?id=image'],
+        use: [
+          {
+            loader: require.resolve("thread-loader"),
+            options: workerPoolCubec
+          },
+          {
+            loader: require.resolve("cache-loader"),
+            options: {
+              cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
+            }
+          },
+          {
+            loader: require.resolve("cubec-loader")
+          }
+        ]
       },
       {
         test: /\.(?:ico|proto|png|gif|mp4|m4a|mp3|jpg|svg|ttf|otf|eot|woff|woff2)$/,
-        use: [require.resolve('happypack/loader') + '?id=file'],
+        use: [
+          {
+            loader: require.resolve("thread-loader"),
+            options: workerPoolFile
+          },
+          {
+            loader: require.resolve("file-loader"),
+            options: {
+              name: "[name].[ext]",
+              emitFile: true
+            }
+          }
+        ]
       },
       {
         test: /\.(css|scss)$/,
         use: [
           MiniCssExtractPlugin.loader,
-          require.resolve('happypack/loader') + '?id=scss',
-        ],
-      },
-    ],
+          {
+            loader: require.resolve("thread-loader"),
+            options: workerPoolScss
+          },
+          {
+            loader: require.resolve("cache-loader"),
+            options: {
+              cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
+            }
+          }
+        ]
+          .concat(
+            abcJSON.wap
+              ? [
+                  {
+                    loader: require.resolve("css-loader"),
+                    options: {
+                      sourceMap: false,
+                      modules: abcJSON.css ? !!abcJSON.css.modules : false,
+                      importLoaders: 2
+                    }
+                  },
+                  {
+                    loader: require.resolve("postcss-loader"),
+                    options: {
+                      sourceMap: false,
+                      config: {
+                        path: path.join(__dirname, "/")
+                      }
+                    }
+                  }
+                ]
+              : [
+                  {
+                    loader: require.resolve("css-loader"),
+                    options: {
+                      sourceMap: false,
+                      modules: abcJSON.css ? !!abcJSON.css.modules : false
+                    }
+                  }
+                ]
+          )
+          .concat([
+            {
+              loader: require.resolve("resolve-url-loader"),
+              options: {
+                sourceMap: false
+              }
+            },
+            {
+              loader: require.resolve("sass-loader"),
+              options: {
+                sourceMap: false
+              }
+            }
+          ])
+      }
+    ]
   },
 
   plugins: [
@@ -125,145 +304,19 @@ const webpackConfig = {
     new webpack.ProvidePlugin(abcJSON.provide),
     new webpack.DefinePlugin({
       XISDEV: false,
-      ...abcJSON.define,
+      ...abcJSON.define
     }),
 
     new webpack.LoaderOptionsPlugin({
       minimize: true,
       sourceMap: false,
-      debug: false,
+      debug: false
     }),
 
     new webpack.optimize.AggressiveMergingPlugin(),
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.optimize.ModuleConcatenationPlugin(),
     // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
-
-    new HappyPack({
-      id: 'cubec',
-      threadPool: HappyThreadPool,
-      loaders: [
-        {
-          loader: require.resolve('cubec-loader'),
-        },
-      ],
-    }),
-
-    new HappyPack({
-      id: 'file',
-      threadPool: HappyThreadPool,
-      loaders: [
-        {
-           loader: require.resolve('file-loader'),
-           options: {
-            name: '[name].[ext]',
-            emitFile: true,
-          }
-        }
-      ]
-    }),
-
-    new HappyPack({
-      id: 'image',
-      threadPool: HappyThreadPool,
-      loaders: [
-        {
-           loader: require.resolve('url-loader'),
-           options: {
-             limit: 8192
-           }
-        }
-      ]
-    }),
-
-    new HappyPack({
-      id: 'jsx',
-      threadPool: HappyThreadPool,
-      loaders: [
-        {
-          loader: require.resolve('cache-loader'),
-          options: {
-            cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`,
-          },
-        },
-        {
-          loader: require.resolve('babel-loader'),
-          options: {
-            presets: [
-              [require.resolve('@babel/preset-env'),{
-                "targets": {
-                  "chrome": 38,
-                  "browsers": ["last 2 versions", "safari 7", "android > 4.4", "ie > 10"]
-                },
-                "modules": false,
-                "useBuiltIns": false,
-                "debug": false
-              }],
-              require.resolve('@babel/preset-react'),
-            ],
-            plugins: [
-              require.resolve('@babel/plugin-syntax-dynamic-import'),
-              //require.resolve('@babel/plugin-proposal-object-rest-spread'),
-              [require.resolve('@babel/plugin-proposal-object-rest-spread'),{ loose: true }],
-              require.resolve('@babel/plugin-proposal-class-properties'),
-              require.resolve('@babel/plugin-proposal-function-bind'),
-            ],
-            babelrc: false,
-            compact: true,
-            sourceMap: false,
-            cacheDirectory: true,
-          },
-        },
-      ],
-    }),
-
-    new HappyPack({
-      id: 'scss',
-      threadPool: HappyThreadPool,
-      loaders: (abcJSON.wap
-        ? [
-            {
-              loader: require.resolve('css-loader'),
-              options: {
-                sourceMap: false,
-                modules: abcJSON.css ? !!abcJSON.css.modules : false,
-                importLoaders: 2,
-              },
-            },
-            {
-              loader: require.resolve('postcss-loader'),
-              options: {
-                sourceMap: false,
-                config: {
-                  path: path.join(__dirname, '/'),
-                },
-              },
-            },
-          ]
-        : [
-            {
-              loader: require.resolve('css-loader'),
-              options: {
-                sourceMap: false,
-                modules: abcJSON.css ? !!abcJSON.css.modules : false,
-              },
-            },
-          ]
-      ).concat([
-        {
-          loader: require.resolve('resolve-url-loader'),
-          options: {
-            sourceMap: false,
-          },
-        },
-        {
-          loader: require.resolve('sass-loader'),
-          options: {
-            sourceMap: false,
-          },
-        },
-      ]),
-    }),
 
     new BabelMinifyPlugin(
       {
@@ -288,11 +341,11 @@ const webpackConfig = {
         simplify: true,
         simplifyComparisons: true,
         typeConstructors: true,
-        undefinedToVoid: true,
+        undefinedToVoid: true
       },
       {
-        comments: false,
-      },
+        comments: false
+      }
     ),
 
     //new PrepackWebpackPlugin(),
@@ -308,38 +361,38 @@ const webpackConfig = {
         ie8: false,
         output: {
           comments: false,
-          beautify: false,
+          beautify: false
         },
         compress: {
           unsafe: false,
           hoist_vars: true,
           drop_console: false,
-          drop_debugger: true,
+          drop_debugger: true
         },
-        sourceMap: false,
-      },
+        sourceMap: false
+      }
     }),
 
     new OptimizeCssAssetsPlugin({
       assetNameRegExp: /.css$/g,
-      cssProcessor: require(require.resolve('clean-css')),
+      cssProcessor: require(require.resolve("clean-css")),
       cssProcessorPluginOptions: {},
-      canPrint: true,
+      canPrint: true
     }),
 
     new MiniCssExtractPlugin({
-      filename: '[name]/[name].[hash:8].css',
-      chunkFilename: '[id].css',
-    }),
+      filename: "[name]/[name].[hash:8].css",
+      chunkFilename: "[id].css"
+    })
 
     // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
   ],
 
   devServer: {
-    quiet: true,
+    quiet: true
   },
 
-  devtool: false,
+  devtool: false
 };
 
 const build = function(entry, callback) {
@@ -415,6 +468,7 @@ const build = function(entry, callback) {
     compiler.run(() => {
       log('webpack building completed!');
       _isFn(callback) && callback(entry);
+      setTimeout(()=>process.exit(0), 2000);
     });
   } else {
     return error('must choice less than one entry for build!');
@@ -427,9 +481,8 @@ module.exports = function(entrys, callback) {
     entrys = null;
   }
 
-  if (entrys) {
+  if (entrys)
     return build(entrys, callback);
-  }
 
   let list = fs.readdirSync(`${currentPath}/src`);
   list = list.filter(function(val) {
