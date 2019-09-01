@@ -29,6 +29,7 @@ const {abcJSON, paths, msg, os} = require('../../lib/util');
 const {currentPath} = paths;
 const regex = new RegExp(`${currentPath}`);
 const _extend = struct.extend();
+const _cool = struct.cool();
 
 const workerDefaultOptions = {
   workers: os.threads - 1,
@@ -52,13 +53,6 @@ const workerPoolCubec = _extend(
   workerDefaultOptions
 );
 
-const workerPoolFile = _extend(
-  {
-    name: "FILE"
-  },
-  workerDefaultOptions
-);
-
 const workerPoolScss = _extend(
   {
     name: "SCSS"
@@ -76,7 +70,6 @@ threadLoader.warmup(workerPoolCubec, [
   require.resolve("cache-loader"),
   require.resolve("cubec-loader")
 ]);
-threadLoader.warmup(workerPoolFile, [require.resolve("file-loader")]);
 threadLoader.warmup(workerPoolScss, [
   require.resolve("cache-loader"),
   require.resolve("style-loader"),
@@ -125,7 +118,7 @@ const webpackConfig = {
 
   mode: "production",
 
-  parallelism: 8,
+  parallelism: os.threads,
 
   resolve: {
     alias: abcJSON.alias
@@ -139,6 +132,10 @@ const webpackConfig = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: [
+          {
+            loader: require.resolve("thread-loader"),
+            options: workerPoolJSX
+          },
           {
             loader: require.resolve("cache-loader"),
             options: {
@@ -157,7 +154,7 @@ const webpackConfig = {
                       browsers: [
                         "last 2 versions",
                         "safari 7",
-                        "android > 4.4",
+                        "android >= 4.4",
                         "ie > 10"
                       ]
                     },
@@ -169,6 +166,9 @@ const webpackConfig = {
                 require.resolve("@babel/preset-react")
               ],
               plugins: [
+                fs.existsSync(paths.currentPath+"/node_modules/react-hot-loader") ?
+                  "react-hot-loader/babel" :
+                  false,
                 require.resolve("@babel/plugin-syntax-dynamic-import"),
                 [
                   require.resolve("@babel/plugin-proposal-object-rest-spread"),
@@ -176,7 +176,7 @@ const webpackConfig = {
                 ],
                 require.resolve("@babel/plugin-proposal-class-properties"),
                 require.resolve("@babel/plugin-proposal-function-bind")
-              ],
+              ].filter(_cool),
               babelrc: false,
               compact: true,
               sourceMap: false,
@@ -207,10 +207,6 @@ const webpackConfig = {
       {
         test: /\.(?:ico|proto|png|gif|mp4|m4a|mp3|jpg|svg|ttf|otf|eot|woff|woff2)$/,
         use: [
-          {
-            loader: require.resolve("thread-loader"),
-            options: workerPoolFile
-          },
           {
             loader: require.resolve("file-loader"),
             options: {
@@ -467,8 +463,8 @@ const build = function(entry, callback) {
     const compiler = webpack(webpackConfig);
     compiler.run(() => {
       log('webpack building completed!');
-      _isFn(callback) && callback(entry);
-      setTimeout(()=>process.exit(0), 2000);
+      if(_isFn(callback)) return callback(entry);
+      setTimeout(()=>process.exit(), 2000);
     });
   } else {
     return error('must choice less than one entry for build!');

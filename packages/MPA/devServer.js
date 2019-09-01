@@ -4,7 +4,6 @@ const fs = require("fs");
 const path = require("path");
 const CONSTANT = require("../../lib/constant");
 const opn = require("opn");
-const os = require("os");
 const webpack = require("webpack");
 const webpackDevServer = require("webpack-dev-server");
 const struct = require("ax-struct-js");
@@ -32,15 +31,15 @@ const threadLoader = require("thread-loader");
 // const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 // const smp = new SpeedMeasurePlugin();
 
-const utils = require("../../lib/util");
-const { abcJSON, paths } = utils;
+const { abcJSON, paths, os } = require("../../lib/util");
 const mockServer = require("../../lib/mockserver");
 const { currentPath, ipadress } = paths;
 const _merge = struct.merge();
 const _extend = struct.extend();
+const _cool = struct.cool();
 
 const workerDefaultOptions = {
-  workers: utils.os.threads - 1,
+  workers: os.threads - 1,
   workerParallelJobs: 50,
   poolRespawn: false,
   poolTimeout: Infinity,
@@ -57,13 +56,6 @@ const workerPoolJSX = _extend(
 const workerPoolCubec = _extend(
   {
     name: "CUBEC"
-  },
-  workerDefaultOptions
-);
-
-const workerPoolFile = _extend(
-  {
-    name: "FILE"
   },
   workerDefaultOptions
 );
@@ -85,7 +77,6 @@ threadLoader.warmup(workerPoolCubec, [
   require.resolve("cache-loader"),
   require.resolve("cubec-loader")
 ]);
-threadLoader.warmup(workerPoolFile, [require.resolve("file-loader")]);
 threadLoader.warmup(workerPoolScss, [
   require.resolve("cache-loader"),
   require.resolve("style-loader"),
@@ -115,7 +106,7 @@ const webpackConfig = {
 
   mode: "development",
 
-  parallelism: 8,
+  parallelism: os.threads,
 
   resolve: {
     alias: abcJSON.alias
@@ -155,8 +146,11 @@ const webpackConfig = {
                   { loose: true }
                 ],
                 require.resolve("@babel/plugin-proposal-class-properties"),
-                require.resolve("@babel/plugin-proposal-function-bind")
-              ],
+                require.resolve("@babel/plugin-proposal-function-bind"),
+                fs.existsSync(paths.currentPath+"/node_modules/react-hot-loader") ?
+                  "react-hot-loader/babel" :
+                  false,
+              ].filter(_cool),
               compact: true,
               cacheDirectory: true
             }
@@ -185,10 +179,6 @@ const webpackConfig = {
       {
         test: /\.(?:ico|proto|png|gif|mp4|m4a|mp3|jpg|svg|ttf|otf|eot|woff|woff2)$/,
         use: [
-          {
-            loader: require.resolve("thread-loader"),
-            options: workerPoolFile
-          },
           {
             loader: require.resolve("file-loader"),
             options: {
@@ -458,7 +448,7 @@ module.exports = function(util, listener) {
           log("Webpack DevServer Start!".green);
 
           opn(`${listener}/${entryOpen}`, {
-            app: CONSTANT.BROWSER_SYSTEM_MAPPING[os.type()]
+            app: CONSTANT.BROWSER_SYSTEM_MAPPING[os.type]
           });
         });
       } else {

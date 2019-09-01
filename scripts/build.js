@@ -30,7 +30,10 @@ module.exports = function() {
         fse.removeSync(output);
       }
 
-      compiler.run(() => log('webpack building completed!'));
+      compiler.run(() =>{
+        log('webpack building completed!');
+        process.exit(0);
+      });
     }else{
       // 自定义发布方法
       const customBuildServer = require(path.join(

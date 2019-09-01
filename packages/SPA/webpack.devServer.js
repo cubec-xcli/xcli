@@ -1,5 +1,6 @@
 process.env.NODE_ENV = 'development';
 
+const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const struct = require('ax-struct-js');
@@ -16,17 +17,66 @@ const noopServiceWorkerMiddleware = require('react-dev-utils/noopServiceWorkerMi
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const DuplicatePackageCheckerPlugin = require("duplicate-package-checker-webpack-plugin");
 const WebpackBuildNotifierPlugin = require('webpack-build-notifier');
-const HappyPack = require('happypack');
-const HappyThreadPool = HappyPack.ThreadPool({size: 8});
+
+const threadLoader = require("thread-loader");
 // for speed test
 // const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 // const smp = new SpeedMeasurePlugin();
 
-const {abcJSON, paths} = require('../../lib/util');
+const {abcJSON, paths, os} = require('../../lib/util');
 const mockServer = require("../../lib/mockserver");
 const {currentPath, ipadress} = paths;
-
+const _cool = struct.cool();
 const _merge = struct.merge();
+const _extend = struct.extend();
+
+const workerDefaultOptions = {
+  workers: os.threads - 1,
+  workerParallelJobs: 50,
+  poolRespawn: false,
+  poolTimeout: Infinity,
+  poolParallelJobs: 400
+};
+
+const workerPoolJSX = _extend(
+  {
+    name: "JSX"
+  },
+  workerDefaultOptions
+);
+
+const workerPoolCubec = _extend(
+  {
+    name: "CUBEC"
+  },
+  workerDefaultOptions
+);
+
+const workerPoolScss = _extend(
+  {
+    name: "SCSS"
+  },
+  workerDefaultOptions
+);
+
+threadLoader.warmup(workerPoolJSX, [
+  require.resolve("cache-loader"),
+  require.resolve("babel-loader"),
+  require.resolve("@babel/preset-env"),
+  require.resolve("@babel/preset-react")
+]);
+threadLoader.warmup(workerPoolCubec, [
+  require.resolve("cache-loader"),
+  require.resolve("cubec-loader")
+]);
+threadLoader.warmup(workerPoolScss, [
+  require.resolve("cache-loader"),
+  require.resolve("style-loader"),
+  require.resolve("css-loader"),
+  require.resolve("postcss-loader"),
+  require.resolve("resolve-url-loader"),
+  require.resolve("sass-loader"),
+]);
 
 module.exports = {
   entry: [
@@ -66,7 +116,7 @@ module.exports = {
     },
   },
 
-  parallelism: 8,
+  parallelism: os.threads,
 
   resolve: {
     alias: abcJSON.alias,
@@ -79,30 +129,142 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: [require.resolve('happypack/loader') + '?id=jsx'],
+        use: [
+          {
+            loader: require.resolve("thread-loader"),
+            options: workerPoolJSX
+          },
+          {
+            loader: require.resolve("cache-loader"),
+            options: {
+              cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
+            }
+          },
+          {
+            loader: require.resolve("babel-loader"),
+            options: {
+              babelrc: false,
+              sourceMap: true,
+              presets: [
+                require.resolve("@babel/preset-env"),
+                require.resolve("@babel/preset-react")
+              ],
+              plugins: [
+                require.resolve("@babel/plugin-syntax-dynamic-import"),
+                [
+                  require.resolve("@babel/plugin-proposal-object-rest-spread"),
+                  { loose: true }
+                ],
+                require.resolve("@babel/plugin-proposal-class-properties"),
+                require.resolve("@babel/plugin-proposal-function-bind"),
+                fs.existsSync(paths.currentPath+"/node_modules/react-hot-loader") ?
+                  "react-hot-loader/babel" :
+                  false,
+              ].filter(_cool),
+              compact: true,
+              cacheDirectory: true
+            }
+          }
+        ]
       },
-      // {
-      //   test: /\.js$/,
-      //   exclude: /node_modules/,
-      //   use: [require.resolve('happypack/loader') + '?id=sourcemap'],
-      // },
       {
         test: /\.(ax|cubec)$/,
         exclude: /node_modules/,
-        use: [require.resolve('happypack/loader') + '?id=cubec'],
+        use: [
+          {
+            loader: require.resolve("thread-loader"),
+            options: workerPoolCubec
+          },
+          {
+            loader: require.resolve("cache-loader"),
+            options: {
+              cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
+            }
+          },
+          {
+            loader: require.resolve("cubec-loader")
+          }
+        ]
       },
       {
-        test: /\.(jpe?g|png|svg|gif)$/,
-        exclude: /node_modules/,
-        use: [require.resolve('happypack/loader') + '?id=image'],
+        test: /\.(?:ico|proto|png|gif|mp4|m4a|mp3|jpg|svg|ttf|otf|eot|woff|woff2)$/,
+        use: [
+          {
+            loader: require.resolve("file-loader"),
+            options: {
+              name: "[name].[ext]",
+              emitFile: true
+            }
+          }
+        ]
       },
       {
         test: /\.(css|scss)$/,
         use: [
-          require.resolve('css-hot-loader'),
-          //MiniCssExtractPlugin.loader,
-          require.resolve('happypack/loader') + '?id=scss',
-        ],
+          {
+            loader: require.resolve('css-hot-loader'),
+          },
+          // MiniCssExtractPlugin.loader,
+          {
+            loader: require.resolve("thread-loader"),
+            options: workerPoolScss
+          },
+          {
+            loader: require.resolve("cache-loader"),
+            options: {
+              cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
+            }
+          },
+        ].concat(abcJSON.wap
+          ? [
+              {
+                loader: require.resolve("style-loader")
+              },
+              {
+                loader: require.resolve("css-loader"),
+                options: {
+                  sourceMap: true,
+                  modules: abcJSON.css ? !!abcJSON.css.modules : false,
+                  importLoaders: 2
+                }
+              },
+              {
+                loader: require.resolve("postcss-loader"),
+                options: {
+                  sourceMap: "inline",
+                  config: {
+                    path: path.join(__dirname, "/")
+                  }
+                }
+              }
+            ]
+          : [
+              {
+                loader: require.resolve("style-loader")
+              },
+              {
+                loader: require.resolve("css-loader"),
+                options: {
+                  sourceMap: true,
+                  modules: abcJSON.css ? !!abcJSON.css.modules : false,
+                  importLoaders: 2
+                }
+              }
+            ]
+        ).concat([
+          {
+            loader: require.resolve("resolve-url-loader"),
+            options: {
+              sourceMap: true
+            }
+          },
+          {
+            loader: require.resolve("sass-loader"),
+            options: {
+              sourceMap: true
+            }
+          }
+        ])
       },
       // {
       //   test: /\.(otf|eot|svg|ttf|woff|woff2)$/,
@@ -128,29 +290,6 @@ module.exports = {
       debug: true,
     }),
 
-    new HappyPack({
-      id: 'cubec',
-      threadPool: HappyThreadPool,
-      loaders: [
-        {
-          loader: require.resolve('cubec-loader'),
-        },
-      ],
-    }),
-
-    new HappyPack({
-      id: 'image',
-      threadPool: HappyThreadPool,
-      loaders: [
-        {
-           loader: require.resolve('url-loader'),
-           options: {
-             limit: 8192
-           }
-        }
-      ]
-    }),
-
     // new HappyPack({
     //   id: 'sourcemap',
     //   threadPool: HappyThreadPool,
@@ -164,81 +303,6 @@ module.exports = {
     //     },
     //   ],
     // }),
-
-    new HappyPack({
-      id: 'jsx',
-      threadPool: HappyThreadPool,
-      loaders: [
-        {
-          loader: require.resolve('cache-loader'),
-          options: {
-            cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
-          }
-        },
-        {
-          loader: require.resolve('babel-loader'),
-          options: {
-            babelrc: false,
-            sourceMap: true,
-            presets: [
-              require.resolve('@babel/preset-env'),
-              require.resolve('@babel/preset-react'),
-            ],
-            plugins: [
-              //require.resolve('@babel/plugin-transform-runtime'),
-              require.resolve('@babel/plugin-syntax-dynamic-import'),
-              //require.resolve('@babel/plugin-transform-modules-commonjs'),
-              //require.resolve('babel-plugin-add-module-exports'),
-              //require.resolve('@babel/plugin-transform-regenerator'),
-              require.resolve('@babel/plugin-transform-async-to-generator'),
-              [require.resolve('@babel/plugin-proposal-object-rest-spread'),{ loose: true }],
-              require.resolve('@babel/plugin-proposal-class-properties'),
-              require.resolve('@babel/plugin-proposal-function-bind'),
-            ],
-            compact: true,
-            cacheDirectory: true,
-          },
-        },
-      ],
-    }),
-
-    new HappyPack({
-      id: 'scss',
-      threadPool: HappyThreadPool,
-      loaders: [
-        {
-          loader: require.resolve('style-loader'),
-        },
-        {
-          loader: require.resolve('css-loader'),
-          options: {
-            modules: abcJSON.css ? !!abcJSON.css.modules : false,
-            sourceMap: true,
-          },
-        },
-        {
-          loader: require.resolve('postcss-loader'),
-          options: {
-            sourceMap: true,
-            config: {
-              path: path.join(__dirname, '/'),
-            },
-          },
-        },
-        {
-          loader: require.resolve('resolve-url-loader'),
-          options: {
-            sourceMap: true,
-          },
-        },
-        {
-          loader: require.resolve('sass-loader'),
-          options: {
-            sourceMap: true,
-          },
-        },
-      ],
-    }),
 
     new BundleAnalyzerPlugin({
       analyzerMode: 'server',
