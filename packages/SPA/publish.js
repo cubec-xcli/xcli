@@ -22,7 +22,7 @@ function getToken(){
     if(token && _size(token) > 8){
       return token;
     }
-    
+
     warn("The token is not being validate");
     return false;
   }
@@ -44,7 +44,7 @@ function pathCater(basepath, usepath, targetPath){
   return exportPath;
 }
 
-function upCommitToGitLab(currentPubOption, token){
+function upCommitToGitLab(currentPubOption, pubkey, token){
   const { gitlab } = abcJSON.publish;
 
   const axiosHeaders = {
@@ -59,7 +59,6 @@ function upCommitToGitLab(currentPubOption, token){
   }).then((res)=>{
     // 获取到对应的ProjectId
     const project = _one(res.data, item=>item.path_with_namespace === currentPubOption.git);
-    
     const projectId = project ? project.id : null;
     const targetPath = currentPubOption.target || "";
 
@@ -67,7 +66,7 @@ function upCommitToGitLab(currentPubOption, token){
       return error("publish process can not find remote host project on gitlab");
     }
 
-    const sp = loading("starting scan git repository tree");
+    const sp = loading(`[${pubkey.yellow}] starting scan git repository tree`);
 
     axios({
       url: processGitLabAPI(gitlab, `projects/${projectId}/repository/tree`),
@@ -138,17 +137,17 @@ function upCommitToGitLab(currentPubOption, token){
   });
 }
 
-module.exports = function(currentPubOption){
+module.exports = function(currentPubOption, pubkey){
   const token = getToken();
 
   if(token)
-    return upCommitToGitLab(currentPubOption, token);
+    return upCommitToGitLab(currentPubOption, pubkey, token);
 
   return new Input({
     message: "GitLab Personal access tokens",
   }).run().then(token=>{
     fse.ensureFileSync(paths.tokenPath);
     fs.writeFileSync(paths.tokenPath, token, 'utf8');
-    upCommitToGitLab(currentPubOption, token);
+    upCommitToGitLab(currentPubOption, pubkey, token);
   }).catch(console.error);
 };

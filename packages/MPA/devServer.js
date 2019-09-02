@@ -11,12 +11,11 @@ const { MultiSelect } = require("enquirer");
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const SimpleProgressWebpackPlugin = require("simple-progress-webpack-plugin");
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+// const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // const AutoDLLPlugin = require('autodll-webpack-plugin');
 const CircularDependencyPlugin = require("circular-dependency-plugin");
 const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
-const BundleAnalyzerPlugin = require("webpack-bundle-analyzer")
-  .BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const errorOverlayMiddleware = require("react-dev-utils/errorOverlayMiddleware");
 const noopServiceWorkerMiddleware = require("react-dev-utils/noopServiceWorkerMiddleware");
 const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
@@ -265,10 +264,7 @@ const webpackConfig = {
     new webpack.NamedModulesPlugin(),
     new CaseSensitivePathsPlugin(),
     new webpack.ProvidePlugin(abcJSON.provide),
-    new webpack.DefinePlugin({
-      XISDEV: true,
-      ...abcJSON.define
-    }),
+    new webpack.DefinePlugin((abcJSON.define.dev || {} )),
 
     new webpack.LoaderOptionsPlugin({
       minimize: false,
@@ -451,9 +447,9 @@ module.exports = function(util, listener) {
             app: CONSTANT.BROWSER_SYSTEM_MAPPING[os.type]
           });
         });
-      } else {
-        return error("must choice less than one entry for devServer!");
       }
+
+      return error("must choice less than one entry for devServer!");
     })
     .catch(console.error);
 };

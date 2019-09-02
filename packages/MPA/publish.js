@@ -58,7 +58,7 @@ function findInEntry(entryes, path, targetPath){
   return find;
 }
 
-function upCommitToGitLab(currentPubOption, token){
+function upCommitToGitLab(currentPubOption, pubkey, token){
   const { gitlab } = abcJSON.publish;
   const axiosHeaders = {
     "Private-Token": token,
@@ -71,9 +71,9 @@ function upCommitToGitLab(currentPubOption, token){
     return val;
   });
 
-  return build(entryes, function(){
+  return build(entryes, pubkey, function(){
 
-    log(`prepared for release [${entryes.toString().red}]`);
+    log(`[${pubkey.yellow}] prepared for release [${entryes.toString().red}]`);
 
     axios({
       url: processGitLabAPI(gitlab, "projects"),
@@ -90,7 +90,7 @@ function upCommitToGitLab(currentPubOption, token){
         return error("publish process can not find remote host project on gitlab");
       }
 
-      const sp = loading("starting scan git repository tree");
+      const sp = loading(`[${pubkey.yellow}] starting scan git repository tree`);
 
       axios({
         url: processGitLabAPI(gitlab, `projects/${projectId}/repository/tree`),
@@ -173,16 +173,16 @@ function upCommitToGitLab(currentPubOption, token){
   });
 }
 
-module.exports = function(currentPubOption){
+module.exports = function(currentPubOption, pubkey){
   const token = getToken();
 
-  if(token) return upCommitToGitLab(currentPubOption, token);
+  if(token) return upCommitToGitLab(currentPubOption, pubkey, token);
 
   return new Input({
     message: "GitLab Personal access tokens",
   }).run().then(token=>{
     fse.ensureFileSync(paths.tokenPath);
     fs.writeFileSync(paths.tokenPath, token, 'utf8');
-    upCommitToGitLab(currentPubOption, token);
+    upCommitToGitLab(currentPubOption, pubkey, token);
   }).catch(console.error);
 };

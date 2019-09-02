@@ -23,6 +23,11 @@ if(fs.existsSync(path.join(__dirname, `../../packages/${type}/webpack.devServer.
     __dirname,
     `../../packages/${type}/webpack.devServer`,
   ));
+
+  webpackConfig.plugins.unshift(
+    new webpack.DefinePlugin(abcJSON.define.dev || {}),
+  );
+
   const compiler = webpack(webpackConfig);
   const server = new webpackDevServer(compiler, webpackConfig.devServer);
 

@@ -289,10 +289,6 @@ module.exports = {
     new webpack.NamedModulesPlugin(),
     new CaseSensitivePathsPlugin(),
     new webpack.ProvidePlugin(abcJSON.provide),
-    new webpack.DefinePlugin({
-      XISDEV: false,
-      ...abcJSON.define,
-    }),
 
     new webpack.LoaderOptionsPlugin({
       minimize: true,

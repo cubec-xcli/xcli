@@ -14,8 +14,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const PurifyCSSPlugin = require('purifycss-webpack');
 const WebpackBuildNotifierPlugin = require('webpack-build-notifier');
+//const PurifyCSSPlugin = require('purifycss-webpack');
 //const PrepackWebpackPlugin = require('prepack-webpack-plugin').default;
 //const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 //const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
@@ -298,11 +298,6 @@ const webpackConfig = {
 
     new CaseSensitivePathsPlugin(),
     new webpack.ProvidePlugin(abcJSON.provide),
-    new webpack.DefinePlugin({
-      XISDEV: false,
-      ...abcJSON.define
-    }),
-
     new webpack.LoaderOptionsPlugin({
       minimize: true,
       sourceMap: false,
@@ -344,8 +339,6 @@ const webpackConfig = {
       }
     ),
 
-    //new PrepackWebpackPlugin(),
-
     new UglifyJSPlugin({
       test: /.(js|jsx)$/,
       exclude: /node_modules/,
@@ -369,6 +362,8 @@ const webpackConfig = {
       }
     }),
 
+    //new PrepackWebpackPlugin(),
+
     new OptimizeCssAssetsPlugin({
       assetNameRegExp: /.css$/g,
       cssProcessor: require(require.resolve("clean-css")),
@@ -391,7 +386,7 @@ const webpackConfig = {
   devtool: false
 };
 
-const build = function(entry, callback) {
+const build = function(entry, pubkey, callback) {
   const _each = struct.each();
   const _isFn = struct.type('func');
   const {log, error} = msg;
@@ -418,7 +413,7 @@ const build = function(entry, callback) {
 
       webpackConfig.entry[page] = `${currentPath}/src/${page}/index.js`;
 
-      // purifycssConfig.paths[page] = 
+      // purifycssConfig.paths[page] =
       // glob.sync(`${currentPath}/{*,!(node_modules|${abcJSON.path.output})/}**/*.+(html|cubec|js)`);
       //console.log(purifycssConfig.paths[page]);
 
@@ -448,7 +443,10 @@ const build = function(entry, callback) {
       );
     });
 
+    const defined = abcJSON.define[pubkey] || abcJSON.define.build || {};
+
     webpackConfig.plugins = webpackConfig.plugins.concat([
+      new webpack.DefinePlugin(defined),
       new HtmlWebpackInlineSourcePlugin(),
       //new PurifyCSSPlugin(purifycssConfig),
       new WebpackBuildNotifierPlugin({
@@ -471,14 +469,15 @@ const build = function(entry, callback) {
   }
 };
 
-module.exports = function(entrys, callback) {
+module.exports = function(entrys, pubkey, callback) {
   if(typeof entrys === 'function'){
     callback = entrys;
+    pubkey = null;
     entrys = null;
   }
 
   if (entrys)
-    return build(entrys, callback);
+    return build(entrys, pubkey, callback);
 
   let list = fs.readdirSync(`${currentPath}/src`);
   list = list.filter(function(val) {
@@ -496,5 +495,5 @@ module.exports = function(entrys, callback) {
   //   return build(entrys, callback);
   // });
 
-  return build(list, callback);
+  return build(list, pubkey, callback);
 };

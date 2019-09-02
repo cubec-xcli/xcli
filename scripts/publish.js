@@ -39,6 +39,10 @@ module.exports = function() {
           `../packages/${type}/webpack.build`,
         ));
 
+        webpackConfig.plugins.unshift(
+          new webpack.DefinePlugin(abcJSON.define.build || {})
+        );
+
         const compiler = webpack(webpackConfig);
 
         return compiler.run(() =>{
@@ -83,9 +87,13 @@ module.exports = function() {
 
           const compiler = webpack(webpackConfig);
 
+          webpackConfig.plugins.unshift(
+            new webpack.DefinePlugin(abcJSON.define[pubkey] || {})
+          );
+
           compiler.run(() =>{
             log('webpack building completed!');
-            log(`start xcli[${type}] publish process...`);
+            log(`[${pubkey.yellow}] start xcli[${type}] publish process...`);
 
             // 编译完成后，执行推送
             const publisher = require(path.join(
@@ -93,7 +101,7 @@ module.exports = function() {
               `../packages/${type}/publish`,
             ));
 
-            return publisher(currentPubOption);
+            return publisher(currentPubOption, pubkey);
           });
         }else if(fs.existsSync(path.join(__dirname, `../packages/${type}/build.js`))){
           const publisher = require(path.join(
@@ -101,9 +109,9 @@ module.exports = function() {
             `../packages/${type}/publish`,
           ));
 
-          return publisher(currentPubOption);
+          return publisher(currentPubOption, pubkey);
         }else{
-          error(`xcli can not find [${type}] typeof publish progass`);
+          error(`xcli can not find [${type}] typeof publish process`);
         }
       });
 

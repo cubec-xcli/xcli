@@ -23,6 +23,10 @@ module.exports = function() {
         `../packages/${type}/webpack.build`,
       ));
 
+      webpackConfig.plugins.unshift(
+        new webpack.DefinePlugin(abcJSON.define.build || {}),
+      );
+
       const compiler = webpack(webpackConfig);
 
       if (fs.existsSync(output)){
