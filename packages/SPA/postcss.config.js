@@ -22,7 +22,7 @@ const postcss_plugins = process.env.NODE_ENV !== "production" ?
 // devServer
 (abcJSON.wap ?[
   postcss_pxtorem
-] : []) : 
+] : []) :
 // production build
 (abcJSON.wap ? [
   postcss_preset,

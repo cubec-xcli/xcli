@@ -119,7 +119,12 @@ module.exports = {
   parallelism: os.threads,
 
   resolve: {
-    alias: abcJSON.alias,
+    alias: _extend(
+      abcJSON.alias,
+      fs.existsSync(path.join(currentPath, "/node_modules/@hot-loader/react-dom")) ?
+      { "react-dom": "@hot-loader/react-dom" } :
+      {}
+    ),
   },
 
   stats: 'minimal',

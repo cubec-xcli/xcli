@@ -18,11 +18,11 @@ const postcss_pxtorem = require(require.resolve("postcss-pxtorem"))({
 });
 //const postcss_uncss= require(require.resolve("postcss-uncss"))({ html: ['*.html','**/*.html']});
 
-const postcss_plugins = process.env.NODE_ENV !== "production" ? 
+const postcss_plugins = process.env.NODE_ENV !== "production" ?
 // devServer
 (abcJSON.wap ?[
   postcss_pxtorem
-] : []) : 
+] : []) :
 // production build
 (abcJSON.wap ? [
   postcss_preset,
