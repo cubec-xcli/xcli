@@ -5,5 +5,5 @@ module.exports = {
     "[MPA] [Multiple Page Application] React+(TS|ES6)": "DemonCloud/cubec",
     // "[MPWA] [Multiple Modules Progressed Web Application] React+(TS|ES6)+PUG": "DemonCloud/cubec"
   },
-  "[XCLI] XCLI Plugin": "DemonCloud/cubec"
+  "[XCLI] Implements Plugin": "DemonCloud/xcli-plugin-template"
 };

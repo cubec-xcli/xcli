@@ -115,7 +115,7 @@ module.exports = function(context, args) {
     output: {
       // options related to how webpack emits results
       path: currentOutputPath,
-      filename: "[name]/[name].[hash:8].js",
+      filename: "[name]/[name].js",
       chunkFilename: `_vendors/[name].bundle.js`,
       publicPath: "/"
     },

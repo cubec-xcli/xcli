@@ -20,7 +20,10 @@ const ERROR = {
   // abcJSON相关
   abcJSON: {
     notexist: "abc.json does not exist or it is not like JSON standard format",
-    notypeorname: "abc.json must exist (type) and (name) property"
+    notypeorname: "abc.json must exist (type) and (name) property",
+    x_not_exist: 'plugin entry can not find ',
+    x_notas_jsonformat: 'plugin abcx.json is not standard JSON format',
+    x_not_passcheck: 'plugin abcx.json is a non-compliant file or missing the necessary fields'
   },
 
   // cache缓存相关

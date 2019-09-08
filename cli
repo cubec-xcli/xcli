@@ -8,12 +8,14 @@ const cli = require('commander');
 const colors = require('colors');
 const packageJSON = require('./package.json');
 const DESCRIPTION = require('./dict/commandos/DESCRIPTION');
-const commands = ['init', 'dev', 'lint', 'build', 'preview', 'upgrade', 'publish'];
+const commands = ['init', 'dev', 'build', 'publish', 'link', 'unlink'];
 
 const init = require('./commandos/init');
 const dev = require('./commandos/dev');
 const build = require('./commandos/build');
 const publish = require('./commandos/publish');
+const link = require('./commandos/link');
+const unlink = require('./commandos/unlink');
 // const cmd_lint = require('./scripts/lint');
 // const cmd_preview = require('./scripts/preview');
 // const cmd_upgrade = require('./scripts/upgrade');
@@ -56,6 +58,15 @@ cli.
   description(DESCRIPTION.publish).
   action(publish);
 
+cli.
+  command('link').
+  description(DESCRIPTION.link).
+  action(link);
+
+cli.
+  command('unlink').
+  description(DESCRIPTION.unlink).
+  action(unlink);
 
 // cli
 //   .command('preview')

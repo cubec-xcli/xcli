@@ -31,7 +31,7 @@ module.exports = function(context, args) {
   const { mockServer } = context.servers;
   const { log } = std;
   const abcJSON = prefixAbcJSON;
-  const { currentPath } = paths;
+  const { currentPath, currentOutputPath } = paths;
   const { ip, threads }= os;
   const port = +abcJSON.devServer.port;
   const listener = `http://${ip}:${port}`;
@@ -109,9 +109,9 @@ module.exports = function(context, args) {
 
     output: {
       // options related to how webpack emits results
-      path: path.resolve(currentPath, abcJSON.path.output),
-      filename: "[name].[hash:8].js",
-      chunkFilename: `[name].[contenthash:8].bundle.js`,
+      path: currentOutputPath,
+      filename: "[name].js",
+      chunkFilename: `[name].bundle.js`,
       publicPath: "/"
       // publicPath: `http://${ipadress}:${abcJSON.devServer.port}/`,
     },
