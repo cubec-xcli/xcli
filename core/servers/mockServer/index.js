@@ -158,6 +158,7 @@ module.exports = function() {
     }
 
     let route = requestPath.split("/");
+
     for(let i=0, l=route.length, p=rules.tree, _p; i<l; i++){
       _p = p[":"];
       p = p[route[i]];

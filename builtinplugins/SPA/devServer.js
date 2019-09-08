@@ -450,7 +450,16 @@ module.exports = function(context, args) {
         hot: true,
         quiet: true,
         disableHostCheck: true,
-        historyApiFallback: true,
+        historyApiFallback: {
+          rewrites: [
+            {
+              from: /^\/api\/.*$/,
+              to: function(context) {
+                return context.parsedUrl.pathname;
+              }
+            }
+          ]
+        },
         https: false,
         //lazy: true,
 
@@ -486,10 +495,10 @@ module.exports = function(context, args) {
         before(app) {
           app.use(errorOverlayMiddleware());
           app.use(noopServiceWorkerMiddleware());
-          //app.use(mockServer(abcJSON.mockServer));
+          // app.use(mockServer(abcJSON.mockServer));
         },
 
-        after(app, serve) {
+        after(app, serve){
           // setup mock server App
           app.use(mockServer(abcJSON.mockServer));
         }

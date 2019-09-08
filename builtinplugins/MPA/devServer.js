@@ -445,7 +445,16 @@ module.exports = function(context, args) {
         hot: true,
         quiet: true,
         disableHostCheck: true,
-        historyApiFallback: true,
+        historyApiFallback: {
+          rewrites: [
+            {
+              from: /^\/api\/.*$/,
+              to: function(context) {
+                return context.parsedUrl.pathname;
+              }
+            }
+          ]
+        },
         https: false,
         //lazy: true,
 
