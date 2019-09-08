@@ -1,77 +1,87 @@
 #!/usr/bin/env node
 
-// X-CLI
+// XCLI
 // @Author: YiJun(sihao)
 // @VERISON 0.0.1
-const INFO = require('./package.json');
 
 const cli = require('commander');
 const colors = require('colors');
+const packageJSON = require('./package.json');
+const DESCRIPTION = require('./dict/commandos/DESCRIPTION');
 const commands = ['init', 'dev', 'lint', 'build', 'preview', 'upgrade', 'publish'];
 
-const cmd_init = require('./scripts/init');
-const cmd_dev = require('./scripts/dev');
-const cmd_build = require('./scripts/build');
-const cmd_lint = require('./scripts/lint');
-const cmd_preview = require('./scripts/preview');
-const cmd_upgrade = require('./scripts/upgrade');
-const cmd_publish = require('./scripts/publish');
-const loger = `
-          ____  ___     .__  .__ 
-          \\   \\/  /____ |  | |__|
-           \\     // ___\\|  | |  |
-           /     \\  \\___|  |_|  |
-          /___/\\  \\___  >____/__|
-                \\_/   \\/         
-`;
+const init = require('./commandos/init');
+const dev = require('./commandos/dev');
+const build = require('./commandos/build');
+const publish = require('./commandos/publish');
+// const cmd_lint = require('./scripts/lint');
+// const cmd_preview = require('./scripts/preview');
+// const cmd_upgrade = require('./scripts/upgrade');
 
-cli
-  .version(INFO.version)
-  .usage('[command]'.green)
-  .description(loger.red + "\n" + INFO.description.red);
+const logo =
+`           ____  ___     .__  .__
+           \\   \\/  /____ |  | |__|
+            \\     // ___\\|  | |  |
+            /     \\  \\___|  |_|  |
+           /___/\\  \\___  >____/__|
+                 \\_/   \\/
+`.red;
+
+cli.
+  version(packageJSON.version).
+  usage('[command]'.green).
+  description(logo + "\n     " + packageJSON.description.red);
 
 // Register Command
-cli
-  .command('init [ProjectName]')
-  .description('init Project'.red)
-  .action(cmd_init);
+cli.
+  command('init [projectName]').
+  description(DESCRIPTION.init).
+  action(init);
 
-cli
-  .command('dev')
-  .description('start development server'.red)
-  .action(cmd_dev);
+cli.
+  command('dev').
+  option('-d, --debug', `${'devServer'.bold} with [debug] mode`).
+  description(DESCRIPTION.dev).
+  action(dev);
 
-cli
-  .command('build')
-  .description('building'.red)
-  .action(cmd_build);
+cli.
+  command('build').
+  option('-d, --debug', `${'build'.bold} with [debug] mode`).
+  description(DESCRIPTION.build).
+  action(build);
 
-cli
-  .command('preview')
-  .description('building and preview'.red)
-  .action(cmd_preview);
+cli.
+  command('publish').
+  option('-d, --debug', `${'publish'.bold} with [debug] mode`).
+  description(DESCRIPTION.publish).
+  action(publish);
 
-cli
-  .command('upgrade')
-  .description('upgrade xcli'.red)
-  .action(cmd_upgrade);
 
-cli
-  .command('publish')
-  .description('publish current project'.red)
-  .action(cmd_publish);
+// cli
+//   .command('preview')
+//   .description('building and preview'.red)
+//   .action(cmd_preview);
 
-cli
-  .command('lint [fix]')
-  .description('lint code style'.red)
-  .action(cmd_lint);
+// cli
+//   .command('upgrade')
+//   .description('upgrade xcli'.red)
+//   .action(cmd_upgrade);
 
-cli
-  .command('help')
-  .description('check help infomation'.green)
-  .action(() => cli.help());
+// cli
+//   .command('publish')
+//   .description('publish current project'.red)
+//   .action(cmd_publish);
+
+// cli
+//   .command('lint [fix]')
+//   .description('lint code style'.red)
+//   .action(cmd_lint);
+
+// cli
+//   .command('help')
+//   .description('check help infomation'.green)
+//   .action(() => cli.help());
 
 cli.parse(process.argv);
 
-if (!cli.args.length || !process.argv[2] || !commands.includes(process.argv[2]))
-  cli.help();
+if (!cli.args.length || !process.argv[2] || !commands.includes(process.argv[2])) cli.help();
