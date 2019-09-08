@@ -4,9 +4,7 @@
 
 如看不到文档，请联系我:
 
-QQ: 496350357
-
-WeiXin: cloudywolf1
+QQ: 496350357  WeiXin: cloudywolf1
 
 ### 如何安装？
 
@@ -26,7 +24,5 @@ xcli --help
 xcli init
 xcli dev
 xcli build
-xcli preview
-xcli lint
-xcli upgrade
+xcli publish
 ```
