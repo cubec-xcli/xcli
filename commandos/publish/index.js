@@ -1,7 +1,6 @@
 const { prompt } = require('enquirer');
 const { isFunction, keys } = require('lodash');
 const { error } = require('../../core/utils/std');
-const { prefixAbcJSON } = require('../../core/utils/abc');
 const COMMON = require('../../dict/commandos/COMMON');
 const PUBLISH = require('../../dict/commandos/PUBLISH');
 
@@ -11,7 +10,9 @@ const getTargetEntryJS = require('../../core/common/pre/getTargetEntry');
 const createContext = require('../../core/common/aop/createContext');
 
 const publishCommand = async function(command){
-  if(checkAbcJSONFormat()){
+  const prefixAbcJSON = checkAbcJSONFormat();
+
+  if(prefixAbcJSON){
     const isDebugMode = command ? !!command.debug : false;
     const publish = getTargetEntryJS(prefixAbcJSON.type, "publish.js");
 

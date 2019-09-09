@@ -7,7 +7,7 @@ const { prefixAbcJSON } = require('../../utils/abc');
 const packageAutoInstall = function(options) {
   const packageType = prefixAbcJSON ? (prefixAbcJSON.package || "npm") : "npm";
 
-  info(`${packageType.bold} installing`);
+  info(`${packageType.bold} installing...`);
 
   execSync(`${packageType} install`, options);
 

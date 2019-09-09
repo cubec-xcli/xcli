@@ -42,6 +42,8 @@ build/Release
 # Dependency directories
 plugins
 plugins/*
+__temp
+__temp/*
 node_modules
 node_modules/
 node_modules/*

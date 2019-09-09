@@ -15,7 +15,7 @@ const createPage = function(pageType) {
       const { name } = await prompt({
         type: "input",
         name: "name",
-        message: "输入页面的名称"
+        message: "Input the page name"
       });
 
       pageName = name;
@@ -27,11 +27,11 @@ const createPage = function(pageType) {
       const { replace } = await prompt({
         type: "confirm",
         name: "replace",
-        message: `需要新建的页面 [${pageName.bold.red}] 在资源目录中已经存在了，是否需要强制执行翻盖式新建?`
+        message: `The new page name [${pageName.bold.red}] already exist，Need to perform mandatory override creation??`
       });
 
       if (!replace) {
-        warn("新建页面操作中断，未完成初始化");
+        warn("New page creation interrupt, not completed initialization");
         return false;
       }
 
@@ -47,8 +47,8 @@ const createPage = function(pageType) {
 };
 
 module.exports = {
-  "[MPA] 创建新页面": {
-    "[MPA] [新页面] JavaScript模板": createPage('jstemplate'),
-    "[MPA] [新页面] Typescript模板": createPage('tstemplate')
+  "[MPA] Create Page": {
+    "[MPA] [New Page] Base JavaScript Template": createPage('jstemplate'),
+    "[MPA] [New Page] Base Typescript Template": createPage('tstemplate')
   }
 };

@@ -14,6 +14,9 @@ const currentPublicPath = path.resolve(currentPath, prefixAbcJSON ? prefixAbcJSO
 const cliRootPath = path.resolve(__dirname, "../../../");
 // 缓存文件 的位置
 const cacheFilePath = path.resolve(cliRootPath, '.cache');
+// plugins 目录的位置
+const pluginsPath = path.resolve(cliRootPath, 'plugins');
+const pluginsBuiltinPath = path.resolve(cliRootPath, 'builtinplugins');
 
 const paths = {
   currentPath,
@@ -23,6 +26,8 @@ const paths = {
 
   cliRootPath,
   cacheFilePath,
+  pluginsPath,
+  pluginsBuiltinPath,
 };
 
 module.exports = paths;

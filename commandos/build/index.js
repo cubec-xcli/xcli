@@ -1,7 +1,6 @@
 const colors = require('colors');
 const { isFunction } = require('lodash');
 const { error } = require('../../core/utils/std');
-const { prefixAbcJSON } = require('../../core/utils/abc');
 const COMMON = require('../../dict/commandos/COMMON');
 
 const packageAutoInstall = require('../../core/common/pre/packageAutoInstall');
@@ -10,7 +9,9 @@ const getTargetEntryJS = require('../../core/common/pre/getTargetEntry');
 const createContext = require('../../core/common/aop/createContext');
 
 const buildCommand = function(command){
-  if(checkAbcJSONFormat()){
+  const prefixAbcJSON = checkAbcJSONFormat();
+
+  if(prefixAbcJSON){
     const isDebugMode = command ? !!command.debug : false;
     const builder = getTargetEntryJS(prefixAbcJSON.type, "build.js");
 

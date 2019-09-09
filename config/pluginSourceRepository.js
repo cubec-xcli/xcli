@@ -1,4 +1,5 @@
 module.exports = {
   pluginSourceGit: "gitlab",
-  pluginSourceGitPath: ""
-}
+  pluginSourceGitPath: "gitlab.xinghuolive.com",
+  pluginSourceGroup: "xcli",
+};

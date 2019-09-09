@@ -18,4 +18,5 @@ if(isFunction(devServer)){
 }else{
   error(COMMON.ERROR_CANNOT_FIND_AOPSCRIPT_IMPLEMENT+` ${"devServer".bold}`);
   throw new Error(COMMON.ERROR_CANNOT_FIND_AOPSCRIPT_IMPLEMENT);
+  process.exit(0);
 }
