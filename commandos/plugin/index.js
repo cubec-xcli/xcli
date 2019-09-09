@@ -1,4 +1,3 @@
-const fs = require('fs');
 const { prompt } = require('enquirer');
 const struct = require('ax-struct-js');
 
