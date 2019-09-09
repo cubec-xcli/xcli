@@ -4,5 +4,7 @@ const paths = require('../../utils/paths');
 
 module.exports = function(pluginType){
   if(!pluginType) return false;
-  return fs.existsSync(path.resolve(paths.pluginsPath, pluginType));
+
+  return fs.existsSync(path.resolve(paths.pluginsPath, pluginType)) ||
+         fs.existsSync(path.resolve(paths.pluginsBuiltinPath, pluginType));
 };
