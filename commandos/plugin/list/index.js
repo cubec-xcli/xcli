@@ -44,7 +44,7 @@ module.exports = async function(){
   }).filter(cool));
 
   if(printList.length)
-    return each(printList, (line)=>console.log(line));
+    return each(printList, line=>console.log(line.text));
 
   return warn("not plugins find install for xcli");
 };

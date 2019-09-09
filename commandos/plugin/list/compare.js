@@ -67,7 +67,12 @@ module.exports = async function(currentVersion, pluginName){
   const onlineVersion = getRemoateAbcxJSON.data["plugin-version"];
   const compareResult = compareVersions.compare(currentVersion, onlineVersion, "<");
 
-  return compareResult ?
+  return {
+    plugin: pluginName,
+    text: compareResult ?
     (`[Plugin] `.bold + pluginName.bold.red + ` ${currentVersion}` + ` - [ new version ${onlineVersion} ]`.green.bold) :
-    (`[Plugin] `.bold + pluginName.bold.red + ` ${currentVersion}`);
+    (`[Plugin] `.bold + pluginName.bold.red + ` ${currentVersion}`),
+    newVersion: onlineVersion,
+    needUpdate: compareResult
+  };
 };
