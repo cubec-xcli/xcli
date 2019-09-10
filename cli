@@ -8,7 +8,7 @@ const cli = require('commander');
 const colors = require('colors');
 const packageJSON = require('./package.json');
 const DESCRIPTION = require('./dict/commandos/DESCRIPTION');
-const commands = ['init', 'dev', 'build', 'publish', 'plugin', 'link', 'unlink'];
+const commands = ['init', 'dev', 'build', 'publish', 'plugin', 'link', 'unlink', 'upgrade'];
 
 const init = require('./commandos/init');
 const dev = require('./commandos/dev');
@@ -17,9 +17,9 @@ const publish = require('./commandos/publish');
 const link = require('./commandos/link');
 const unlink = require('./commandos/unlink');
 const plugin = require('./commandos/plugin');
+const upgrade = require('./commandos/upgrade');
 // const cmd_lint = require('./scripts/lint');
 // const cmd_preview = require('./scripts/preview');
-// const cmd_upgrade = require('./scripts/upgrade');
 
 const logo =
 `           ____  ___     .__  .__
@@ -63,6 +63,11 @@ cli.
   option('-d, --debug', `${'publish'.bold} with [debug] mode`).
   description(DESCRIPTION.publish).
   action(publish);
+
+cli.
+  command('upgrade').
+  description(DESCRIPTION.upgrade).
+  action(upgrade);
 
 cli.
   command('link').
