@@ -37,7 +37,7 @@ module.exports = function(config){
   const cacheExistCreate = {};
 
   return function(context, localIdentName, localName, options){
-    console.log("[css log]", localName);
+    // console.log("[css log]", localName);
     let className = cacheLocalName[localName];
     if(className) return className;
 

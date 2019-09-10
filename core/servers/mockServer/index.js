@@ -148,8 +148,10 @@ module.exports = function() {
       if(_isFn(tapcache.find.action)){
         return (asyncHandler(tapcache.find.action))(req, res, tapcache.param, _paramParse(url), next);
       }else if(tapcache.find.action && _isObj(tapcache.find.action)){
-        res.json(tapcache.find.action);
-        res.end();
+        res.writeHead(200, {"Content-Type": "application/json"});
+        res.end(JSON.stringify(tapcache.find.action));
+        // res.json();
+        // res.end();
       }else{
         error(`[mock server] exec action unexcept error on dispatch the route => ${(url).bold}`.red);
       }
@@ -210,8 +212,8 @@ module.exports = function() {
         if(_isFn(find.action)){
           return (asyncHandler(find.action))(req, res, _combined(find.param, paramValue), _paramParse(url), next);
         }else if(find.action && _isObj(find.action)){
-          res.json(find.action);
-          res.end();
+          res.writeHead(200, {"Content-Type": "application/json"});
+          res.end(JSON.stringify(find.action));
         }else{
           error(`[mock server] exec action unexcept error on dispatch the route => ${matchPath.bold}`.red);
         }

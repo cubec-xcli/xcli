@@ -120,6 +120,7 @@ module.exports = function(context, args, callback) {
         cacheGroups: {
           commons: {
             chunks: "initial",
+            name: "commons",
             minChunks: 2,
             maxInitialRequests: 5,
             minSize: 0
@@ -239,62 +240,35 @@ module.exports = function(context, args, callback) {
           use: [
             MiniCssExtractPlugin.loader,
             {
-              loader: require.resolve("thread-loader"),
-              options: workerPoolScss
+              loader: require.resolve("css-loader"),
+              options: {
+                sourceMap: false,
+                modules: cssModuleOptions,
+                importLoaders: 2
+              }
             },
             {
-              loader: require.resolve("cache-loader"),
+              loader: require.resolve("postcss-loader"),
               options: {
-                cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
+                sourceMap: false,
+                config: {
+                  path: path.join(__dirname, "/")
+                }
+              }
+            },
+            {
+              loader: require.resolve("resolve-url-loader"),
+              options: {
+                sourceMap: false
+              }
+            },
+            {
+              loader: require.resolve("sass-loader"),
+              options: {
+                sourceMap: false
               }
             }
           ]
-            .concat(
-              abcJSON.wap
-                ? [
-                    {
-                      loader: require.resolve("css-loader"),
-                      options: {
-                        sourceMap: false,
-                        modules: cssModuleOptions,
-                        importLoaders: 2
-                      }
-                    },
-                    {
-                      loader: require.resolve("postcss-loader"),
-                      options: {
-                        sourceMap: false,
-                        config: {
-                          path: path.join(__dirname, "/")
-                        }
-                      }
-                    }
-                  ]
-                : [
-                    {
-                      loader: require.resolve("css-loader"),
-                      options: {
-                        sourceMap: false,
-                        modules: cssModuleOptions,
-                        importLoaders: 1
-                      }
-                    }
-                  ]
-            )
-            .concat([
-              {
-                loader: require.resolve("resolve-url-loader"),
-                options: {
-                  sourceMap: false
-                }
-              },
-              {
-                loader: require.resolve("sass-loader"),
-                options: {
-                  sourceMap: false
-                }
-              }
-            ])
         },
         // css&scss
         {
@@ -303,60 +277,41 @@ module.exports = function(context, args, callback) {
           use: [
             MiniCssExtractPlugin.loader,
             {
-              loader: require.resolve("thread-loader"),
-              options: workerPoolScss
+              loader: require.resolve("css-loader"),
+              options: {
+                sourceMap: false,
+                importLoaders: 2
+              }
             },
             {
-              loader: require.resolve("cache-loader"),
+              loader: require.resolve("postcss-loader"),
               options: {
-                cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
+                sourceMap: false,
+                config: {
+                  path: path.join(__dirname, "/")
+                }
+              }
+            },
+            {
+              loader: require.resolve("css-loader"),
+              options: {
+                sourceMap: false,
+                importLoaders: 1
+              }
+            },
+            {
+              loader: require.resolve("resolve-url-loader"),
+              options: {
+                sourceMap: false
+              }
+            },
+            {
+              loader: require.resolve("sass-loader"),
+              options: {
+                sourceMap: false
               }
             }
           ]
-            .concat(
-              abcJSON.wap
-                ? [
-                    {
-                      loader: require.resolve("css-loader"),
-                      options: {
-                        sourceMap: false,
-                        importLoaders: 2
-                      }
-                    },
-                    {
-                      loader: require.resolve("postcss-loader"),
-                      options: {
-                        sourceMap: false,
-                        config: {
-                          path: path.join(__dirname, "/")
-                        }
-                      }
-                    }
-                  ]
-                : [
-                    {
-                      loader: require.resolve("css-loader"),
-                      options: {
-                        sourceMap: false,
-                        importLoaders: 1
-                      }
-                    }
-                  ]
-            )
-            .concat([
-              {
-                loader: require.resolve("resolve-url-loader"),
-                options: {
-                  sourceMap: false
-                }
-              },
-              {
-                loader: require.resolve("sass-loader"),
-                options: {
-                  sourceMap: false
-                }
-              }
-            ])
         }
       ]
     },
@@ -464,10 +419,10 @@ module.exports = function(context, args, callback) {
 
       new MiniCssExtractPlugin({
         filename: "[name].[hash:8].css",
-        chunkFilename: "[id].[hash:8].css"
+        chunkFilename: "[name].[contenthash:8].css"
       }),
 
-      new HtmlWebpackInlineSourcePlugin(),
+      abcJSON.css.embed ? new HtmlWebpackInlineSourcePlugin() : false,
 
       //new PurifyCSSPlugin(purifycssConfig),
       new WebpackBuildNotifierPlugin({
@@ -479,7 +434,7 @@ module.exports = function(context, args, callback) {
       new SimpleProgressWebpackPlugin(),
 
       new FriendlyErrorsWebpackPlugin()
-    ],
+    ].filter(_cool),
 
     devServer: {
       quiet: true

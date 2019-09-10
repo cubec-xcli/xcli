@@ -14,6 +14,9 @@ module.exports = {
   devServer: {
     port: 9001,
     https: false,
+    historyApiFallback: {
+      rewrites: []
+    },
     proxy: {}
     // proxy: {
     //   "/api": {

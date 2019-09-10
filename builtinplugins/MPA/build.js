@@ -37,9 +37,11 @@ module.exports = function(context, args, callback) {
   const existTypeScript = fs.existsSync(path.resolve(currentPath, "tsconfig.json"));
   const existReactHotLoader = fs.existsSync(path.resolve(currentPath + "node_modules/react-hot-loader"));
   const cssModuleOptions = abcJSON.css ? ( abcJSON.css.module ? {
+    // mode: 'global',
     mode: 'local',
     // localIdentName: '[name]__[local]',
-    getLocalIdent: tools.system.optimizeCssModulesPlugin()
+    getLocalIdent: tools.system.optimizeCssModulesPlugin(),
+    // getLocalIdent: function(){ console.log(1); return "abc"; }
   } : false ): false;
 
   const _extend = struct.extend();
@@ -76,13 +78,6 @@ module.exports = function(context, args, callback) {
     workerDefaultOptions
   );
 
-  const workerPoolScssModule = _extend(
-    {
-      name: "SCSSMODULE"
-    },
-    workerDefaultOptions
-  );
-
   threadLoader.warmup(workerPoolJSX, [
     require.resolve("cache-loader"),
     require.resolve("babel-loader"),
@@ -94,18 +89,11 @@ module.exports = function(context, args, callback) {
     require.resolve("cache-loader"),
     require.resolve("cubec-loader")
   ]);
-  threadLoader.warmup(workerPoolScssModule, [
-    require.resolve("cache-loader"),
-    require.resolve("style-loader"),
-    require.resolve("css-loader"),
-    require.resolve("postcss-loader"),
-    require.resolve("resolve-url-loader"),
-    require.resolve("sass-loader")
-  ]);
   threadLoader.warmup(workerPoolScss, [
-    require.resolve("cache-loader"),
-    require.resolve("style-loader"),
-    require.resolve("css-loader"),
+    // require.resolve("cache-loader"),
+    // MiniCssExtractPlugin.loader,
+    // require.resolve("style-loader"),
+    // require.resolve("css-loader"),
     require.resolve("postcss-loader"),
     require.resolve("resolve-url-loader"),
     require.resolve("sass-loader")
@@ -251,63 +239,42 @@ module.exports = function(context, args, callback) {
           test: /\.module\.(css|s(a|c)ss)$/,
           use: [
             MiniCssExtractPlugin.loader,
+            // {
+            //   loader: require.resolve("cache-loader"),
+            //   options: {
+            //     cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
+            //   }
+            // },
             {
-              loader: require.resolve("thread-loader"),
-              options: workerPoolScss
+              loader: require.resolve("css-loader"),
+              options: {
+                sourceMap: false,
+                modules: cssModuleOptions,
+                importLoaders: 2
+              }
             },
             {
-              loader: require.resolve("cache-loader"),
+              loader: require.resolve("postcss-loader"),
               options: {
-                cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
+                sourceMap: false,
+                config: {
+                  path: path.join(__dirname, "/")
+                }
+              }
+            },
+            {
+              loader: require.resolve("resolve-url-loader"),
+                options: {
+                  sourceMap: false
+                }
+            },
+            {
+              loader: require.resolve("sass-loader"),
+              options: {
+                sourceMap: false
               }
             }
           ]
-            .concat(
-              abcJSON.wap
-                ? [
-                    {
-                      loader: require.resolve("css-loader"),
-                      options: {
-                        sourceMap: false,
-                        modules: cssModuleOptions,
-                        importLoaders: 2
-                      }
-                    },
-                    {
-                      loader: require.resolve("postcss-loader"),
-                      options: {
-                        sourceMap: false,
-                        config: {
-                          path: path.join(__dirname, "/")
-                        }
-                      }
-                    }
-                  ]
-                : [
-                    {
-                      loader: require.resolve("css-loader"),
-                      options: {
-                        sourceMap: false,
-                        modules: cssModuleOptions,
-                        importLoaders: 1
-                      }
-                    }
-                  ]
-            )
-            .concat([
-              {
-                loader: require.resolve("resolve-url-loader"),
-                options: {
-                  sourceMap: false
-                }
-              },
-              {
-                loader: require.resolve("sass-loader"),
-                options: {
-                  sourceMap: false
-                }
-              }
-            ])
         },
         // css&scss
         {
@@ -315,63 +282,42 @@ module.exports = function(context, args, callback) {
           exclude: /\.module\.(css|s(a|c)ss)$/,
           use: [
             MiniCssExtractPlugin.loader,
+            // {
+            //   loader: require.resolve("cache-loader"),
+            //   options: {
+            //     cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
+            //   }
+            // },
             {
-              loader: require.resolve("thread-loader"),
-              options: workerPoolScss
+              loader: require.resolve("css-loader"),
+              options: {
+                sourceMap: false,
+                modules: false,
+                importLoaders: 2
+              }
             },
             {
-              loader: require.resolve("cache-loader"),
+              loader: require.resolve("postcss-loader"),
               options: {
-                cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
+                sourceMap: false,
+                config: {
+                  path: path.join(__dirname, "/")
+                }
+              }
+            },
+            {
+              loader: require.resolve("resolve-url-loader"),
+              options: {
+                sourceMap: false
+              }
+            },
+            {
+              loader: require.resolve("sass-loader"),
+              options: {
+                sourceMap: false
               }
             }
           ]
-            .concat(
-              abcJSON.wap
-                ? [
-                    {
-                      loader: require.resolve("css-loader"),
-                      options: {
-                        sourceMap: false,
-                        modules: false,
-                        importLoaders: 2
-                      }
-                    },
-                    {
-                      loader: require.resolve("postcss-loader"),
-                      options: {
-                        sourceMap: false,
-                        config: {
-                          path: path.join(__dirname, "/")
-                        }
-                      }
-                    }
-                  ]
-                : [
-                    {
-                      loader: require.resolve("css-loader"),
-                      options: {
-                        sourceMap: false,
-                        modules: false,
-                        importLoaders: 1
-                      }
-                    }
-                  ]
-            )
-            .concat([
-              {
-                loader: require.resolve("resolve-url-loader"),
-                options: {
-                  sourceMap: false
-                }
-              },
-              {
-                loader: require.resolve("sass-loader"),
-                options: {
-                  sourceMap: false
-                }
-              }
-            ])
         }
       ]
     },
@@ -479,7 +425,7 @@ module.exports = function(context, args, callback) {
 
       new MiniCssExtractPlugin({
         filename: "[name]/[name].[hash:8].css",
-        chunkFilename: "[id].css"
+        chunkFilename: "[name].[contenthash:8].css"
       })
 
       // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
@@ -536,7 +482,7 @@ module.exports = function(context, args, callback) {
 
     webpackConfig.plugins = webpackConfig.plugins.concat([
       new webpack.DefinePlugin(abcJSON.webpackDefine[context.publishEntry] || abcJSON.webpackDefine.build || {}),
-      new HtmlWebpackInlineSourcePlugin(),
+      abcJSON.css.embed ? new HtmlWebpackInlineSourcePlugin() : false,
       //new PurifyCSSPlugin(purifycssConfig),
       new WebpackBuildNotifierPlugin({
         title: `xcli Building [${abcJSON.name}]`,
@@ -545,7 +491,7 @@ module.exports = function(context, args, callback) {
       }),
       new SimpleProgressWebpackPlugin(),
       new FriendlyErrorsWebpackPlugin()
-    ]);
+    ].filter(_cool));
 
     const compiler = webpack(webpackConfig);
 

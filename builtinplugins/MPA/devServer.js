@@ -222,61 +222,40 @@ module.exports = function(context, args) {
               options: {
                 cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
               }
-            }
-          ]
-            .concat(
-              abcJSON.wap
-                ? [
-                    {
-                      loader: require.resolve("style-loader")
-                    },
-                    {
-                      loader: require.resolve("css-loader"),
-                      options: {
-                        sourceMap: true,
-                        modules: cssModuleOptions,
-                        importLoaders: 2
-                      }
-                    },
-                    {
-                      loader: require.resolve("postcss-loader"),
-                      options: {
-                        sourceMap: true,
-                        config: {
-                          path: path.join(__dirname, "/")
-                        }
-                      }
-                    }
-                  ]
-                : [
-                    {
-                      loader: require.resolve("style-loader")
-                    },
-                    {
-                      loader: require.resolve("css-loader"),
-                      options: {
-                        sourceMap: true,
-                        modules: cssModuleOptions,
-                        camelCase: true,
-                        importLoaders: 1
-                      }
-                    }
-                  ]
-            )
-            .concat([
-              {
-                loader: require.resolve("resolve-url-loader"),
-                options: {
-                  sourceMap: true
-                }
-              },
-              {
-                loader: require.resolve("sass-loader"),
-                options: {
-                  sourceMap: true
+            },
+            {
+              loader: require.resolve("style-loader")
+            },
+            {
+              loader: require.resolve("css-loader"),
+              options: {
+                sourceMap: true,
+                modules: cssModuleOptions,
+                importLoaders: 2
+              }
+            },
+            {
+              loader: require.resolve("postcss-loader"),
+              options: {
+                sourceMap: true,
+                config: {
+                  path: path.join(__dirname, "/")
                 }
               }
-            ])
+            },
+            {
+              loader: require.resolve("resolve-url-loader"),
+              options: {
+                sourceMap: true
+              }
+            },
+            {
+              loader: require.resolve("sass-loader"),
+              options: {
+                sourceMap: true
+              }
+            }
+          ]
         },
 
         // css&scss
@@ -284,10 +263,10 @@ module.exports = function(context, args) {
           test: /\.(css|s(a|c)ss)$/,
           exclude: /\.module\.(css|s(a|c)ss)$/,
           use: [
+            // MiniCssExtractPlugin.loader,
             {
               loader: require.resolve("css-hot-loader")
             },
-            // MiniCssExtractPlugin.loader,
             {
               loader: require.resolve("thread-loader"),
               options: workerPoolScss
@@ -297,58 +276,39 @@ module.exports = function(context, args) {
               options: {
                 cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
               }
-            }
-          ]
-            .concat(
-              abcJSON.wap
-                ? [
-                    {
-                      loader: require.resolve("style-loader")
-                    },
-                    {
-                      loader: require.resolve("css-loader"),
-                      options: {
-                        sourceMap: true,
-                        importLoaders: 2
-                      }
-                    },
-                    {
-                      loader: require.resolve("postcss-loader"),
-                      options: {
-                        sourceMap: "inline",
-                        config: {
-                          path: path.join(__dirname, "/")
-                        }
-                      }
-                    }
-                  ]
-                : [
-                    {
-                      loader: require.resolve("style-loader")
-                    },
-                    {
-                      loader: require.resolve("css-loader"),
-                      options: {
-                        sourceMap: true,
-                        importLoaders: 1
-                      }
-                    }
-                  ]
-            )
-            .concat([
-              {
-                loader: require.resolve("resolve-url-loader"),
-                options: {
-                  sourceMap: true
-                }
-              },
-              {
-                loader: require.resolve("sass-loader"),
-                options: {
-                  sourceMap: true
+            },
+            {
+              loader: require.resolve("style-loader")
+            },
+            {
+              loader: require.resolve("css-loader"),
+              options: {
+                sourceMap: true,
+                importLoaders: 2
+              }
+            },
+            {
+              loader: require.resolve("postcss-loader"),
+              options: {
+                sourceMap: true,
+                config: {
+                  path: path.join(__dirname, "/")
                 }
               }
-            ])
+            },
+            {
+              loader: require.resolve("resolve-url-loader"),
+              options: {
+                sourceMap: true
+              }
+            },
+            {
+              loader: require.resolve("sass-loader"),
+              options: {
+                sourceMap: true
+              }
+            }
+          ]
         }
       ]
     },
@@ -445,17 +405,17 @@ module.exports = function(context, args) {
         hot: true,
         quiet: true,
         disableHostCheck: true,
-        historyApiFallback: {
-          rewrites: [
-            {
-              from: /^\/api\/.*$/,
-              to: function(context) {
-                return context.parsedUrl.pathname;
-              }
-            }
-          ]
-        },
         https: false,
+        // historyApiFallback: {
+        //   rewrites: [
+        //     {
+        //       from: /^\/api\/.*$/,
+        //       to: function(context) {
+        //         return context.parsedUrl.pathname;
+        //       }
+        //     }
+        //   ]
+        // },
         //lazy: true,
 
         // clientLogLevel: 'none',
