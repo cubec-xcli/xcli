@@ -1,7 +1,7 @@
 {
   "name": "xcli",
   "version": "0.0.1",
-  "description": "XCli [ X Command Line Interface ]",
+  "description": "XCli [ X Command Line Interface ] Front-end automation build tool integration",
   "main": "cli",
   "author": "YiJun",
   "license": "MIT",
