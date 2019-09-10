@@ -1,7 +1,7 @@
 {
   "name": "xcli",
   "version": "0.0.1",
-  "description": "XCli [ Xiao Command Line Interface ]",
+  "description": "XCli [ X Command Line Interface ]",
   "main": "cli",
   "author": "YiJun",
   "license": "MIT",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.xinghuolive.com/pengsihao/xcli.git"
+    "url": "git+https://github.com/DemonCloud/xcli.git"
   },
   "dependencies": {
     "ax-struct-js": "^5.0.0",
