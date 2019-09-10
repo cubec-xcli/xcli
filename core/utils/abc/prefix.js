@@ -56,10 +56,7 @@ module.exports = function(abcJSON){
         });
       });
     }
-
   }
-
-  console.log(prefixAbcJSON.devServer.historyApiFallback.rewrites);
 
   return prefixAbcJSON;
 };

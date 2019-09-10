@@ -7,6 +7,7 @@ module.exports = {
   plugin  : "xcli plugin manager".magenta,
   link    : "[development] link plugin for xcli",
   unlink  : "[development] unlink plugin for xcli",
+  help    : '[development] check help infomation',
   upgrade : "upgrade xcli core".red,
   test    : "run UT and living preview test for project".cyan,
   build   : "run fast building project".green,

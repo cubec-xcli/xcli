@@ -8,7 +8,7 @@ const cli = require('commander');
 const colors = require('colors');
 const packageJSON = require('./package.json');
 const DESCRIPTION = require('./dict/commandos/DESCRIPTION');
-const commands = ['init', 'dev', 'build', 'publish', 'plugin', 'link', 'unlink', 'upgrade', 'test'];
+const commands = ['init', 'dev', 'build', 'publish', 'plugin', 'link', 'unlink', 'upgrade', 'test', 'help'];
 
 const init = require('./commandos/init');
 const dev = require('./commandos/dev');
@@ -20,7 +20,6 @@ const plugin = require('./commandos/plugin');
 const upgrade = require('./commandos/upgrade');
 const test = require('./commandos/test');
 // const cmd_lint = require('./scripts/lint');
-// const cmd_preview = require('./scripts/preview');
 
 const logo =
 `           ____  ___     .__  .__
@@ -55,7 +54,7 @@ cli.
 
 cli.
   command('test').
-  option('-u, --unit', `${'build'.bold} with [UT] mode`).
+  option('-u, --unit', `${'test'.bold} with [UT] mode`).
   description(DESCRIPTION.test).
   action(test);
 
@@ -86,30 +85,15 @@ cli.
   description(DESCRIPTION.unlink).
   action(unlink);
 
-// cli
-//   .command('preview')
-//   .description('building and preview'.red)
-//   .action(cmd_preview);
-
-// cli
-//   .command('upgrade')
-//   .description('upgrade xcli'.red)
-//   .action(cmd_upgrade);
-
-// cli
-//   .command('publish')
-//   .description('publish current project'.red)
-//   .action(cmd_publish);
+cli.
+  command('help').
+  description(DESCRIPTION.help).
+  action(()=>cli.help());
 
 // cli
 //   .command('lint [fix]')
 //   .description('lint code style'.red)
 //   .action(cmd_lint);
-
-// cli
-//   .command('help')
-//   .description('check help infomation'.green)
-//   .action(() => cli.help());
 
 cli.parse(process.argv);
 
