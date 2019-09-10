@@ -8,6 +8,8 @@ const { pluginSourceGit } = require('../../../config/pluginSourceRepository');
 const { warn } = require('../../../core/utils/std');
 const paths = require('../../../core/utils/paths');
 const cache = require('../../../core/utils/cache');
+const COMMON = require('../../../dict/commandos/COMMON');
+const PLUGIN = require('../../../dict/commandos/PLUGIN');
 
 const cool = struct.cool();
 const each = struct.each();
@@ -19,10 +21,10 @@ module.exports = async function(){
     const { gitlabToken } = await prompt({
       type: "input",
       name: "gitlabToken",
-      message: "Input your gitlab Personal Access Token (PAT)"
+      message: COMMON.REQUIRED_INPUT_GITLAB_PAT
     });
 
-    if(!gitlabToken && gitlabToken.length < 5) return warn("plugin list preview interrupted");
+    if(!gitlabToken && gitlabToken.length < 5) return warn(PLUGIN.PLUGIN_LIST_COMMAND_INTERRUPTED);
 
     cache.setGlobal("gitlabToken", gitlabToken);
   }
@@ -46,5 +48,5 @@ module.exports = async function(){
   if(printList.length)
     return each(printList, line=>console.log(line.text));
 
-  return warn("not plugins find install for xcli");
+  return warn(PLUGIN.PLUGIN_LIST_NOTPLUGIN_FOUND);
 };

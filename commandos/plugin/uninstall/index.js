@@ -9,6 +9,7 @@ const { info, warn } = require('../../../core/utils/std');
 const cool = struct.cool();
 const each = struct.each();
 const noop = struct.noop();
+const PLUGIN = require('../../../dict/commandos/PLUGIN');
 
 module.exports = async function(pluginName){
   let plugin = pluginName;
@@ -38,7 +39,7 @@ module.exports = async function(pluginName){
     const { pluginSelect } = await prompt({
       type: 'multiselect',
       name: "pluginSelect",
-      message: "Select need uninstall plugins",
+      message: PLUGIN.PLUGIN_UNINNSTALL_SELECT_REQUIRED,
       choices,
     });
 
@@ -59,12 +60,12 @@ module.exports = async function(pluginName){
       }
     });
 
-    info("uninstall plugins success");
+    info(PLUGIN.PLUGIN_UNINSTALL_SUCCESSED);
 
     return true;
   }
 
-  warn("no plugins selected for uninstall");
+  warn(PLUGIN.PLUGIN_UNINSTALL_NOPLUGINS_SELECTED);
 
   return false;
 };

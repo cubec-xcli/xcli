@@ -14,8 +14,7 @@ const parsePluginDownloadUrl = function(pluginName){
   }else if(pluginSourceGit === "gitlab" || pluginSourceGit === "bitbucket"){
     return `${pluginSourceGit}:${pluginSourceGitPath}:${pluginSourceGroup}/${pluginName}#master`;
   }
-
-  warn("[plugin] install unknown gitSource options");
+  warn("plugin install unknown gitSource options");
   return false;
 };
 

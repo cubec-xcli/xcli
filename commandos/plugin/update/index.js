@@ -9,6 +9,8 @@ const { warn, info } = require('../../../core/utils/std');
 const paths = require('../../../core/utils/paths');
 const cache = require('../../../core/utils/cache');
 const checkPluginExist = require('../../../core/common/tools/checkPluginExist');
+const COMMON = require('../../../dict/commandos/COMMON');
+const PLUGIN = require('../../../dict/commandos/PLUGIN');
 
 const pluginInstall = require('../install');
 
@@ -23,10 +25,10 @@ module.exports = async function(pluginName){
     const { gitlabToken } = await prompt({
       type: "input",
       name: "gitlabToken",
-      message: "Input your gitlab Personal Access Token (PAT)"
+      message: COMMON.REQUIRED_INPUT_GITLAB_PAT
     });
 
-    if(!gitlabToken && gitlabToken.length < 5) return warn("plugin update process interrupted");
+    if(!gitlabToken && gitlabToken.length < 5) return warn(PLUGIN.PLUGIN_UPDATE_COMMAND_INTERRUPTED);
 
     cache.setGlobal("gitlabToken", gitlabToken);
   }
@@ -76,7 +78,7 @@ module.exports = async function(pluginName){
       const { updateList } = await prompt({
         type: "multiselect",
         name: "updateList",
-        message: "Select plugin for update",
+        message: PLUGIN.PLUGIN_UPDATE_SELECT_REQUIRED,
         choices: pluginsChoicesList
       });
 
@@ -85,12 +87,13 @@ module.exports = async function(pluginName){
           const getPlugin = pluginsListMap[updatePlugin];
           return pluginInstall(getPlugin.plugin, true);
         }));
-        return info("all plugins were updated to latest version");
+
+        return info(PLUGIN.PLUGIN_UPDATE_SUCCESS_COMPLETED);
       }
 
-      return warn("no select plugin for update");
+      return warn(PLUGIN.PLUGIN_UPDATE_NOSELECT);
     }
   }
 
-  return info("all plugins already hold on latest version");
+  return info(PLUGIN.PLUGIN_UPDATE_ALREADY_LATEST_VERSION);
 };

@@ -1,12 +1,13 @@
 const { prompt } = require('enquirer');
 const struct = require('ax-struct-js');
-
-const has = struct.has();
+	const PLUGIN = require('../../dict/commandos/PLUGIN');
 
 const useInstall = require('./install');
 const useUninstall = require('./uninstall');
 const useList = require('./list');
 const useUpdate = require('./update');
+
+const has = struct.has();
 
 const useCommandosList = [
   'install',
@@ -41,12 +42,14 @@ const pluginCommand = async function(use, pluginName){
   let useCommand = use;
 
   if(!useCommand || !has(useCommandosList, useCommand)){
+    // 没有找到对应的命令
     const { command } = await prompt({
       type: "select",
       name: "command",
-      message: "Select the type of action",
+      message: PLUGIN.PLUGIN_SELECT_COMMAND_TYPE,
       choices: useCurrentCommandosList
     });
+
     useCommand = command;
   }
 

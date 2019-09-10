@@ -10,6 +10,8 @@ const { warn, loading, error } = require('../../../core/utils/std');
 const checkPluginAbcxJSONFormat = require('../../../core/common/pre/checkPluginAbcxJSONFormat');
 const downloadPlugin = require('./adapter/downloadPlugin');
 
+const PLUGIN = require('../../../dict/commandos/PLUGIN');
+
 // Install Plugin
 module.exports = async function(pluginName, forceReinstall=false){
   let plugin = pluginName;
@@ -19,7 +21,7 @@ module.exports = async function(pluginName, forceReinstall=false){
     const { newPlugin } = await prompt({
       type: "Input",
       name: "newPlugin",
-      message: "Input plugin name for remote install"
+      message: PLUGIN.PLUGIN_INSTALL_PLUGINNAME_REQUIRED
     });
     plugin = newPlugin;
     if(!plugin) return warn(`[plugin] ${plugin.bold} install interrupted`);
@@ -80,11 +82,12 @@ module.exports = async function(pluginName, forceReinstall=false){
       await fse.move(createTempDir, newPluginPath);
       loading_plugininit.succeed(`success install remote plugin ${("["+plugin+"]").green.bold}`);
 
+    // 不符合规范的插件包不允许执行安装
     }else{
 
       await fse.remove(createTempDir);
       loading_download.fail(`failed download remote plugin ${("["+plugin+"]").green.bold}`);
-      error("the plugin is not xcli plugin format, can not be install!");
+      error(PLUGIN.PLUGIN_INSTALL_REJECT_UN_ABCXJSON_CHECKER);
     }
 
   }else{

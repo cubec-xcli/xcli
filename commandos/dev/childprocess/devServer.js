@@ -12,8 +12,9 @@ const args = parseArgs(process.argv.slice(2));
 const devServer = getTargetEntryJS(prefixAbcJSON.type, "devServer.js");
 
 if(isFunction(devServer)){
-  info(`${('['+prefixAbcJSON.type+']').bold} [${packageJSON.name}] version ${packageJSON.version}`);
-  info(`${('['+prefixAbcJSON.type+']').bold} [${packageJSON.name}] ${DEV.INFO_DEVSERVER_PRESTART}`);
+  const presetMsg = `${'[xcli]'.bold} ${('['+prefixAbcJSON.type+']').bold} ${('['+packageJSON.name+']').bold} `;
+  info(presetMsg + `version ${packageJSON.version}`);
+  info(presetMsg + `${DEV.INFO_DEVSERVER_PRESTART}`);
   devServer(createContext(), args);
 }else{
   error(COMMON.ERROR_CANNOT_FIND_AOPSCRIPT_IMPLEMENT+` ${"devServer".bold}`);
