@@ -4,6 +4,7 @@ const postcss_preset = require(require.resolve("postcss-preset-env"))({
   ['last 2 versions', 'iOS >= 6', "Android >= 4.3", "IE 10", "not dead"] :
   ['last 2 versions', 'IE 10', 'iOS >= 10', 'Android >= 8']
 });
+const postcss_mixins = require(require.resolve('postcss-mixins'));
 const postcss_clean = require(require.resolve("postcss-clean"))({ level: 2 });
 // const postcss_momentum_scrolling = require(require.resolve("postcss-momentum-scrolling"));
 const postcss_no_important = require(require.resolve('postcss-no-important'))({});
@@ -23,8 +24,11 @@ const postcss_pxtorem = require(require.resolve("postcss-pxtorem"))({
 const postcss_plugins = process.env.NODE_ENV !== "production" ?
 // devServer
 (abcJSON.wap ?[
+  postcss_mixins,
   postcss_pxtorem
-] : []) :
+] : [
+  postcss_mixins,
+]) :
 // production build
 (abcJSON.wap ? [
   postcss_preset,
