@@ -37,18 +37,25 @@ module.exports = async function(pluginName){
 
   const pluginsList = await Promise.all(plugins.map(plugin=>{
     let getAbcxJSON = {};
+    const currentPluginPath = path.resolve(paths.pluginsPath, `${plugin}`);
+    const stats = fs.lstatSync(currentPluginPath);
 
-    try {
-      getAbcxJSON = require(path.resolve(paths.pluginsPath, `${plugin}/abcx.json`));
-    }catch(e){
-      return false;
+    if(stats.isSymbolicLink()){
+      return compareVersion(false, plugin, true);
+    }else if(stats.isDirectory()){
+      try {
+        getAbcxJSON = require(path.resolve(currentPluginPath, `abcx.json`));
+      }catch(e){
+        return false;
+      }
+
+      if(!getAbcxJSON["plugin-version"]) return false;
+
+      return compareVersion(getAbcxJSON["plugin-version"], plugin);
     }
 
-    if(!getAbcxJSON["plugin-version"]) return false;
-
-    return compareVersion(getAbcxJSON["plugin-version"], plugin);
+    return false;
   }).filter(cool));
-
 
   if(pluginsList.length){
     const pluginsListMap = {};

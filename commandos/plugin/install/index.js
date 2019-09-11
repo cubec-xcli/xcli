@@ -12,6 +12,8 @@ const downloadPlugin = require('./adapter/downloadPlugin');
 
 const PLUGIN = require('../../../dict/commandos/PLUGIN');
 
+let tempId = 0;
+
 // Install Plugin
 module.exports = async function(pluginName, forceReinstall=false){
   let plugin = pluginName;
@@ -49,7 +51,7 @@ module.exports = async function(pluginName, forceReinstall=false){
   // 因此先需要将plugin下载到temp文件夹中
   // 确认下载成功, 且校验插件无误之后。才可以替换先前的文件夹
   const loading_download = loading(`download remote plugin ${("["+plugin+"]").bold}`);
-  const createTempDir = path.resolve(pluginsDir, '__temp');
+  const createTempDir = path.resolve(pluginsDir, `__temp${tempId++}`);
   await fse.remove(createTempDir);
   await fse.ensureDir(createTempDir);
   const downloadStatus = await downloadPlugin(plugin, createTempDir);

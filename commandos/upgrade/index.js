@@ -32,9 +32,7 @@ const upgradeCommand = function(version){
         // 有更新 xcli 的 package.json
         if(has(upgrade.files, "package.json")){
           const package_loading = loading(UPGRADE.UPGRADE_PROCESS_CORE_PACKAGE);
-
           await cexec(`npm install`, { cwd: paths.cliRootPath });
-
           package_loading.succeed(UPGRADE.UPGRADE_PROCESS_CORE_PACKAGE+" completed");
         }
 
