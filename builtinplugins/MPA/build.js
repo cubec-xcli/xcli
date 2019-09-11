@@ -71,12 +71,12 @@ module.exports = function(context, args, callback) {
     workerDefaultOptions
   );
 
-  const workerPoolScss = _extend(
-    {
-      name: "SCSS"
-    },
-    workerDefaultOptions
-  );
+  // const workerPoolScss = _extend(
+  //   {
+  //     name: "SCSS"
+  //   },
+  //   workerDefaultOptions
+  // );
 
   threadLoader.warmup(workerPoolJSX, [
     require.resolve("cache-loader"),
@@ -89,15 +89,15 @@ module.exports = function(context, args, callback) {
     require.resolve("cache-loader"),
     require.resolve("cubec-loader")
   ]);
-  threadLoader.warmup(workerPoolScss, [
-    // require.resolve("cache-loader"),
-    // MiniCssExtractPlugin.loader,
-    // require.resolve("style-loader"),
-    // require.resolve("css-loader"),
-    require.resolve("postcss-loader"),
-    require.resolve("resolve-url-loader"),
-    require.resolve("sass-loader")
-  ]);
+  // threadLoader.warmup(workerPoolScss, [
+  //   // require.resolve("cache-loader"),
+  //   // MiniCssExtractPlugin.loader,
+  //   // require.resolve("style-loader"),
+  //   // require.resolve("css-loader"),
+  //   require.resolve("postcss-loader"),
+  //   require.resolve("resolve-url-loader"),
+  //   require.resolve("sass-loader")
+  // ]);
 
   const webpackConfig = {
     entry: {},

@@ -1,4 +1,4 @@
-const { abcJSON, prefixAbcJSON, packageJSON } = require('./abc');
+const { abcJSON, prefixAbcJSON, packageJSON, xcliPackageJSON } = require('./abc');
 const os = require('./os');
 const paths = require('./paths');
 const std = require('./std');
@@ -9,6 +9,7 @@ module.exports = {
   abcJSON,
   prefixAbcJSON,
   packageJSON,
+  xcliPackageJSON,
   os,
   std,
   paths,

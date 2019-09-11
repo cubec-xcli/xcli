@@ -3,6 +3,7 @@ const struct = require('ax-struct-js');
 const bs = require('browser-sync');
 const proxy = require('http-proxy-middleware');
 const { isFunction } = require('lodash');
+// const { ip } = require('../../core/utils/os');
 const paths = require('../../core/utils/paths');
 const { error } = require('../../core/utils/std');
 const { mockServer } = require('../../core/servers');
@@ -31,7 +32,7 @@ const testCommand = function(command){
         const proxyConfig = prefixAbcJSON.devServer.proxy;
         const proxyMiddlewares = keys(proxyConfig).map(uri=>proxy(uri, proxyConfig[uri]));
 
-        previewBS.init({
+        return previewBS.init({
           // host: ip,
           port: prefixAbcJSON.devServer.port + 2,
           ui: {
@@ -41,9 +42,20 @@ const testCommand = function(command){
             }
           },
 
+          open: "ui",
+
+          cors: true,
+          // single: true,
           cwd: paths.currentPath,
 
-          server:  prefixAbcJSON.path.output,
+          server: {
+            baseDir: prefixAbcJSON.path.output,
+            // index: "index.html",
+            // directory: true,
+            serveStaticOptions: {
+              extensions: ['html']
+            }
+          },
           // httpModule: 'http2',
           https: prefixAbcJSON.devServer.https,
           // https: true,

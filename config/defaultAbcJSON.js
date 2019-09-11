@@ -9,7 +9,8 @@ module.exports = {
   define: {},
   provide: {},
   css: {
-    modules: false,
+    module: true,
+    embed: false
   },
   devServer: {
     port: 9001,
