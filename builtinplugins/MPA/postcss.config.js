@@ -18,32 +18,34 @@ const postcss_pxtorem = require(require.resolve("postcss-pxtorem"))({
   minPixelValue: 1
 });
 
-// const postcss_modules = require('postcss-modules')({});
+const postcss_modules = require('postcss-modules')({});
 // const postcss_uncss= require(require.resolve("postcss-uncss"))({ html: ['*.html','**/*.html']});
 
 const postcss_plugins = process.env.NODE_ENV !== "production" ?
 // devServer
 (abcJSON.wap ?[
   postcss_mixins,
-  postcss_pxtorem
+  // postcss_modules,
+  postcss_pxtorem,
 ] : [
   postcss_mixins,
+  // postcss_modules,
 ]) :
 // production build
 (abcJSON.wap ? [
+  // postcss_modules,
   postcss_preset,
   postcss_clean,
   // postcss_momentum_scrolling,
   postcss_no_important,
   //postcss_uncss,
-  // postcss_modules,
   postcss_pxtorem,
 ] : [
+  // postcss_modules,
   postcss_preset,
   postcss_clean,
   // postcss_momentum_scrolling,
   postcss_no_important,
-  // postcss_modules
   //postcss_uncss
 ]);
 

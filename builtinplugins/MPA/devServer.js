@@ -76,6 +76,13 @@ module.exports = function(context, args) {
     workerDefaultOptions
   );
 
+  const workerPoolPug = _extend(
+    {
+      name: "PUG"
+    },
+    workerDefaultOptions
+  );
+
   const workerPoolScss = _extend(
     {
       name: "SCSS"
@@ -93,6 +100,10 @@ module.exports = function(context, args) {
   threadLoader.warmup(workerPoolCubec, [
     require.resolve("cache-loader"),
     require.resolve("cubec-loader")
+  ]);
+  threadLoader.warmup(workerPoolPug, [
+    require.resolve("cache-loader"),
+    require.resolve("pug-loader")
   ]);
   threadLoader.warmup(workerPoolScss, [
     require.resolve("cache-loader"),
@@ -190,6 +201,25 @@ module.exports = function(context, args) {
             },
             {
               loader: require.resolve("cubec-loader")
+            }
+          ]
+        },
+        {
+          test: /\.(pug|jade)$/,
+          exclude: /node_modules/,
+          use: [
+            {
+              loader: require.resolve("thread-loader"),
+              options: workerPoolPug
+            },
+            {
+              loader: require.resolve("cache-loader"),
+              options: {
+                cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
+              }
+            },
+            {
+              loader: require.resolve("pug-loader")
             }
           ]
         },
@@ -484,7 +514,8 @@ module.exports = function(context, args) {
           new HtmlWebpackPlugin({
             inject: true,
             filename: `${page}/index.html`,
-            template: `${currentPath}/src/${page}/index.html`,
+            template: `${currentPath}/src/${page}/index.pug`,
+            templateParameters: abcJSON.define.dev || {},
             chunks: [page]
           })
         );

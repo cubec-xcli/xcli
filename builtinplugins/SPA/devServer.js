@@ -78,6 +78,13 @@ module.exports = function(context, args) {
     workerDefaultOptions
   );
 
+  const workerPoolPug = _extend(
+    {
+      name: "PUG"
+    },
+    workerDefaultOptions
+  );
+
   threadLoader.warmup(workerPoolJSX, [
     require.resolve("cache-loader"),
     require.resolve("babel-loader"),
@@ -88,6 +95,10 @@ module.exports = function(context, args) {
   threadLoader.warmup(workerPoolCubec, [
     require.resolve("cache-loader"),
     require.resolve("cubec-loader")
+  ]);
+  threadLoader.warmup(workerPoolPug, [
+    require.resolve("cache-loader"),
+    require.resolve("pug-loader")
   ]);
   threadLoader.warmup(workerPoolScss, [
     require.resolve("cache-loader"),
@@ -148,7 +159,7 @@ module.exports = function(context, args) {
       extensions: [ '.tsx', '.ts', '.js', '.jsx' ]
     },
 
-    stats: "minimal",
+    // stats: "minimal",
 
     module: {
       rules: [
@@ -205,6 +216,25 @@ module.exports = function(context, args) {
             },
             {
               loader: require.resolve("cubec-loader")
+            }
+          ]
+        },
+        {
+          test: /\.(pug|jade)$/,
+          exclude: /node_modules/,
+          use: [
+            {
+              loader: require.resolve("thread-loader"),
+              options: workerPoolPug
+            },
+            {
+              loader: require.resolve("cache-loader"),
+              options: {
+                cacheDirectory: `${currentPath}/node_modules/.cache/cache-loader`
+              }
+            },
+            {
+              loader: require.resolve("pug-loader")
             }
           ]
         },
@@ -378,9 +408,10 @@ module.exports = function(context, args) {
       }) : false,
 
       new HtmlWebpackPlugin({
-        inject: true,
+        // inject: true,
         filename: "index.html",
-        template: `${currentPath}/src/index.html`
+        template: `${currentPath}/src/index.pug`,
+        templateParameters: abcJSON.define.dev || {},
       }),
 
       // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),

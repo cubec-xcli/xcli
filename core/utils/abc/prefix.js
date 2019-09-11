@@ -11,6 +11,23 @@ const unique = struct.unique("fast");
 const currentPath = process.cwd();
 const defaultJSONPath = require("../../../config/defaultAbcJSON");
 
+const deepDefineResolve = function(env){
+  const newDefine = map(env, (val, key)=>{
+    if(
+      val === "null" ||
+      val === "undefined" ||
+      val === "NaN" ||
+      val === "Infinity" ||
+      val === "void 0"
+    ) return val;
+    if(isString(val)) return env[key] = JSON.stringify(val);
+    if(isPlainObject(val)) return deepDefineResolve(val);
+    return val;
+  });
+
+  return newDefine;
+};
+
 module.exports = function(abcJSON){
   // 创建一个默认的prefixAbcJSON
   let prefixAbcJSON = null;
@@ -21,12 +38,9 @@ module.exports = function(abcJSON){
     prefixAbcJSON = merge({}, defaultJSONPath, abcJSON);
 
     // 修正 define 输出给 webpack.DefinePlugin
-    prefixAbcJSON.webpackDefine = map(prefixAbcJSON.define, function(defineProp) {
-      if (isPlainObject(defineProp))
-        each(defineProp, (val, globalName) => {
-          if (isString(val)) defineProp[globalName] = JSON.stringify(val);
-        });
-      return defineProp;
+    prefixAbcJSON.webpackDefine = map(prefixAbcJSON.define, function(env) {
+      if (isPlainObject(env)) env=deepDefineResolve(env);
+      return env;
     });
 
     // 修正alias 输出给 webpackConfig.alias
