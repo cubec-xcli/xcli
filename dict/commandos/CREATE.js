@@ -10,13 +10,13 @@ module.exports = {
 
   LOADING_PREPARE_DOWNLOAD: "prepare download remote template file...",
 
-  INFO_SUCCESS_DOWNLOAD_FORM_REMOTE: successLabel + " completed init project from remote template".green,
+  INFO_SUCCESS_DOWNLOAD_FORM_REMOTE: successLabel + " completed create project from remote template".green,
 
-  WARN_INIT_ACTION_CANCEL: "init action exit (cancel clear folder)",
+  WARN_INIT_ACTION_CANCEL: "create action exit (cancel clear folder)",
 
-  ERROR_UNKNOWN_ACTION: "init template with unkown action",
+  ERROR_UNKNOWN_ACTION: "create template with unkown action",
 
   ERROR_FAIL_DOWNLOAD_FORM_REMOTE: failedLabel + " download remote template throw error".red,
 
-  ERROR_WITHOUT_FIND_TEMPLATE: "no init template with current project"
+  ERROR_WITHOUT_FIND_TEMPLATE: "no create template with current project"
 };

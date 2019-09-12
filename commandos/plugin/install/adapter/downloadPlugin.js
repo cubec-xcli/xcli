@@ -1,17 +1,16 @@
 const download = require('download-git-repo');
-const Config = require('../../../../config/pluginSourceRepository');
+const {
+  pluginSourceGit,
+  pluginSourceGroup,
+  pluginSourceGitPath
+} = require('../../../../config/.pluginSourceRepository.js');
+
 const { info, warn, error } = require('../../../../core/utils/std');
 
 const parsePluginDownloadUrl = function(pluginName){
-  const {
-    pluginSourceGit,
-    pluginSourceGroup,
-    pluginSourceGitPath
-  } = Config;
-
   if(pluginSourceGit === "github"){
     return `${pluginSourceGroup}/${pluginName}`;
-  }else if(pluginSourceGit === "gitlab" || pluginSourceGit === "bitbucket"){
+  }else if(pluginSourceGit === "gitlab"){
     return `${pluginSourceGit}:${pluginSourceGitPath}:${pluginSourceGroup}/${pluginName}#master`;
   }
   warn("plugin install unknown gitSource options");
@@ -20,17 +19,27 @@ const parsePluginDownloadUrl = function(pluginName){
 
 module.exports = function(pluginName, targetFilePath){
   const url = parsePluginDownloadUrl(pluginName);
+  // console.log(url);
 
   if(url && targetFilePath){
     return new Promise((resolve, reject) => {
-
-      download(url, targetFilePath, { clone: true }, function(err){
-        if(err){
-          error(err);
-          return reject(err);
-        }
-        resolve(true);
-      });
+      if(pluginSourceGit === "github"){
+        download(url, targetFilePath, function(err){
+          if(err){
+            error(err); return reject(err);
+          }
+          resolve(true);
+        });
+      }else if(pluginSourceGit === "gitlab"){
+        download(url, targetFilePath, { clone: true }, function(err){
+          if(err){
+            error(err); return reject(err);
+          }
+          resolve(true);
+        });
+      }else{
+        return reject(new TypeError("unknown git source type"));
+      }
     });
   }
 

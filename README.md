@@ -1,28 +1,61 @@
-### 文档地址
+# XCLI
 
-[xcli语雀文档](https://www.yuque.com/yijun-swbdq/qr9nvw)
+[XCLI] Front-end automation build tool integration
 
-如看不到文档，请联系我:
 
-QQ: 496350357  WeiXin: cloudywolf1
+## Documentation
 
-### 如何安装？
+under construction...
 
-将该项目clone到本地,
 
-打开终端，进入该项目的目录，执行：
+### How To Install？
 
+clone project
+
+```sh
+git clone https://github.com/cubec-xcli/xcli.git
+```
+
+run npm link
 ```sh
 npm link
 ```
 
-### 常用命令
+check install (xcli --help)
+```sh
+xcli -h
+```
+
+
+### Set XCLI remote plugin
+
+try to install plugin (from origin github:cubec-xcli)
+
+```
+xcli plugin install test-xcli-plugin
+```
+
+You can set the source of the installation plugin according to the developer's own needs.
+
+If you don't set the plugin source, XCLI will use the plugin of the ``cubec-xcli`` project group under github by default, meaning that the source of your plugins comes from the ``github:cubec-xcli`` project group.
+
 
 ```sh
-xcli --help
-
-xcli init
-xcli dev
-xcli build
-xcli publish
+xcli set-remote-plugin config.json
 ```
+
+```javascript
+// [config.json]
+// only support gitlab and github
+{
+  // git type [github or gitlab]
+  "pluginSourceGit": "gitlab",
+
+  // git repository domain
+  "pluginSourceGitPath": "www.yourpersonal-gitlab.com",
+
+  // git repository domain/group
+  "pluginSourceGroup": "xcli",
+}
+```
+

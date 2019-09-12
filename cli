@@ -6,9 +6,24 @@ const cli = require('commander');
 const colors = require('colors');
 const packageJSON = require('./package.json');
 const DESCRIPTION = require('./dict/commandos/DESCRIPTION');
-const commands = ['init', 'dev', 'build', 'publish', 'plugin', 'link', 'unlink', 'upgrade', 'test', 'help'];
+const commands = [
+  'new',
+  'init',
+  'dev',
+  'create',
+  'build',
+  'publish',
+  'plugin',
+  'link',
+  'unlink',
+  'upgrade',
+  'test',
+  'help',
+  'set-remote-plugin'
+];
 
-const init = require('./commandos/init');
+const newXCLI = require('./commandos/new');
+const create = require('./commandos/create');
 const dev = require('./commandos/dev');
 const build = require('./commandos/build');
 const publish = require('./commandos/publish');
@@ -17,6 +32,7 @@ const unlink = require('./commandos/unlink');
 const plugin = require('./commandos/plugin');
 const upgrade = require('./commandos/upgrade');
 const test = require('./commandos/test');
+const setRemotePlugin = require('./commandos/set-remote-plugin');
 // const cmd_lint = require('./scripts/lint');
 
 const logo =
@@ -28,6 +44,7 @@ const logo =
                  \\_/   \\/
 `.red;
 
+// Command create
 cli.
   version(packageJSON.version).
   usage('[command]'.green).
@@ -35,9 +52,15 @@ cli.
 
 // Register Command
 cli.
-  command('init [projectName]').
-  description(DESCRIPTION.init).
-  action(init);
+  command('new [projectFolder]').
+  alias('init').
+  description(DESCRIPTION.new).
+  action(newXCLI);
+
+cli.
+  command('create [name]').
+  description(DESCRIPTION.create).
+  action(create);
 
 cli.
   command('plugin [command] [pluginName]').
@@ -72,6 +95,11 @@ cli.
   command('upgrade').
   description(DESCRIPTION.upgrade).
   action(upgrade);
+
+cli.
+  command('set-remote-plugin [configJSON]').
+  description(DESCRIPTION.setRemotePlugin).
+  action(setRemotePlugin);
 
 cli.
   command('link').

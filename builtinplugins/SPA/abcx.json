@@ -1,4 +1,5 @@
 {
+  "abcx-version": "1.0",
   "plugin-name": "SPA",
   "plugin-version": "0.0.1",
   "plugin-package": "npm"

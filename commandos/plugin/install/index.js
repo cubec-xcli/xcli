@@ -6,10 +6,13 @@ const { execSync } = require('child_process');
 const path = require('path');
 const { prompt } = require('enquirer');
 const paths = require('../../../core/utils/paths');
+const cache = require('../../../core/utils/cache');
 const { warn, loading, error } = require('../../../core/utils/std');
+const { pluginSourceGit } = require('../../../config/.pluginSourceRepository.js');
 const checkPluginAbcxJSONFormat = require('../../../core/common/pre/checkPluginAbcxJSONFormat');
 const downloadPlugin = require('./adapter/downloadPlugin');
 
+const COMMON = require('../../../dict/commandos/COMMON');
 const PLUGIN = require('../../../dict/commandos/PLUGIN');
 
 let tempId = 0;
@@ -27,6 +30,19 @@ module.exports = async function(pluginName, forceReinstall=false){
     });
     plugin = newPlugin;
     if(!plugin) return warn(`[plugin] ${plugin.bold} install interrupted`);
+  }
+
+  // gitLab should get PAT
+  if(pluginSourceGit === "gitlab" && !cache.getGlobal("gitlabToken")){
+    const { gitlabToken } = await prompt({
+      type: "input",
+      name: "gitlabToken",
+      message: COMMON.REQUIRED_INPUT_GITLAB_PAT
+    });
+
+    if(!gitlabToken && gitlabToken.length < 5) return warn(PLUGIN.PLUGIN_LIST_COMMAND_INTERRUPTED);
+
+    cache.setGlobal("gitlabToken", gitlabToken);
   }
 
   const newPluginPath = path.resolve(pluginsDir, plugin);

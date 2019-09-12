@@ -5,7 +5,7 @@ const {
   pluginSourceGit,
   pluginSourceGitPath,
   pluginSourceGroup,
-} = require('../../../config/pluginSourceRepository');
+} = require('../../../config/.pluginSourceRepository.js');
 const cache = require('../../../core/utils/cache');
 
 const one = struct.index('one');

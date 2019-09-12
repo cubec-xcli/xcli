@@ -39,7 +39,7 @@ module.exports = async function(pluginName){
     const { pluginSelect } = await prompt({
       type: 'multiselect',
       name: "pluginSelect",
-      message: PLUGIN.PLUGIN_UNINNSTALL_SELECT_REQUIRED,
+      message: PLUGIN.PLUGIN_UNINSTALL_SELECT_REQUIRED,
       choices,
     });
 
