@@ -4,7 +4,7 @@ const util = require('util');
 const { prompt } = require('enquirer');
 const struct = require('ax-struct-js');
 const compareVersion = require('./compare');
-const { pluginSourceGit } = require('../../../config/.pluginSourceRepository.js');
+const { pluginSourceGit, pluginSourceGroup, pluginSourceGitPath } = require('../../../config/.pluginSourceRepository.js');
 const { warn } = require('../../../core/utils/std');
 const paths = require('../../../core/utils/paths');
 const cache = require('../../../core/utils/cache');
@@ -13,6 +13,7 @@ const PLUGIN = require('../../../dict/commandos/PLUGIN');
 
 const cool = struct.cool();
 const each = struct.each();
+const eq = struct.eq();
 
 module.exports = async function(){
   const fsreaddir = util.promisify(fs.readdir);
@@ -37,7 +38,7 @@ module.exports = async function(){
     const stats = fs.lstatSync(currentPluginPath);
 
     if(stats.isSymbolicLink()){
-      return compareVersion(false, plugin, true);
+      return compareVersion(false, plugin, true, false);
     }else if(stats.isDirectory()){
       try {
         getAbcxJSON = require(path.resolve(currentPluginPath, `abcx.json`));
@@ -47,7 +48,14 @@ module.exports = async function(){
 
       if(!getAbcxJSON["plugin-version"]) return false;
 
-      return compareVersion(getAbcxJSON["plugin-version"], plugin);
+      // 插件是否来自于不同于当前的源
+      const isDiffSouce = !eq(getAbcxJSON["plugin-source"], {
+        pluginSourceGit,
+        pluginSourceGitPath,
+        pluginSourceGroup
+      });
+
+      return compareVersion(getAbcxJSON["plugin-version"], plugin, false, isDiffSouce);
     }
 
     return false;

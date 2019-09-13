@@ -4,11 +4,14 @@ const util = require('util');
 const fse = require('fs-extra');
 const { prompt } = require('enquirer');
 const struct = require('ax-struct-js');
-const paths = require('../../core/utils/paths');
 const download = require('download-git-repo');
+const paths = require('../../core/utils/paths');
+const getTargetEntryJS = require('../../core/common/pre/getTargetEntry');
+const checkPluginExist = require('../../core/common/tools/checkPluginExist');
 const { error, warn, info, loading } = require('../../core/utils/std');
 const defaultNewAbcJSON = require('../../config/defaultNewAbcJSON');
 const defaultNewAbcxJSON = require('../../config/defaultNewAbcxJSON');
+const callCreate = require('../create/adapter/callCreate');
 
 const keys = struct.keys();
 const merge = struct.merge();
@@ -107,7 +110,26 @@ const newCommand = async function(projectFolder){
 
     await fswriteFile(abcJSONPath, JSON.stringify(abcJSON, null, 2));
 
-    return info("init project abc.json completed");
+    info("init project abc.json completed");
+
+    // 如果存在对应的插件
+    if(checkPluginExist(pluginType, true)){
+      const createImplement = getTargetEntryJS(pluginType, "create.js", true);
+
+      if(createImplement){
+        const { needCreate } = await prompt({
+          type: "confirm",
+          name: "needCreate",
+          message: "find initial create template by " + ("["+pluginType+"]").bold.red + ". need create template together?"
+        });
+
+        if(needCreate) await callCreate(createImplement, null, projectPath);
+      }
+
+      // console.log(process.cwd());
+    }
+
+    return info("init project completed use plugin " + ("["+ pluginType +"]").red.bold);
 
   // create new plugin
   }else if(type === "plugin"){
@@ -150,7 +172,8 @@ const newCommand = async function(projectFolder){
 
       await fswriteFile(abcxJSONPath, JSON.stringify(abcxJSON, null, 2));
 
-      initLoading.succeed("init plugin completed");
+      initLoading.succeed("remote download plugin template completed");
+      info("init plugin completed "+("["+pluginName+"]").bold.red);
     });
   }
 

@@ -26,14 +26,18 @@ module.exports = function(pluginName, targetFilePath){
       if(pluginSourceGit === "github"){
         download(url, targetFilePath, function(err){
           if(err){
-            error(err); return reject(err);
+            error("remote plugin download failed with unexcepted error");
+            error(err);
+            return reject(err);
           }
           resolve(true);
         });
       }else if(pluginSourceGit === "gitlab"){
         download(url, targetFilePath, { clone: true }, function(err){
           if(err){
-            error(err); return reject(err);
+            error("remote plugin download failed with unexcepted error");
+            error(err);
+            return reject(err);
           }
           resolve(true);
         });

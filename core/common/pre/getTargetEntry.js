@@ -4,8 +4,9 @@ const paths = require('../../utils/paths');
 const colors = require('colors');
 const { warn } = require('../../utils/std');
 const checkPluginAbcxJSONFormat = require('./checkPluginAbcxJSONFormat');
+
 // 获取包的入口AOP文件
-const getTargetEntryJS = function(type, entryFileName){
+const getTargetEntryJS = function(type, entryFileName, notWarn=false){
   // 寻找目标
   let target = null;
 
@@ -27,12 +28,13 @@ const getTargetEntryJS = function(type, entryFileName){
 
     // 如果内置包也没有，则提示是否需要安装对应的plugin
     if(!fs.existsSync(filePath)){
-      if(!fs.existsSync(builtinPath))
+      if(!fs.existsSync(builtinPath) && !notWarn)
         warn(`can not find type mode [${type.bold}], maybe try to install "${type}" plugin`);
       filePath = false;
     }
   }
 
+  // 获取对应的入口，执行返回
   if(filePath) target = require(filePath);
 
   return target;

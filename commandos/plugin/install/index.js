@@ -8,7 +8,7 @@ const { prompt } = require('enquirer');
 const paths = require('../../../core/utils/paths');
 const cache = require('../../../core/utils/cache');
 const { warn, loading, error } = require('../../../core/utils/std');
-const { pluginSourceGit } = require('../../../config/.pluginSourceRepository.js');
+const { pluginSourceGit, pluginSourceGitPath, pluginSourceGroup } = require('../../../config/.pluginSourceRepository.js');
 const checkPluginAbcxJSONFormat = require('../../../core/common/pre/checkPluginAbcxJSONFormat');
 const downloadPlugin = require('./adapter/downloadPlugin');
 
@@ -22,6 +22,7 @@ module.exports = async function(pluginName, forceReinstall=false){
   let plugin = pluginName;
   const pluginsDir = path.resolve(paths.cliRootPath, 'plugins');
 
+  // 要求输入插件名称
   if(!plugin){
     const { newPlugin } = await prompt({
       type: "Input",
@@ -48,6 +49,7 @@ module.exports = async function(pluginName, forceReinstall=false){
   const newPluginPath = path.resolve(pluginsDir, plugin);
   const existPluginPath = fs.existsSync(newPluginPath);
 
+  // 如果不是强制安装，则询问是否覆盖插件
   if(existPluginPath && !forceReinstall){
     const newPluginPathstats = fs.lstatSync(newPluginPath);
 
@@ -68,6 +70,8 @@ module.exports = async function(pluginName, forceReinstall=false){
   // 确认下载成功, 且校验插件无误之后。才可以替换先前的文件夹
   const loading_download = loading(`download remote plugin ${("["+plugin+"]").bold}`);
   const createTempDir = path.resolve(pluginsDir, `__temp${tempId++}`);
+
+  // 先移除，然后保证temp 存在
   await fse.remove(createTempDir);
   await fse.ensureDir(createTempDir);
   const downloadStatus = await downloadPlugin(plugin, createTempDir);
@@ -80,15 +84,16 @@ module.exports = async function(pluginName, forceReinstall=false){
 
     // abcx.json 过检
     if(abcxJSON){
+      const fsunlink = util.promisify(fs.unlink);
+      const fswriteFile = util.promisify(fs.writeFile);
       loading_download.succeed(`success download remote plugin ${("["+plugin+"]").green.bold}`);
 
-      // 移除先前存在的插件包 可能是link的
-      if(existPluginPath){
-        const newPluginPathstats = fs.lstatSync(newPluginPath);
-        const fsunlink = util.promisify(fs.unlink);
-        if(newPluginPathstats.isSymbolicLink()) await fsunlink(newPluginPath);
-        else await fse.remove(newPluginPath);
-      }
+      // 写入plugin-source
+      abcxJSON["plugin-source"] = {
+        pluginSourceGit,
+        pluginSourceGitPath,
+        pluginSourceGroup
+      };
 
       // 自动为插件安装好对应的package包
       const packageType = abcxJSON["plugin-package"] || "npm";
@@ -96,20 +101,35 @@ module.exports = async function(pluginName, forceReinstall=false){
 
       execSync(`${packageType} install`, { cwd:createTempDir });
 
+      // 重写abcx.json
+      await fswriteFile(path.resolve(createTempDir,'abcx.json'), JSON.stringify(abcxJSON, null, 2));
+
+      // 移除先前存在的插件包 可能是link的
+      if(existPluginPath){
+        const newPluginPathstats = fs.lstatSync(newPluginPath);
+        if(newPluginPathstats.isSymbolicLink()) await fsunlink(newPluginPath);
+        else await fse.remove(newPluginPath);
+      }
+
       // 安装文成之后移动文件即可
       await fse.move(createTempDir, newPluginPath);
+
       loading_plugininit.succeed(`success install remote plugin ${("["+plugin+"]").green.bold}`);
 
     // 不符合规范的插件包不允许执行安装
     }else{
 
+      // 移除插件
       await fse.remove(createTempDir);
+
       loading_download.fail(`failed download remote plugin ${("["+plugin+"]").green.bold}`);
+
       error(PLUGIN.PLUGIN_INSTALL_REJECT_UN_ABCXJSON_CHECKER);
     }
 
   }else{
     await fse.remove(createTempDir);
+
     loading_download.fail(`failed download remote plugin ${("["+plugin+"]").green.bold}`);
   }
 

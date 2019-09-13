@@ -6,7 +6,7 @@ const colors = require('colors');
 
 const paths = require('../../utils/paths');
 const { prefixAbcJSON } = require('../../utils/abc');
-const { log, error } = require('../../utils/std');
+const { debug, error } = require('../../utils/std');
 const ERRORS = require('../../../dict/std/ERRORS');
 
 const mockServer = path.resolve(paths.currentPath, 'mock');
@@ -143,7 +143,7 @@ module.exports = function() {
     // tap cache
     if(tapcache){
 
-      if(config.debug) log(`${"[mock server]".bold} route match => ${(url).green.bold} ${'cache'.yellow}`);
+      if(config.debug) debug(`${"[mock server]".bold} route match => ${(url).green.bold} ${'cache'.yellow}`);
 
       if(_isFn(tapcache.find.action)){
         return (asyncHandler(tapcache.find.action))(req, res, tapcache.param, _paramParse(url), next);
@@ -205,7 +205,7 @@ module.exports = function() {
       if(actions[matchPath]){
         const find = actions[matchPath];
 
-        if(config.debug) log(`${"[mock server]".bold} route match => ${(url).green.bold}`);
+        if(config.debug) debug(`${"[mock server]".bold} route match => ${(url).green.bold}`);
 
         routerCache[requestPath] = { find, param: _isFn(find.action) ? _combined(find.param, paramValue) : {} };
 

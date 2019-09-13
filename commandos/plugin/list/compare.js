@@ -17,11 +17,23 @@ const rawSourcePath = {
 
 const domain = rawSourcePath[pluginSourceGit];
 
-module.exports = async function(currentVersion, pluginName, isLinked=false){
+module.exports = async function(currentVersion, pluginName, isLinked=false, isDiffSource=false){
   let abcxJSONSource = '';
   let axiosHeaders = {};
 
-  if(!isLinked){
+  // 来自不同的安装源
+  if(isDiffSource){
+    // 插件是来自不同的安装源，则不需要执行比较
+    return {
+      plugin: pluginName,
+      isLinked,
+      text: (`[Plugin] `.bold + pluginName.bold.red + ` ${currentVersion}`),
+      newVersion: currentVersion,
+      needUpdate: false
+    };
+
+  // 插件不是link调试的形式，是正常的插件包则执行比较
+  }else if(!isLinked){
     if(pluginSourceGit === "github"){
       abcxJSONSource = `${domain}/${pluginSourceGroup}/${pluginName}/master/abcx.json`;
     }else if(pluginSourceGit === "gitlab"){
@@ -79,6 +91,7 @@ module.exports = async function(currentVersion, pluginName, isLinked=false){
     };
   }
 
+  // 否则是linked的调试插件包，不需要升级
   return {
     plugin: pluginName,
     isLinked,

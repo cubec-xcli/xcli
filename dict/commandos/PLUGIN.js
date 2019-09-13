@@ -4,6 +4,7 @@ module.exports = {
   PLUGIN_UPDATE_SELECT_REQUIRED: "Select plugin for update",
   PLUGIN_UPDATE_SUCCESS_COMPLETED: "all plugins were updated to latest version",
   PLUGIN_UPDATE_NOSELECT: "no select plugin for update",
+  PLUGIN_UPDATE_NOEXIST_PLUGIN: "not find current plugin exist and install ",
   PLUGIN_UPDATE_ALREADY_LATEST_VERSION: "all plugins already hold on latest version",
   PLUGIN_UNINSTALL_SELECT_REQUIRED: "Select plugins need uninstall",
   PLUGIN_UNINSTALL_SUCCESSED: "uninstall plugins success",

@@ -4,7 +4,7 @@ const util = require('util');
 const { prompt } = require('enquirer');
 const struct = require('ax-struct-js');
 const compareVersion = require('../list/compare');
-const { pluginSourceGit } = require('../../../config/.pluginSourceRepository.js');
+const { pluginSourceGit, pluginSourceGroup, pluginSourceGitPath } = require('../../../config/.pluginSourceRepository.js');
 const { warn, info } = require('../../../core/utils/std');
 const paths = require('../../../core/utils/paths');
 const cache = require('../../../core/utils/cache');
@@ -17,6 +17,7 @@ const pluginInstall = require('../install');
 const cool = struct.cool();
 const each = struct.each();
 const one = struct.index("one");
+const eq = struct.eq();
 
 module.exports = async function(pluginName){
   const fsreaddir = util.promisify(fs.readdir);
@@ -33,7 +34,11 @@ module.exports = async function(pluginName){
     cache.setGlobal("gitlabToken", gitlabToken);
   }
 
-  const plugins = pluginName && checkPluginExist(pluginName) ? [pluginName] : await fsreaddir(paths.pluginsPath);
+  // 如果输入插件名称，但是插件又不存在，则不允许操作
+  if(pluginName && !checkPluginExist(pluginName))
+    return warn(PLUGIN.PLUGIN_UPDATE_NOEXIST_PLUGIN+pluginName);
+
+  const plugins = pluginName ? [pluginName] : await fsreaddir(paths.pluginsPath);
 
   const pluginsList = await Promise.all(plugins.map(plugin=>{
     let getAbcxJSON = {};
@@ -41,7 +46,7 @@ module.exports = async function(pluginName){
     const stats = fs.lstatSync(currentPluginPath);
 
     if(stats.isSymbolicLink()){
-      return compareVersion(false, plugin, true);
+      return compareVersion(false, plugin, true, false);
     }else if(stats.isDirectory()){
       try {
         getAbcxJSON = require(path.resolve(currentPluginPath, `abcx.json`));
@@ -51,9 +56,17 @@ module.exports = async function(pluginName){
 
       if(!getAbcxJSON["plugin-version"]) return false;
 
-      return compareVersion(getAbcxJSON["plugin-version"], plugin);
+      // 插件是否来自于不同于当前的源
+      const isDiffSouce = !eq(getAbcxJSON["plugin-source"], {
+        pluginSourceGit,
+        pluginSourceGitPath,
+        pluginSourceGroup
+      });
+
+      return compareVersion(getAbcxJSON["plugin-version"], plugin, false, isDiffSouce);
     }
 
+    // 其他形式的文件都不被视为插件
     return false;
   }).filter(cool));
 

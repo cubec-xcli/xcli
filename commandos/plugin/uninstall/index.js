@@ -19,7 +19,7 @@ module.exports = async function(pluginName){
     const getAllPlugins = fs.readdirSync(pluginsDir);
     const pluginListMap = {};
 
-    // 手机选择列表
+    // 收集选择列表
     const choices = getAllPlugins.map(function(pluginFolder){
       const pluginPath = path.resolve(pluginsDir, pluginFolder);
       const pluginAbcxJSON = require(path.resolve(pluginPath, 'abcx.json'));

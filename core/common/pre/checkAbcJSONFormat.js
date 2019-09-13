@@ -16,7 +16,7 @@ const checkAbcJsonFormat = function(){
   if(!abcJSON.type || !abcJSON.name)
     return error(ERRORS.ABCJSON.NOTYPEORNAME);
 
-  if(!checkPluginExist(abcJSON.type)){
+  if(!checkPluginExist(abcJSON.type, true)){
     warn(ERRORS.ABCJSON.TRYTOINSTALLPLUGIN + `[${abcJSON.type}]`.bold);
     return false;
   }

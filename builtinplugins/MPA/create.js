@@ -4,12 +4,12 @@ const fse = require("fs-extra");
 
 const createPage = function(pageType) {
   return async function(context, args) {
-    const { projectName, projectRoot, utils } = context;
+    const { projectName, createPath, utils } = context;
     const { tools, std } = utils;
     const { warn, info } = std;
 
     let pageName = projectName;
-    let pageInitPath = projectRoot;
+    let pageInitPath = createPath;
 
     if (!pageName) {
       const { name } = await prompt({
@@ -17,7 +17,6 @@ const createPage = function(pageType) {
         name: "name",
         message: "Input the page name"
       });
-
       pageName = name;
     }
 
@@ -50,7 +49,7 @@ const createPage = function(pageType) {
 
 const createTemplate = async function(context, args){
   const { createPath, projectName, utils } = context;
-  const { prefixAbcJSON, tools, std } = utils;
+  const { tools, std } = utils;
   const { warn, info } = std;
 
   // 如果存在初始化名称
@@ -69,9 +68,9 @@ const createTemplate = async function(context, args){
 
       fse.emptyDirSync(createPath);
     }
-  // 不存在初始化名称
   }
 
+  // 不存在初始化名称 可以直接创建
   await fse.ensureDir(createPath);
 
   await fse.copy(`${__dirname}/initTemplates/_mpa_project_template`, createPath);

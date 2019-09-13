@@ -4,18 +4,18 @@ const colors = require('colors');
 const { prompt } = require('enquirer');
 const download = require('download-git-repo');
 
-const INIT = require('../../../dict/commandos/INIT');
+const CREATE = require('../../../dict/commandos/CREATE');
 const { loading, warn } = require('../../../core/utils/std');
 
 const downloadRemoteGitRepo = function(gitRepoUrl, path){
-  const processLoading = loading(INIT.LOADING_PREPARE_DOWNLOAD);
+  const processLoading = loading(CREATE.LOADING_PREPARE_DOWNLOAD);
 
   return download(gitRepoUrl, path, err => {
     if(err){
-      processLoading.fail(INIT.ERROR_FAIL_DOWNLOAD_FORM_REMOTE);
+      processLoading.fail(CREATE.ERROR_FAIL_DOWNLOAD_FORM_REMOTE);
       throw err;
     }else{
-      processLoading.succeed(INIT.INFO_SUCCESS_DOWNLOAD_FORM_REMOTE);
+      processLoading.succeed(CREATE.INFO_SUCCESS_DOWNLOAD_FORM_REMOTE);
     }
   });
 };
@@ -53,7 +53,7 @@ const gitDownloadAdapter = async function(gitRepoUrl, projectName, initProjectPa
       downloadRemoteGitRepo(gitRepoUrl, initProjectPath);
   }
 
-  return warn(INIT.WARN_INIT_ACTION_CANCEL);
+  return warn(CREATE.WARN_INIT_ACTION_CANCEL);
 };
 
 module.exports = gitDownloadAdapter;
