@@ -162,7 +162,7 @@ module.exports = function(context, args, callback) {
     module: {
       rules: [
         {
-          test: /\.(js|jsx)$/,
+          test: /\.(ts|tsx|js|jsx)$/,
           exclude: /node_modules/,
           use: [
             {
@@ -320,13 +320,6 @@ module.exports = function(context, args, callback) {
                 config: {
                   path: path.join(__dirname, "/")
                 }
-              }
-            },
-            {
-              loader: require.resolve("css-loader"),
-              options: {
-                sourceMap: false,
-                importLoaders: 1
               }
             },
             {
