@@ -10,6 +10,7 @@ const { debug, error } = require('../../utils/std');
 const ERRORS = require('../../../dict/std/ERRORS');
 
 const mockServer = path.resolve(paths.currentPath, 'mock');
+const existMockServer = fs.existsSync(path.resolve(mockServer,'index.js'));
 const _keys = struct.keys();
 const _each = struct.each("array");
 const _trim = struct.string("trim");
@@ -94,6 +95,9 @@ function generateMapTree(routes = {}, config){
 
 // 返回中间件
 module.exports = function() {
+  // 如果不存在mockServer则直接返回中间件
+  if(!existMockServer) return function(req, res, next){ return next(); };
+
   const config = _merge({
     debug: false,
   }, prefixAbcJSON.mockServer);

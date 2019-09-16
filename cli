@@ -2,8 +2,8 @@
 
 // XCLI
 
-const cli = require('commander');
 const colors = require('colors');
+const cli = require('commander');
 const packageJSON = require('./package.json');
 const DESCRIPTION = require('./dict/commandos/DESCRIPTION');
 const commands = [
