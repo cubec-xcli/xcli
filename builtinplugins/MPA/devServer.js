@@ -146,6 +146,25 @@ module.exports = function(context, args) {
 
     stats: "minimal",
 
+    optimization: {
+      removeAvailableModules: false,
+      removeEmptyChunks: true,
+      splitChunks: {
+        cacheGroups: {
+          // In dev mode, we want all vendor (node_modules) to go into a chunk,
+          // so building main.js is faster.
+          vendors: {
+            chunks: "all",
+            test: /[\\/]node_modules[\\/].*\.js/,
+            name: "vendors",
+            reuseExistingChunk: true,
+            priority: 10,
+            enforce: true
+          }
+        }
+      }
+    },
+
     module: {
       rules: [
         {
@@ -516,7 +535,7 @@ module.exports = function(context, args) {
             filename: `${page}/index.html`,
             template: `${currentPath}/src/${page}/index.pug`,
             templateParameters: abcJSON.define.dev || {},
-            chunks: [page]
+            chunks: ["vendors", page]
           })
         );
       });

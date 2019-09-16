@@ -1,6 +1,6 @@
 const { prompt } = require('enquirer');
 const struct = require('ax-struct-js');
-	const PLUGIN = require('../../dict/commandos/PLUGIN');
+const PLUGIN = require('../../dict/commandos/PLUGIN');
 
 const useInstall = require('./install');
 const useUninstall = require('./uninstall');
