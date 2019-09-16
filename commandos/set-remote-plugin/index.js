@@ -34,7 +34,7 @@ const setRemotePluginCommand = async function(configFile){
       }
 
       const fswriteFile = util.promisify(fs.writeFile);
-      const configFilePath = path.resolve(paths.cliRootPath, "config/.pluginSourceRepository.js");
+      const configFilePath = path.resolve(paths.cliRootPath, ".pluginsource.js");
 
       await fswriteFile(configFilePath, `module.exports=${JSON.stringify(newConfig||defaultConfig)}`,);
 

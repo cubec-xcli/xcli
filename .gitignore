@@ -19,6 +19,8 @@ package-lock.json*
 yarn.lock
 
 # ignore config and static
+.pluginsource.js
+.pluginsource.*
 ./config/.pluginSourceRepository.js
 config/.pluginSourceRepository.js
 

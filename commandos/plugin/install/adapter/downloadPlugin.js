@@ -1,11 +1,12 @@
 const download = require('download-git-repo');
+const getAotPluginSource = require('../../../../core/common/pre/getAotPluginSource');
 const {
   pluginSourceGit,
   pluginSourceGroup,
   pluginSourceGitPath
-} = require('../../../../config/.pluginSourceRepository.js');
+} = getAotPluginSource();
 
-const { info, warn, error } = require('../../../../core/utils/std');
+const { warn, error } = require('../../../../core/utils/std');
 
 const parsePluginDownloadUrl = function(pluginName){
   if(pluginSourceGit === "github"){

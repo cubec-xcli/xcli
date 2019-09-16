@@ -8,9 +8,10 @@ const { prompt } = require('enquirer');
 const paths = require('../../../core/utils/paths');
 const cache = require('../../../core/utils/cache');
 const { warn, loading, error } = require('../../../core/utils/std');
-const { pluginSourceGit, pluginSourceGitPath, pluginSourceGroup } = require('../../../config/.pluginSourceRepository.js');
 const checkPluginAbcxJSONFormat = require('../../../core/common/pre/checkPluginAbcxJSONFormat');
 const downloadPlugin = require('./adapter/downloadPlugin');
+const getAotPluginSource = require('../../../core/common/pre/getAotPluginSource');
+const { pluginSourceGit, pluginSourceGitPath, pluginSourceGroup } = getAotPluginSource();
 
 const COMMON = require('../../../dict/commandos/COMMON');
 const PLUGIN = require('../../../dict/commandos/PLUGIN');

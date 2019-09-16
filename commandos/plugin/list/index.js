@@ -4,12 +4,13 @@ const util = require('util');
 const { prompt } = require('enquirer');
 const struct = require('ax-struct-js');
 const compareVersion = require('./compare');
-const { pluginSourceGit, pluginSourceGroup, pluginSourceGitPath } = require('../../../config/.pluginSourceRepository.js');
 const { warn } = require('../../../core/utils/std');
 const paths = require('../../../core/utils/paths');
 const cache = require('../../../core/utils/cache');
 const COMMON = require('../../../dict/commandos/COMMON');
 const PLUGIN = require('../../../dict/commandos/PLUGIN');
+const getAotPluginSource = require('../../../core/common/pre/getAotPluginSource');
+const { pluginSourceGit, pluginSourceGroup, pluginSourceGitPath } = getAotPluginSource();
 
 const cool = struct.cool();
 const each = struct.each();

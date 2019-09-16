@@ -1,12 +1,9 @@
 const axios = require('axios');
 const struct = require('ax-struct-js');
 const compareVersions = require('compare-versions');
-const {
-  pluginSourceGit,
-  pluginSourceGitPath,
-  pluginSourceGroup,
-} = require('../../../config/.pluginSourceRepository.js');
 const cache = require('../../../core/utils/cache');
+const getAotPluginSource = require('../../../core/common/pre/getAotPluginSource');
+const { pluginSourceGit, pluginSourceGitPath, pluginSourceGroup } = getAotPluginSource();
 
 const one = struct.index('one');
 
