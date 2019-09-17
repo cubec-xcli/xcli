@@ -196,13 +196,14 @@ module.exports = function(context, args, callback) {
                       debug: false
                     }
                   ],
+                  require.resolve("@babel/preset-react"),
                   existTypeScript ? require.resolve("@babel/preset-typescript") : false,
-                  require.resolve("@babel/preset-react")
                 ].filter(_cool),
                 plugins: [
+                  [require.resolve("@babel/plugin-transform-runtime"), { helpers: false, regenerator: true }],
                   require.resolve("@babel/plugin-syntax-dynamic-import"),
-                  [require.resolve("@babel/plugin-proposal-object-rest-spread"),{ loose: true }],
-                  require.resolve("@babel/plugin-proposal-class-properties"),
+                  [require.resolve("@babel/plugin-proposal-object-rest-spread"), { loose: true }],
+                  [require.resolve("@babel/plugin-proposal-class-properties"), { loose: true }],
                   require.resolve("@babel/plugin-proposal-function-bind"),
                   existReactHotLoader ? "react-hot-loader/babel" : false,
                 ].filter(_cool),
@@ -390,7 +391,7 @@ module.exports = function(context, args, callback) {
       //new PrepackWebpackPlugin(),
 
       new UglifyJSPlugin({
-        test: /.(js|jsx)$/,
+        test: /\.(ts|js)x?$/,
         exclude: /node_modules/,
         cache: true,
         parallel: true,

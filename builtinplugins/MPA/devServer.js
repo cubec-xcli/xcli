@@ -168,7 +168,7 @@ module.exports = function(context, args) {
     module: {
       rules: [
         {
-          test: /\.(ts|tsx|js|jsx)$/,
+          test: /\.(ts|js)x?$/,
           exclude: /node_modules/,
           use: [
             {
@@ -187,14 +187,14 @@ module.exports = function(context, args) {
                 babelrc: false,
                 sourceMap: true,
                 presets: [
-                  require.resolve("@babel/preset-env"),
+                  // require.resolve("@babel/preset-env"),
+                  require.resolve("@babel/preset-react"),
                   existTypeScript ? require.resolve("@babel/preset-typescript") : false,
-                  require.resolve("@babel/preset-react")
                 ].filter(_cool),
                 plugins: [
                   require.resolve("@babel/plugin-syntax-dynamic-import"),
-                  [require.resolve("@babel/plugin-proposal-object-rest-spread"),{ loose: true }],
-                  require.resolve("@babel/plugin-proposal-class-properties"),
+                  // require.resolve("@babel/plugin-proposal-object-rest-spread"),
+                  [require.resolve("@babel/plugin-proposal-class-properties"), { loose: true }],
                   require.resolve("@babel/plugin-proposal-function-bind"),
                   existReactHotLoader ? "react-hot-loader/babel" : false
                 ].filter(_cool),
@@ -513,7 +513,7 @@ module.exports = function(context, args) {
     // devtool: 'cheap-module-eval-source-map',
     // devtool: 'inline-cheap-module-source-map',
     // devtool: 'cheap-module-eval-source-map',
-    devtool: "cheap-module-eval-source-map"
+    devtool: "eval-source-map"
   };
 
   // 执行devServer

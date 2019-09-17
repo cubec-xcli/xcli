@@ -6,6 +6,10 @@
   "scripts": {},
   "author": "YiJun",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cubec-xcli/xcli.git"
+  },
   "dependencies": {
     "@babel/core": "^7.6.0",
     "@babel/plugin-proposal-class-properties": "^7.5.5",
