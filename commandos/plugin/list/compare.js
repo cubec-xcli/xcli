@@ -60,7 +60,13 @@ module.exports = async function(currentVersion, pluginName, isLinked=false, isDi
       const projectId = list ? list.id : null;
 
       if(projectId == null){
-        return `[Plugin] ${pluginName}`;
+        return {
+          plugin: pluginName,
+          isLinked,
+          text: `[Plugin]`.bold+` ${pluginName}`.bold.red,
+          newVersion: currentVersion,
+          needUpdate: false
+        };
       }
 
       abcxJSONSource = `${domain}/api/v4/projects/${projectId}/repository/files/abcx%2Ejson/raw`;
