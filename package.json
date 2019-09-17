@@ -2,11 +2,11 @@
   "name": "xcli",
   "version": "0.0.1",
   "description": "XCli [ X Command Line Interface ] \nFront-end automation build tool integration",
-  "main": "cli",
+  "main": "cli.js",
   "author": "YiJun",
   "license": "MIT",
   "bin": {
-    "xcli": "cli"
+    "xcli": "cli.js"
   },
   "repository": {
     "type": "git",
