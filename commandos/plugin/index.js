@@ -1,5 +1,7 @@
 const { prompt } = require('enquirer');
 const struct = require('ax-struct-js');
+const fse = require('fs-extra');
+const paths = require('../../core/utils/paths');
 const PLUGIN = require('../../dict/commandos/PLUGIN');
 
 const useInstall = require('./install');
@@ -41,6 +43,7 @@ const useCommandosAlias = {
 const pluginCommand = async function(use, pluginName){
   let useCommand = use;
 
+
   if(!useCommand || !has(useCommandosList, useCommand)){
     // 没有找到对应的命令
     const { command } = await prompt({
@@ -54,6 +57,8 @@ const pluginCommand = async function(use, pluginName){
   }
 
   const getCommand = useCommandosAlias[useCommand];
+
+  await fse.ensureDir(paths.pluginsPath);
 
   const result = await getCommand(pluginName);
 
