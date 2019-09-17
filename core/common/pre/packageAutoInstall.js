@@ -9,7 +9,8 @@ const packageAutoInstall = function(options) {
 
   info(`${"[PKG]".bold} ${packageType.bold} installing...`);
 
-  execSync(`${packageType} install`, options);
+  // yarn 的模式下，包不会以production的模式安装
+  execSync(`${packageType} install${packageType === "yarn" ? " --production=false" : ""}`, options);
 
   info(`${"[PKG]".bold} ${packageType.bold} install completed!`);
 };

@@ -38,10 +38,22 @@ module.exports = function(abcJSON){
     prefixAbcJSON = merge({}, defaultJSONPath, abcJSON);
 
     // 修正 define 输出给 webpack.DefinePlugin
+    // 是否存在namespace
+    const existDefineNameSpace = (prefixAbcJSON.defineNamespace && isString(prefixAbcJSON.defineNamespace));
     prefixAbcJSON.webpackDefine = map(prefixAbcJSON.define, function(env) {
       if (isPlainObject(env)) env=deepDefineResolve(env);
-      return env;
+      return existDefineNameSpace ? { [prefixAbcJSON.defineNamespace] : env } : env;
     });
+
+    // 同时处理define
+    prefixAbcJSON.define = map(prefixAbcJSON.define, function(env){
+      let newEnv = env;
+      if(isPlainObject(env))
+        newEnv = existDefineNameSpace ? { [prefixAbcJSON.defineNamespace] : env } : env;
+      return newEnv;
+    });
+    // console.log(prefixAbcJSON.define);
+    // console.log(prefixAbcJSON.webpackDefine);
 
     // 修正alias 输出给 webpackConfig.alias
     prefixAbcJSON.webpackAlias = map(prefixAbcJSON.alias, function(aila) {
