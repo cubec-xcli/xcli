@@ -1,49 +1,50 @@
+const fs = require('fs');
+const path = require('path');
 const colors = require("colors");
 
-const createPage = function(pageType) {
-  return async function(context, args) {
-    const { projectName, createPath, utils } = context;
-    const { tools, std } = utils;
-    const { fsextra:fse } = tools.modules;
-    const { warn, info } = std;
+const createPage = async function(context, args) {
+  const { projectName, createPath, utils } = context;
+  const { tools, std, paths } = utils;
+  const { fsextra:fse } = tools.modules;
+  const { warn, info } = std;
 
-    let pageName = projectName;
-    let pageInitPath = createPath;
+  let pageName = projectName;
+  let pageInitPath = createPath;
+  const useTypeScript = fs.existSync(path.resolve(paths.currentPath, "tsconfig.json"));
 
-    if (!pageName) {
-      const { name } = await prompt({
-        type: "input",
-        name: "name",
-        message: "Input the page name"
-      });
-      pageName = name;
+  if (!pageName) {
+    const { name } = await prompt({
+      type: "input",
+      name: "name",
+      message: "Input the page name"
+    });
+    pageName = name;
+  }
+
+  pageInitPath += "/src/" + pageName;
+
+  if (tools.file.existDir(pageInitPath)) {
+    const { replace } = await prompt({
+      type: "confirm",
+      name: "replace",
+      message: `The new page name [${pageName.bold.red}] already exist，Need to perform mandatory override creation??`
+    });
+
+    if (!replace) {
+      warn("New [MPA] page creation interrupt, not completed initialization");
+      return false;
     }
 
-    pageInitPath += "/src/" + pageName;
+    fse.removeSync(pageInitPath);
+  }
 
-    if (tools.file.existDir(pageInitPath)) {
-      const { replace } = await prompt({
-        type: "confirm",
-        name: "replace",
-        message: `The new page name [${pageName.bold.red}] already exist，Need to perform mandatory override creation??`
-      });
+  await fse.ensureDir(pageInitPath);
 
-      if (!replace) {
-        warn("New [MPA] page creation interrupt, not completed initialization");
-        return false;
-      }
+  await fse.copy(`${__dirname}/initTemplates/${useTypeScript ? "tstemplate" : "jstemplate"}`, pageInitPath);
 
-      fse.removeSync(pageInitPath);
-    }
+  info("[MPA] create new page completed");
 
-    await fse.ensureDir(pageInitPath);
-
-    await fse.copy(`${__dirname}/initTemplates/${pageType}`, pageInitPath);
-
-    info("[MPA] create new page completed");
-
-    return true;
-  };
+  return true;
 };
 
 const createTemplate = async function(context, args){
@@ -84,8 +85,7 @@ const createTemplate = async function(context, args){
 
 module.exports = {
   "[MPA] Create Page": {
-    "[MPA] [New Page] Base JavaScript Template": createPage('jstemplate'),
-    "[MPA] [New Page] Base Typescript Template": createPage('tstemplate')
+    "[MPA] [New Page] Base Page Template": createPage(),
   },
   "[MPA] Create Project Application Template": createTemplate
 };

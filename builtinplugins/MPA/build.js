@@ -478,7 +478,10 @@ module.exports = function(context, args, callback) {
         fse.removeSync(entryOutputDir);
       }
 
-      webpackConfig.entry[page] = `${currentPath}/src/${page}/index.js`;
+      webpackConfig.entry[page] = [
+        existReactHotLoader ? 'react-hot-loader/patch' : false,
+        `${currentPath}/src/${page}/index.js`
+      ].filter(_cool);
 
       webpackConfig.plugins.push(
         new HtmlWebpackPlugin({

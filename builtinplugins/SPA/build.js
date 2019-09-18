@@ -103,13 +103,16 @@ module.exports = function(context, args, callback) {
   // ]);
 
   const webpackConfig = {
-    entry: `${currentPath}/src/index.js`,
+    entry: [
+      existReactHotLoader ? 'react-hot-loader/patch' : false,
+      `${currentPath}/src/index.${existTypeScript ? 'ts' : 'js'}`,
+    ].filter(_cool),
 
     output: {
       // options related to how webpack emits results
       path: path.resolve(currentPath, abcJSON.path.output),
       filename: "[name].[hash:8].js",
-      chunkFilename: `[name].[contenthash:8].bundle.js`,
+      chunkFilename: `chunks/[name].[contenthash:8].bundle.js`,
       publicPath: abcJSON.path.public || "/"
     },
 

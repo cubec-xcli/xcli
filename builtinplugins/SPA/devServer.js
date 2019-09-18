@@ -111,12 +111,13 @@ module.exports = function(context, args) {
 
   const webpackConfig = {
     entry: [
-      `${currentPath}/src/index.js`,
+      existReactHotLoader ? 'react-hot-loader/patch' : false,
+      `${currentPath}/src/index.${existTypeScript ? 'ts' : 'js'}`,
       require.resolve("webpack/hot/dev-server"),
       require.resolve("webpack-dev-server/client") +
       `?http://0.0.0.0:${port}/`
         // `?http://${ip}:${abcJSON.devServer.port}/`
-    ],
+    ].filter(_cool),
 
     output: {
       // options related to how webpack emits results

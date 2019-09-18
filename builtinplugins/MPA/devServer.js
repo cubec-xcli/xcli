@@ -523,11 +523,12 @@ module.exports = function(context, args) {
 
       _each(entry, page => {
         webpackConfig.entry[page] = [
+          existReactHotLoader ? 'react-hot-loader/patch' : false,
           `${currentPath}/src/${page}/index.js`,
           require.resolve("webpack/hot/dev-server"),
           require.resolve("webpack-dev-server/client") +
           `?http://0.0.0.0:${abcJSON.devServer.port}/`
-        ];
+        ].filter(_cool);
 
         webpackConfig.plugins.push(
           new HtmlWebpackPlugin({
