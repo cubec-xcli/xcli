@@ -4,7 +4,6 @@ const fs = require("fs");
 const path = require("path");
 const webpack = require("webpack");
 const webpackDevServer = require("webpack-dev-server");
-const struct = require("ax-struct-js");
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const SimpleProgressWebpackPlugin = require("simple-progress-webpack-plugin");
@@ -28,6 +27,7 @@ const threadLoader = require("thread-loader");
 
 module.exports = function(context, args) {
   const { prefixAbcJSON, paths, os, tools, std } = context.utils;
+  const { struct } = tools.modules;
   const { mockServer } = context.servers;
   const { log } = std;
   const abcJSON = prefixAbcJSON;

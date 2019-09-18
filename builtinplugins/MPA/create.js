@@ -1,11 +1,10 @@
 const colors = require("colors");
-const { prompt } = require("enquirer");
-const fse = require("fs-extra");
 
 const createPage = function(pageType) {
   return async function(context, args) {
     const { projectName, createPath, utils } = context;
     const { tools, std } = utils;
+    const { fsextra:fse } = tools.modules;
     const { warn, info } = std;
 
     let pageName = projectName;
@@ -50,6 +49,7 @@ const createPage = function(pageType) {
 const createTemplate = async function(context, args){
   const { createPath, projectName, utils } = context;
   const { tools, std } = utils;
+  const { fsextra:fse } = tools.modules;
   const { warn, info } = std;
 
   // 如果存在初始化名称

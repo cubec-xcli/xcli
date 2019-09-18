@@ -4,8 +4,6 @@ const fs = require("fs");
 const path = require("path");
 const webpack = require("webpack");
 const webpackDevServer = require("webpack-dev-server");
-const struct = require("ax-struct-js");
-const { MultiSelect } = require("enquirer");
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const SimpleProgressWebpackPlugin = require("simple-progress-webpack-plugin");
@@ -31,7 +29,9 @@ const threadLoader = require("thread-loader");
 // const smp = new SpeedMeasurePlugin();
 
 module.exports = function(context, args) {
-  const { paths, std, os, prefixAbcJSON, packageJSON, cache, tools } = context.utils;
+  const { paths, std, os, prefixAbcJSON, cache, tools } = context.utils;
+  const { struct, enquirer } = tools.modules;
+  const { MultiSelect } = enquirer;
   const { log, error } = std;
   const { currentPath, currentOutputPath } = paths;
   const { ip, threads } = os;

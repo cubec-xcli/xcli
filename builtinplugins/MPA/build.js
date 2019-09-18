@@ -1,10 +1,8 @@
 process.env.NODE_ENV = "production";
 
 const fs = require("fs");
-const fse = require("fs-extra");
 const path = require("path");
 const webpack = require("webpack");
-const struct = require("ax-struct-js");
 
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const SimpleProgressWebpackPlugin = require("simple-progress-webpack-plugin");
@@ -29,6 +27,7 @@ const threadLoader = require("thread-loader");
 
 module.exports = function(context, args, callback) {
   const { prefixAbcJSON, paths, std, os, tools } = context.utils;
+  const { struct, fsextra:fse } = tools.modules;
   const abcJSON = prefixAbcJSON;
   const { currentPath, currentOutputPath } = paths;
   const { log, info, error } = std;
