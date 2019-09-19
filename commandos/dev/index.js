@@ -21,6 +21,7 @@ const devCommand = function(command){
     // 是否存在对应的插件
     if(devServer){
       info(DEV.INFO_DEVSERVER_LOGXCLIVERSION);
+
       let childDevProcess = fork(devServerJS, [isDebugMode, false]);
 
       fs.watchFile(paths.currentPath+"/abc.json", function(){

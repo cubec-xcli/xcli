@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 const paths = require('../../utils/paths');
 const colors = require('colors');
-const { warn } = require('../../utils/std');
+const { loading, warn } = require('../../utils/std');
 const checkPluginAbcxJSONFormat = require('./checkPluginAbcxJSONFormat');
 
 // 获取包的入口AOP文件
@@ -20,6 +21,15 @@ const getTargetEntryJS = function(type, entryFileName, notWarn=false){
   if(existPlugin){
     const abcxJSON = checkPluginAbcxJSONFormat(pluginsPath);
     if(!abcxJSON) return target;
+
+    // 校验合法后，检测有没有安装node模块 ，如果没有则帮忙安装
+    const existNodeModules = fs.existsSync(path.resolve(pluginsPath, 'node_modules'));
+
+    if(!existNodeModules){
+      const install = loading(`${"[xcli]".green.bold} prepare plugin ${("["+type+"]").red.bold}`);
+      execSync(`${abcxJSON['plugin-package'] || "npm"} install`, { cwd: pluginsPath });
+      install.succeed();
+    }
   } else {
     // 如果没有则尝试寻找内置的包
     const builtinPath = path.resolve(paths.cliRootPath, `builtinplugins/${type}`);
@@ -31,7 +41,17 @@ const getTargetEntryJS = function(type, entryFileName, notWarn=false){
       if(!fs.existsSync(builtinPath) && !notWarn)
         warn(`can not find type mode [${type.bold}], maybe try to install "${type}" plugin`);
       filePath = false;
+    }else{
+      // 如果存在内置包，则帮忙检测有没有安装node模块
+      const existNodeModules = fs.existsSync(path.resolve(builtinPath), 'node_modules');
+
+      if(!existNodeModules){
+        const install = loading(`${"[xcli]".green.bold} prepare plugin ${("["+type+"]").red.bold}`);
+        execSync("npm install", { cwd: builtinPath });
+        install.succeed();
+      }
     }
+
   }
 
   // 获取对应的入口，执行返回

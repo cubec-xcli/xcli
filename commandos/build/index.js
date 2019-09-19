@@ -1,6 +1,5 @@
 const fs = require('fs');
 const fse = require('fs-extra');
-const util = require('util');
 const colors = require('colors');
 const { isFunction } = require('lodash');
 const paths = require('../../core/utils/paths');
@@ -16,10 +15,9 @@ const buildCommand = async function(command){
   const prefixAbcJSON = checkAbcJSONFormat();
 
   if(prefixAbcJSON){
-    const fsexists = util.promisify(fs.exists);
     const isDebugMode = command ? !!command.debug : false;
     const builder = getTargetEntryJS(prefixAbcJSON.type, "build.js");
-    const existsOutputDir = await fsexists(paths.currentOutputPath);
+    const existsOutputDir = fs.existsSync(paths.currentOutputPath);
 
     if(existsOutputDir) await fse.remove(paths.currentOutputPath);
 
