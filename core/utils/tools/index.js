@@ -7,6 +7,7 @@ const optimizeCssModulesPlugin = require('./system/optimizeCssModulesPlugin');
 const enquirer = require('./modules/enquirer');
 const fsextra = require('./modules/fsextra');
 const struct = require('./modules/struct');
+const lodash = require('./modules/lodash');
 const axios = require('./modules/axios');
 
 module.exports = {
@@ -18,6 +19,7 @@ module.exports = {
     enquirer,
     fsextra,
     struct,
+    lodash,
     axios,
   },
   system: {
