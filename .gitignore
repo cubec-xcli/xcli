@@ -14,6 +14,8 @@ pids
 .idea
 .token
 .cache
+config.json
+config.js
 package-lock.json
 package-lock.json*
 yarn.lock
