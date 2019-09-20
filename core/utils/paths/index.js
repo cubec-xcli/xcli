@@ -8,7 +8,7 @@ const currentDirName = path.basename(currentPath);
 // 资源输出目录
 const currentOutputPath = path.join(currentPath, prefixAbcJSON ? prefixAbcJSON.path.output : "");
 // 资源公共路径
-const currentPublicPath = path.resolve(currentPath, prefixAbcJSON ? prefixAbcJSON.path.public : "");
+const currentPublicPath = path.join(currentPath, prefixAbcJSON ? prefixAbcJSON.path.public : "");
 
 // XCLI 目录的位置
 const cliRootPath = path.resolve(__dirname, "../../../");

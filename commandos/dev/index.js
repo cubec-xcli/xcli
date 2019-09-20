@@ -3,7 +3,7 @@ const { fork } = require('child_process');
 const path = require('path');
 const paths = require('../../core/utils/paths');
 const { prefixAbcJSON } = require('../../core/utils/abc');
-const { log, info } = require('../../core/utils/std');
+const { debug, info } = require('../../core/utils/std');
 const DEV = require('../../dict/commandos/DEV');
 
 const packageAutoInstall = require('../../core/common/pre/packageAutoInstall');
@@ -22,12 +22,13 @@ const devCommand = function(command){
     if(devServer){
       info(DEV.INFO_DEVSERVER_LOGXCLIVERSION);
 
-      let childDevProcess = fork(devServerJS, [isDebugMode, false]);
+      // fork 子进程
+      let childDevProcess = fork(devServerJS, [isDebugMode, false], { stdio: 'inherit' });
 
       fs.watchFile(paths.currentPath+"/abc.json", function(){
-        log("detect abc.json change, restart dev server");
+        debug("detect abc.json change, restart dev server");
         childDevProcess.kill('SIGINT');
-        childDevProcess = fork(devServerJS, [isDebugMode, true]);
+        childDevProcess = fork(devServerJS, [isDebugMode, true], { stdio: 'inherit' });
       });
     }
   }

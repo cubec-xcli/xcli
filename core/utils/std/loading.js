@@ -9,16 +9,16 @@ const successLabel = c.bg.Green + c.fg.Black + " SUCCESS " + c.Reset;
 
 const loading = function(msg, type="hamburger"){
   const loadingInstance = new ora({
-    text: trim(loadLabel + " " +(msg || '')),
+    text: loadLabel + " " +trim(msg || '')+"\n",
     spinner: type
   }).start();
 
   return {
     succeed(smsg){
-      loadingInstance.succeed(successLabel+ " "+(smsg||msg||''));
+      loadingInstance.succeed(successLabel+ " "+trim(smsg||msg||''));
     },
     fail(fmsg){
-      loadingInstance.fail(failedLabel+ " "+(fmsg||msg||''));
+      loadingInstance.fail(failedLabel+ " "+trim(fmsg||msg||''));
     }
   };
 };

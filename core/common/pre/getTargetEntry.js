@@ -27,7 +27,7 @@ const getTargetEntryJS = function(type, entryFileName, notWarn=false){
 
     if(!existNodeModules){
       const install = loading(`${"[xcli]".green.bold} prepare plugin ${("["+type+"]").red.bold}`);
-      execSync(`${abcxJSON['plugin-package'] || "npm"} install`, { cwd: pluginsPath });
+      execSync(`${abcxJSON['plugin-package'] || "npm"} install`, { cwd: pluginsPath, stdio: "inherit" });
       install.succeed();
     }
   } else {
@@ -43,11 +43,11 @@ const getTargetEntryJS = function(type, entryFileName, notWarn=false){
       filePath = false;
     }else{
       // 如果存在内置包，则帮忙检测有没有安装node模块
-      const existNodeModules = fs.existsSync(path.resolve(builtinPath), 'node_modules');
+      const existNodeModules = fs.existsSync(path.resolve(builtinPath, 'node_modules'));
 
       if(!existNodeModules){
         const install = loading(`${"[xcli]".green.bold} prepare plugin ${("["+type+"]").red.bold}`);
-        execSync("npm install", { cwd: builtinPath });
+        execSync("npm install", { cwd: builtinPath, stdio: "inherit" });
         install.succeed();
       }
     }

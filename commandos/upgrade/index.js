@@ -32,7 +32,7 @@ const upgradeCommand = function(version){
         // 有更新 xcli 的 package.json
         if(has(upgrade.files, "package.json")){
           const package_loading = loading(UPGRADE.UPGRADE_PROCESS_CORE_PACKAGE);
-          await cexec(`npm install`, { cwd: paths.cliRootPath });
+          await cexec(`npm install`, { cwd: paths.cliRootPath, stdio: 'inherit' });
           package_loading.succeed(UPGRADE.UPGRADE_PROCESS_CORE_PACKAGE+" completed");
         }
 
@@ -44,7 +44,7 @@ const upgradeCommand = function(version){
 
           await Promise.all(builtinPluginsPaths.map(function(btPlugin){
             const btPluginPath = path.resolve(paths.pluginsBuiltinPath, btPlugin);
-            return cexec(`npm install`, { cwd: btPluginPath });
+            return cexec(`npm install`, { cwd: btPluginPath, stdio: 'inherit' });
           }));
 
           builtinplugins_loading.succeed(UPGRADE.UPGRADE_PROCESS_BUILTIN_PACKAGE+" completed");
