@@ -100,7 +100,7 @@ module.exports = async function(pluginName, forceReinstall=false){
       const packageType = abcxJSON["plugin-package"] || "npm";
       const loading_plugininit = loading(`plugin init process install ${packageType.bold.red} packages`);
 
-      execSync(`${packageType} install`, { cwd:createTempDir });
+      execSync(`${packageType} install`, { cwd:createTempDir, stdio: 'inherit' });
 
       // 重写abcx.json
       await fswriteFile(path.resolve(createTempDir,'abcx.json'), JSON.stringify(abcxJSON, null, 2));
