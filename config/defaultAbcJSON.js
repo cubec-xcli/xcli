@@ -8,10 +8,7 @@ module.exports = {
   alias: {},
   define: {},
   provide: {},
-  css: {
-    module: true,
-    embed: false
-  },
+  plugin: {},
   devServer: {
     port: 9001,
     https: false,

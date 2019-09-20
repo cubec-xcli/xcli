@@ -32,7 +32,7 @@ module.exports = function(context, args, callback) {
 
   const existTypeScript = fs.existsSync(path.resolve(currentPath, "tsconfig.json"));
   const existReactHotLoader = fs.existsSync(path.resolve(currentPath + "node_modules/react-hot-loader"));
-  const cssModuleOptions = abcJSON.css ? ( abcJSON.css.module ? {
+  const cssModuleOptions = abcJSON.plugin.css ? ( abcJSON.plugin.css.module ? {
     mode: 'local',
     // localIdentName: '[name]__[local]',
     getLocalIdent: tools.system.optimizeCssModulesPlugin()
@@ -449,7 +449,7 @@ module.exports = function(context, args, callback) {
         chunkFilename: "[name].[contenthash:8].css"
       }),
 
-      abcJSON.css.embed ? new HtmlWebpackInlineSourcePlugin() : false,
+      (abcJSON.plugin.css && abcJSON.plugin.css.embed) ? new HtmlWebpackInlineSourcePlugin() : false,
 
       //new PurifyCSSPlugin(purifycssConfig),
       new WebpackBuildNotifierPlugin({

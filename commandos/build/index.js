@@ -2,8 +2,9 @@ const fs = require('fs');
 const fse = require('fs-extra');
 const colors = require('colors');
 const { isFunction } = require('lodash');
+const { packageJSON } = require('../../core/utils/abc');
 const paths = require('../../core/utils/paths');
-const { error } = require('../../core/utils/std');
+const { error, info } = require('../../core/utils/std');
 const COMMON = require('../../dict/commandos/COMMON');
 
 const packageAutoInstall = require('../../core/common/pre/packageAutoInstall');
@@ -23,8 +24,11 @@ const buildCommand = async function(command){
 
     if(builder && !isDebugMode) packageAutoInstall();
 
-    if(isFunction(builder))
+    if(isFunction(builder)){
+      const presetMsg = `${'[xcli]'.bold} ${('['+prefixAbcJSON.type+']').red.bold} ${('['+packageJSON.name+']').green.bold} `;
+      info(`${presetMsg}${"prepare building".green}`);
       return builder(createContext(), [isDebugMode]);
+    }
 
     return error(COMMON.ERROR_CANNOT_FIND_AOPSCRIPT_IMPLEMENT+` ${"build".bold}`);
   }

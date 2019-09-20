@@ -35,7 +35,7 @@ module.exports = function(context, args, callback) {
   const regex = new RegExp(`${currentPath}`);
   const existTypeScript = fs.existsSync(path.resolve(currentPath, "tsconfig.json"));
   const existReactHotLoader = fs.existsSync(path.resolve(currentPath + "node_modules/react-hot-loader"));
-  const cssModuleOptions = abcJSON.css ? ( abcJSON.css.module ? {
+  const cssModuleOptions = abcJSON.plugin.css ? ( abcJSON.plugin.css.module ? {
     // mode: 'global',
     mode: 'local',
     // localIdentName: '[name]__[local]',
@@ -513,7 +513,7 @@ module.exports = function(context, args, callback) {
 
     webpackConfig.plugins = webpackConfig.plugins.concat([
       new webpack.DefinePlugin(abcJSON.webpackDefine[context.publishEntry] || abcJSON.webpackDefine.build || {}),
-      abcJSON.css.embed ? new HtmlWebpackInlineSourcePlugin() : false,
+      (abcJSON.plugin.css && abcJSON.plugin.css.embed) ? new HtmlWebpackInlineSourcePlugin() : false,
       //new PurifyCSSPlugin(purifycssConfig),
       new WebpackBuildNotifierPlugin({
         title: `xcli Building [${abcJSON.name}]`,

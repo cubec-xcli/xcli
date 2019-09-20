@@ -6,14 +6,14 @@ module.exports = {
   alias: {},
   define: {},
   provide: {},
-  css: {},
+  plugin: {},
   devServer: {
     port: 9001,
     https: false,
     proxy: {}
   },
   mockServer: {
-    debug: true,
+    debug: false
   },
   publish: {}
 };

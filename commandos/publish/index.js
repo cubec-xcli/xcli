@@ -1,6 +1,7 @@
 const { prompt } = require('enquirer');
 const { isFunction, keys } = require('lodash');
-const { error } = require('../../core/utils/std');
+const { info, error } = require('../../core/utils/std');
+const { packageJSON } = require('../../core/utils/abc');
 const COMMON = require('../../dict/commandos/COMMON');
 const PUBLISH = require('../../dict/commandos/PUBLISH');
 
@@ -30,6 +31,8 @@ const publishCommand = async function(command){
           choices
         });
 
+        const presetMsg = `${'[xcli]'.bold} ${('['+prefixAbcJSON.type+']').red.bold} ${('['+packageJSON.name+']').green.bold} `;
+        info(`${presetMsg}${"prepare publish".green}`);
         return publish(createContext({ publishOptions: publishOptions[entry], publishEntry: entry }), [isDebugMode]);
       }
 

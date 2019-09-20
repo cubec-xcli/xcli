@@ -15,10 +15,10 @@ const loading = function(msg, type="hamburger"){
 
   return {
     succeed(smsg){
-      loadingInstance.succeed(successLabel+ " "+trim(smsg||msg||''));
+      loadingInstance.succeed(successLabel+ " "+trim(smsg||msg||'').green);
     },
     fail(fmsg){
-      loadingInstance.fail(failedLabel+ " "+trim(fmsg||msg||''));
+      loadingInstance.fail(failedLabel+ " "+trim(fmsg||msg||'').red);
     }
   };
 };

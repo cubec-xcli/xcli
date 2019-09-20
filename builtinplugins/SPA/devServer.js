@@ -43,7 +43,7 @@ module.exports = function(context, args) {
   const existTypeScript = fs.existsSync(path.resolve(currentPath, "tsconfig.json"));
   const existReactHotLoader = fs.existsSync(path.resolve(currentPath + "node_modules/react-hot-loader"));
   const existReactHotDom = fs.existsSync(path.resolve(currentPath, "node_modules/@hot-loader/react-dom"));
-  const cssModuleOptions = abcJSON.css ? ( abcJSON.css.module ? {
+  const cssModuleOptions = abcJSON.plugin.css ? ( abcJSON.plugin.css.module ? {
     mode: 'local',
     localIdentName: '[name]__[local]',
     // getLocalIdent: tools.system.optimizeCssModulesPlugin()
@@ -400,12 +400,18 @@ module.exports = function(context, args) {
 
       existTypeScript ? new ForkTsCheckerWebpackPlugin({
         // tsconfig: path.join(__dirname, "/tsconfig.json")
-        silent: false,
-        async: true
+        silent: true,
+        async: true,
+        useTypescriptIncrementalApi: false,
+        memoryLimit: 4096,
+        colors: false,
+        workers: Math.ceil(threads/2)
       }) : false,
 
       existTypeScript ? new ForkTsCheckerNotifierWebpackPlugin({
-        excludeWarnings: true
+        excludeWarnings: true,
+        skipSuccessful: true,
+        skipFirstNotification: true
       }) : false,
 
       new HtmlWebpackPlugin({
