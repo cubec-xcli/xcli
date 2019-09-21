@@ -6,6 +6,9 @@ const { isString } = require('lodash');
 module.exports = function(pluginType, findBuiltIn=false){
   if(!pluginType || !isString(pluginType)) return false;
 
-  return fs.existsSync(path.resolve(paths.pluginsPath, pluginType)) || (findBuiltIn ?
-         fs.existsSync(path.resolve(paths.pluginsBuiltinPath, pluginType)) : false);
+  const pluginsPath = fs.existsSync(path.resolve(paths.pluginsPath, pluginType));
+  const localPluginsPath = fs.existsSync(path.resolve(paths.currentPath, `node_modules/${pluginType}`));
+  const builtinPluginsPath = fs.existsSync(path.resolve(paths.pluginsBuiltinPath, pluginType));
+
+  return pluginsPath || localPluginsPath || builtinPluginsPath;
 };
