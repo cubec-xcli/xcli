@@ -23,7 +23,10 @@ const getTargetEntryJS = function(type, entryFileName, notWarn=false){
     if(!abcxJSON) return target;
 
     // 校验合法后，检测有没有安装node模块 ，如果没有则帮忙安装
-    const existNodeModules = fs.existsSync(path.resolve(pluginsPath, 'node_modules'));
+    const existNodeModules =
+      fs.existsSync(path.resolve(pluginsPath, 'node_modules')) ||
+      fs.existsSync(path.resolve(pluginsPath, 'package-lock.json')) ||
+      fs.existsSync(path.resolve(pluginsPath, 'yarn.lock'));
 
     if(!existNodeModules){
       const install = loading(`${"[xcli]".green.bold} prepare plugin ${("["+type+"]").red.bold}`);
