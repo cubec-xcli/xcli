@@ -41,7 +41,7 @@ module.exports = function(context, args) {
   const _extend = struct.extend();
 
   const existTypeScript = fs.existsSync(path.resolve(currentPath, "tsconfig.json"));
-  const existReactHotLoader = fs.existsSync(path.resolve(currentPath + "node_modules/react-hot-loader"));
+  const existReactHotLoader = fs.existsSync(path.resolve(currentPath, "node_modules/react-hot-loader"));
   const existReactHotDom = fs.existsSync(path.resolve(currentPath, "node_modules/@hot-loader/react-dom"));
   const cssModuleOptions = abcJSON.plugin.css ? ( abcJSON.plugin.css.module ? {
     mode: 'local',
