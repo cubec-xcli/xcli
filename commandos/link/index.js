@@ -27,7 +27,7 @@ const linkCommand = async function(){
       else await fse.remove(linkToPath);
     }
 
-    return fs.symlink(targetFolder, linkToPath, function(err){
+    return fs.symlink(targetFolder, linkToPath, 'junction', function(err){
       if(err) return error(`faild to link plugin ${abcxJSON['plugin-name']}`);
 
       info(`${("["+abcxJSON['plugin-name']+"]").bold} linked completed`);
