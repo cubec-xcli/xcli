@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const { error } = require('../../utils/std');
 const ERRORS = require('../../../dict/std/ERRORS');
-const onlyCheckAbcxJSON = require('../tools/onlyCheckAbcxJSONFormat');
+const onlyCheckAbcxJSON = require('../tools/onlycheckAbcxJSONFormat');
 
 const checkPluginAbcxJSONFormat = function(relativePath){
   let abcxJSON = {};

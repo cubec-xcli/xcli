@@ -80,7 +80,8 @@ cli.
 
 cli.
   command('build').
-  option('-s, --simple', `${'test'.bold} with [simple] mode`).
+  option('-s, --simple', `${'build'.bold} with [simple] mode`).
+  option('-d, --debug', `${'build'.bold} with [debug] mode`).
   description(DESCRIPTION.build).
   action(build);
 
