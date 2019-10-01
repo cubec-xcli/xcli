@@ -152,6 +152,7 @@ module.exports = function() {
       if(_isFn(tapcache.find.action)){
         return (asyncHandler(tapcache.find.action))(req, res, tapcache.param, _paramParse(url), next);
       }else if(tapcache.find.action && _isObj(tapcache.find.action)){
+        res.type('application/json');
         res.writeHead(200, {"Content-Type": "application/json"});
         res.end(JSON.stringify(tapcache.find.action));
         // res.json();
@@ -216,6 +217,7 @@ module.exports = function() {
         if(_isFn(find.action)){
           return (asyncHandler(find.action))(req, res, _combined(find.param, paramValue), _paramParse(url), next);
         }else if(find.action && _isObj(find.action)){
+          res.type('application/json');
           res.writeHead(200, {"Content-Type": "application/json"});
           res.end(JSON.stringify(find.action));
         }else{
