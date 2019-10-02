@@ -49,7 +49,7 @@
     "eslint-formatter-pretty": "^2.1.1",
     "eslint-loader": "^3.0.2",
     "eslint-plugin-prefer-object-spread": "^1.2.1",
-    "eslint-plugin-react": "^7.15.0",
+    "eslint-plugin-react": "^7.15.1",
     "fibers": "^4.0.1",
     "file-loader": "^4.2.0",
     "fork-ts-checker-notifier-webpack-plugin": "^1.0.2",
@@ -75,7 +75,7 @@
     "pug-loader": "^2.4.0",
     "react-dev-utils": "^9.0.4",
     "resolve-url-loader": "^3.1.0",
-    "sass": "^1.23.0-module.beta.1",
+    "sass": "^1.23.0",
     "sass-loader": "^8.0.0",
     "script-ext-html-webpack-plugin": "^2.1.4",
     "simple-progress-webpack-plugin": "^1.1.2",
@@ -91,9 +91,9 @@
     "webpack-bundle-analyzer": "^3.5.2",
     "webpack-cli": "^3.3.9",
     "webpack-dev-middleware": "^3.7.2",
-    "webpack-dev-server": "^3.8.1",
+    "webpack-dev-server": "^3.8.2",
     "webpack-hot-middleware": "^2.25.0",
-    "webpack-manifest-plugin": "^2.1.2",
+    "webpack-manifest-plugin": "^2.2.0",
     "webpack-messages": "^2.0.4"
   }
 }
