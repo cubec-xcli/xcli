@@ -1,8 +1,7 @@
 const { prompt } = require('enquirer');
 const struct = require('ax-struct-js');
 const { isFunction, keys } = require('lodash');
-const { info, error } = require('../../core/utils/std');
-const { packageJSON } = require('../../core/utils/abc');
+const { error } = require('../../core/utils/std');
 const COMMON = require('../../dict/commandos/COMMON');
 const PUBLISH = require('../../dict/commandos/PUBLISH');
 
@@ -35,7 +34,7 @@ const publishOptionsRecursive = async function(publishOptions, recursiveNum=1, p
   return [options, parentPath];
 };
 
-const publishCommand = async function(command){
+const publishCommand = async function(mode, command){
   const prefixAbcJSON = checkAbcJSONFormat();
 
   if(prefixAbcJSON){
@@ -46,25 +45,18 @@ const publishCommand = async function(command){
 
     if(isFunction(publish)){
       const publishOptions = prefixAbcJSON.publish;
-      const [options, entryPath] = await publishOptionsRecursive(publishOptions, prefixAbcJSON.publishRecursive, []);
+      let options;
+      let entryPath;
+
+      if(mode && _get(publishOptions, mode) && mode.split(".").length === prefixAbcJSON.publishRecursive){
+        options = _get(publishOptions, mode);
+        entryPath = mode.split(".");
+      }else{
+        [options, entryPath] = await publishOptionsRecursive(publishOptions, prefixAbcJSON.publishRecursive, []);
+      }
 
       if(options && entryPath)
         return publish(createContext({ publishOptions: options, publishEntry: entryPath.join(".") }), [isDebugMode]);
-
-      // const choices = keys(publishOptions);
-
-      // if(choices.length){
-      //   const { entry } = await prompt({
-      //     type: "select",
-      //     name: "entry",
-      //     message: PUBLISH.CHOICE_PUBLISH_ENTRY_MESSAGE,
-      //     choices
-      //   });
-
-      //   const presetMsg = `${'[xcli]'.bold} ${('['+prefixAbcJSON.type+']').red.bold} ${('['+packageJSON.name+']').green.bold} `;
-      //   info(`${presetMsg}${"prepare publish".green}`);
-      //   return publish(createContext({ publishOptions: publishOptions[entry], publishEntry: entry }), [isDebugMode]);
-      // }
 
       return error(PUBLISH.PUBLISH_OPTIONS_REQUIRED);
     }

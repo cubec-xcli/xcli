@@ -79,14 +79,14 @@ cli.
   action(test);
 
 cli.
-  command('build').
+  command('build [mode]').
   option('-s, --simple', `${'build'.bold} with [simple] mode`).
   option('-d, --debug', `${'build'.bold} with [debug] mode`).
   description(DESCRIPTION.build).
   action(build);
 
 cli.
-  command('publish').
+  command('publish [mode]').
   option('-d, --debug', `${'publish'.bold} with [debug] mode`).
   description(DESCRIPTION.publish).
   action(publish);

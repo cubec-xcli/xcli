@@ -7,6 +7,7 @@ const isObj = struct.type('object');
 const isArray = struct.type('array');
 const keys = struct.keys();
 const unique = struct.unique("fast");
+const clone = struct.clone();
 
 const currentPath = process.cwd();
 const defaultJSONPath = require("../../../config/defaultAbcJSON");
@@ -39,8 +40,8 @@ module.exports = function(abcJSON){
 
     // 修正 define 输出给 webpack.DefinePlugin
     // 是否存在namespace
-    const existDefineNameSpace = (prefixAbcJSON.defineNamespace && isString(prefixAbcJSON.defineNamespace));
-    prefixAbcJSON.webpackDefine = map(prefixAbcJSON.define, function(env) {
+    const existDefineNameSpace = prefixAbcJSON.defineNamespace && isString(prefixAbcJSON.defineNamespace);
+    prefixAbcJSON.webpackDefine = map(clone(prefixAbcJSON.define), function(env) {
       if (isPlainObject(env)) env=deepDefineResolve(env);
       return existDefineNameSpace ? { [prefixAbcJSON.defineNamespace] : env } : env;
     });
@@ -52,9 +53,9 @@ module.exports = function(abcJSON){
         newEnv = existDefineNameSpace ? { [prefixAbcJSON.defineNamespace] : env } : env;
       return newEnv;
     });
+
     // console.log(prefixAbcJSON.define);
     // console.log(prefixAbcJSON.webpackDefine);
-
     // 修正alias 输出给 webpackConfig.alias
     prefixAbcJSON.webpackAlias = map(prefixAbcJSON.alias, function(aila) {
       return path.resolve(currentPath, aila);
