@@ -6,6 +6,7 @@ module.exports = {
     public: "/"
   },
   alias: {},
+  defineNamespace: void 0,
   define: {},
   provide: {},
   plugin: {},
@@ -27,5 +28,6 @@ module.exports = {
   mockServer: {
     debug: false
   },
+  publishRecursive: 1,
   publish: {}
 };
