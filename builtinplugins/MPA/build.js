@@ -488,7 +488,8 @@ module.exports = function(context, args, callback) {
           inject: true,
           filename: `${page}/index.html`,
           template: `${currentPath}/src/${page}/index.pug`,
-          templateParameters: abcJSON.define[context.publishEntry] || abcJSON.define.build || {},
+          // templateParameters: abcJSON.define[context.publishEntry] || abcJSON.define[context.buildEntry] || {},
+          templateParameters: abcJSON.define[context.buildEntry] || {},
           publicPath: abcJSON.path.public || "/",
           chunks: ["vendors", "commons", page],
           inlineSource: ".css$",
@@ -512,7 +513,7 @@ module.exports = function(context, args, callback) {
     });
 
     webpackConfig.plugins = webpackConfig.plugins.concat([
-      new webpack.DefinePlugin(abcJSON.webpackDefine[context.publishEntry] || abcJSON.webpackDefine.build || {}),
+      new webpack.DefinePlugin(abcJSON.webpackDefine[context.publishEntry] || abcJSON.webpackDefine[context.buildEntry] || {}),
       (abcJSON.plugin.css && abcJSON.plugin.css.embed) ? new HtmlWebpackInlineSourcePlugin() : false,
       //new PurifyCSSPlugin(purifycssConfig),
       new WebpackBuildNotifierPlugin({

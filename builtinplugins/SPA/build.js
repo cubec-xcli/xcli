@@ -347,7 +347,7 @@ module.exports = function(context, args, callback) {
       new webpack.NamedModulesPlugin(),
       new CaseSensitivePathsPlugin(),
       new webpack.ProvidePlugin(abcJSON.provide),
-      new webpack.DefinePlugin(abcJSON.webpackDefine.build || {}),
+      new webpack.DefinePlugin(abcJSON.webpackDefine[context.buildEntry] || {}),
 
       new webpack.LoaderOptionsPlugin({
         minimize: true,
@@ -418,7 +418,8 @@ module.exports = function(context, args, callback) {
       new HtmlWebpackPlugin({
         filename: "index.html",
         template: `${currentPath}/src/index.pug`,
-        templateParameters: abcJSON.define[context.publishEntry] || abcJSON.define.build || {},
+        // templateParameters: abcJSON.define[context.publishEntry] || abcJSON.define[context.buildEntry] || {},
+        templateParameters: abcJSON.define[context.buildEntry] || {},
         publicPath: abcJSON.path.public || "/",
         inlineSource: ".css$",
         chunksSortMode: "dependency",
