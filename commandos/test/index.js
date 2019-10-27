@@ -4,6 +4,7 @@ const bs = require('browser-sync');
 const proxy = require('http-proxy-middleware');
 const { isFunction } = require('lodash');
 // const { ip } = require('../../core/utils/os');
+const { prompt } = require('enquirer');
 const paths = require('../../core/utils/paths');
 const { error } = require('../../core/utils/std');
 const { mockServer } = require('../../core/servers');
@@ -17,17 +18,27 @@ const checkAbcJSONFormat = require('../../core/common/pre/checkAbcJSONFormat');
 const getTargetEntryJS = require('../../core/common/pre/getTargetEntry');
 const createContext = require('../../core/common/aop/createContext');
 
-const testCommand = function(command){
+const testCommand = async function(command){
   const prefixAbcJSON = checkAbcJSONFormat();
 
   if(prefixAbcJSON){
     const isUnitMode = command ? !!command.unit : false;
     const builder = getTargetEntryJS(prefixAbcJSON.type, "build.js");
+    const buildOptions = keys(prefixAbcJSON.define);
+    let buildEntry = "";
 
-    if(builder && !isUnitMode) packageAutoInstall();
+    // if(builder && !isUnitMode) packageAutoInstall();
+
+    const { entry } = await prompt({
+      type: "select",
+      name: "entry",
+      message: "Choice build environment",
+      choices: buildOptions
+    });
+    buildEntry = entry;
 
     if(isFunction(builder))
-      return builder(createContext(), [], function(){
+      return builder(createContext({ buildEntry }), [], function(){
         const previewBS = bs.create();
         const proxyConfig = prefixAbcJSON.devServer.proxy;
         const proxyMiddlewares = keys(proxyConfig).map(uri=>proxy(uri, proxyConfig[uri]));
