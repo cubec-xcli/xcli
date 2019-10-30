@@ -27,12 +27,12 @@ const testCommand = async function(command){
     const buildOptions = keys(prefixAbcJSON.define);
     let buildEntry = "";
 
-    // if(builder && !isUnitMode) packageAutoInstall();
+    if(builder && !isUnitMode) packageAutoInstall();
 
     const { entry } = await prompt({
       type: "select",
       name: "entry",
-      message: "Choice build environment",
+      message: "Choice resource build environment",
       choices: buildOptions
     });
     buildEntry = entry;

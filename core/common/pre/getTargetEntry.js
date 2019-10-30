@@ -58,6 +58,9 @@ const getTargetEntryJS = function(type, entryFileName, notWarn=false){
   let filePath;
   let target = null;
 
+  // 没有插件类型
+  if(!type) return target;
+
   const pluginsPath = path.resolve(paths.pluginsPath, `${type}`);
   const existPlugin = fs.existsSync(pluginsPath);
 
