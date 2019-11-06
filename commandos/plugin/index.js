@@ -11,7 +11,6 @@ const useUpdate = require('./update');
 const { prefixAbcJSON } = require('../../core/utils/abc');
 const getTargetEntryJS = require('../../core/common/pre/getTargetEntry');
 const createContext = require('../../core/common/aop/createContext');
-const createArgs = require('../../core/common/aop/createArgs');
 
 const has = struct.has();
 
@@ -50,10 +49,8 @@ const pluginCommand = async function(use, pluginName){
   // extend command in project create by plugin
   const isExtendCommand = prefixAbcJSON ? getTargetEntryJS(prefixAbcJSON.type , `extend/${use}.js`) : null;
 
-  createArgs();
-
   if(isExtendCommand){
-    result = await isExtendCommand(createContext(),{});
+    result = await isExtendCommand(createContext(),[]);
   }else{
     if(!useCommand || !has(useCommandosList, useCommand)){
       // 没有找到对应的命令

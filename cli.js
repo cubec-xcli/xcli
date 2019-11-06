@@ -122,6 +122,5 @@ cli.
 //   .action(cmd_lint);
 
 cli.parse(process.argv);
-
-if (!cli.args.length || !process.argv[2] || !commands.includes(process.argv[2])) cli.help();
+// if (!cli.args.length || !process.argv[2] || !commands.includes(process.argv[2])) cli.help();
 
