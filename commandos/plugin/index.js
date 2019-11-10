@@ -69,6 +69,7 @@ const pluginCommand = async function(use, pluginName){
     result = await getCommand(pluginName);
   }
 
+  process.exit();
   return result;
 };
 
