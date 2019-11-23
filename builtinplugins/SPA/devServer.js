@@ -16,7 +16,7 @@ const FriendlyErrorsWebpackPlugin = require("friendly-errors-webpack-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const errorOverlayMiddleware = require("react-dev-utils/errorOverlayMiddleware");
 const noopServiceWorkerMiddleware = require("react-dev-utils/noopServiceWorkerMiddleware");
-const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
+// const CaseSensitivePathsPlugin = require("case-sensitive-paths-webpack-plugin");
 const DuplicatePackageCheckerPlugin = require("duplicate-package-checker-webpack-plugin");
 const WebpackBuildNotifierPlugin = require("webpack-build-notifier");
 
@@ -358,8 +358,8 @@ module.exports = function(context, args) {
 
     plugins: [
       new webpack.NoEmitOnErrorsPlugin(),
-      new webpack.NamedModulesPlugin(),
-      new CaseSensitivePathsPlugin(),
+      // new webpack.NamedModulesPlugin(),
+      // new CaseSensitivePathsPlugin(),
       new webpack.ProvidePlugin(abcJSON.provide),
 
       new webpack.DefinePlugin(abcJSON.webpackDefine.dev || {}),
