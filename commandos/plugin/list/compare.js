@@ -49,12 +49,16 @@ module.exports = async function(currentVersion, pluginName, isLinked=false, isDi
         url: `${domain}/api/v4/projects/`,
         headers: axiosHeaders,
         params: {
-          simple: true
+          simple: true,
+          per_page: 1000,
+          recursive: true
         }
       });
 
       // fuck gitLab
       let list = one(getGitLabProjects.data, (project)=>project.path_with_namespace === pluginRemoteGitLabPath);
+      // console.log(list);
+
 
       // fuck gitLab
       const projectId = list ? list.id : null;

@@ -49,6 +49,8 @@ module.exports = async function(){
 
       if(!getAbcxJSON["plugin-version"]) return false;
 
+      // console.log(getAbcxJSON["plugin-version"]);
+
       // 插件是否来自于不同于当前的源
       const isDiffSouce = !eq(getAbcxJSON["plugin-source"], {
         pluginSourceGit,
