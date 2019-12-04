@@ -11,7 +11,7 @@ const checkPluginExist = require('../../../core/common/tools/checkPluginExist');
 const COMMON = require('../../../dict/commandos/COMMON');
 const PLUGIN = require('../../../dict/commandos/PLUGIN');
 const getAotPluginSource = require('../../../core/common/pre/getAotPluginSource');
-const { pluginSourceGit, pluginSourceGroup, pluginSourceGitPath } = getAotPluginSource(); 
+const { pluginSourceGit, pluginSourceGroup, pluginSourceGitPath } = getAotPluginSource();
 
 const pluginInstall = require('../install');
 
