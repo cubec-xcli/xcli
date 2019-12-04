@@ -29,7 +29,7 @@ const createCommand = async function(projectName){
       //存在对应的实现
       const createCompleted = await callCreate(create, projectName, initProjectPath);
 
-      if(createCompleted) return info("create template selected completed");
+      if(createCompleted) info("create template selected completed");
 
       return;
     }

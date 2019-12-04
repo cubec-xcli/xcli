@@ -1,10 +1,8 @@
 const git = require('simple-git');
 const colors = require('colors');
-const fs = require('fs');
-const util = require('util');
 const path = require('path');
 const struct = require('ax-struct-js');
-const { exec } = require('child_process');
+const { execSync } = require('child_process');
 const paths = require('../../core/utils/paths');
 const { info, error, loading } = require('../../core/utils/std');
 const UPGRADE = require('../../dict/commandos/UPGRADE');
@@ -16,14 +14,13 @@ const upgradeCommand = function(version){
   const packageJSONPath = path.resolve(paths.cliRootPath, 'package.json');
 
   // 拉取源码
-  xcliGit.pull(async function(err, upgrade){
+  xcliGit.pull(function(err, upgrade){
     if(err){
       error(UPGRADE.UPGRADE_GITPULL_UNEXCEPT_ERROR);
       throw new Error(err);
     }
 
     if(upgrade){
-      const cexec = util.promisify(exec);
       // const fsreaddir = util.promisify(fs.readdir);
 
       if(upgrade.files.length){
@@ -32,7 +29,7 @@ const upgradeCommand = function(version){
         // 有更新 xcli 的 package.json
         if(has(upgrade.files, "package.json")){
           const package_loading = loading(UPGRADE.UPGRADE_PROCESS_CORE_PACKAGE);
-          await cexec(`npm install`, { cwd: paths.cliRootPath, stdio: 'inherit' });
+          execSync(`npm install`, { cwd: paths.cliRootPath, stdio: 'inherit' });
           package_loading.succeed(UPGRADE.UPGRADE_PROCESS_CORE_PACKAGE+" completed");
         }
 
@@ -56,7 +53,9 @@ const upgradeCommand = function(version){
 
     info(UPGRADE.UPGRADE_CORE_SUCCESS);
 
-    return info(`xcli version ${("[" + packageJSON.version + "]").bold}`);
+    info(`xcli version ${("[" + packageJSON.version + "]").bold}`);
+
+    return process.exit(0);
   });
 
   return true;
