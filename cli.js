@@ -5,21 +5,21 @@ const colors = require('colors');
 const cli = require('commander');
 const packageJSON = require('./package.json');
 const DESCRIPTION = require('./dict/commandos/DESCRIPTION');
-const commands = [
-  'new',
-  'init',
-  'dev',
-  'create',
-  'build',
-  'publish',
-  'plugin',
-  'link',
-  'unlink',
-  'upgrade',
-  'test',
-  'help',
-  'set-remote-plugin'
-];
+// const commands = [
+//   'new',
+//   'init',
+//   'dev',
+//   'create',
+//   'build',
+//   'publish',
+//   'plugin',
+//   'link',
+//   'unlink',
+//   'upgrade',
+//   'test',
+//   'help',
+//   'set-remote-plugin'
+// ];
 
 const newXCLI = require('./commandos/new');
 const create = require('./commandos/create');
