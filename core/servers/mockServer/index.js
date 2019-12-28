@@ -112,6 +112,7 @@ module.exports = function() {
       delete require.cache[require.resolve(mockServer+"/"+filename)];
       routerCache = {};
       rules = generateMapTree(require(mockServer), config);
+      if(config.debug) debug("mockServer hot reload success");
     }catch(e){
       error(ERRORS.MOCKSERVER.HOTUPDATEUNEXPECTED);
     }
