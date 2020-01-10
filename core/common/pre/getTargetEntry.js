@@ -105,7 +105,7 @@ const getTargetEntryJS = function(type, entryFileName, notWarn=false){
   // 都没有找到，则提示尝试安装插件
   }else{
     filePath = null;
-    warn(`can not find type mode [${type.bold}], maybe try to install "${type}" plugin`);
+    if(!notWarn) warn(`can not find type mode [${type.bold}], maybe try to install "${type}" plugin`);
   }
 
   // 获取对应的入口，执行返回

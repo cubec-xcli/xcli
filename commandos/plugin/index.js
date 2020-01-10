@@ -47,7 +47,7 @@ const pluginCommand = async function(use, pluginName){
   let result;
   let useCommand = use;
   // extend command in project create by plugin
-  const isExtendCommand = prefixAbcJSON ? getTargetEntryJS(prefixAbcJSON.type , `extend/${use}.js`) : null;
+  const isExtendCommand = prefixAbcJSON ? getTargetEntryJS(prefixAbcJSON.type , `extend/${use}.js`, true) : null;
 
   if(isExtendCommand){
     result = await isExtendCommand(createContext(),[]);

@@ -29,7 +29,8 @@ module.exports = function(pluginName, targetFilePath){
           if(err){
             error("remote plugin download failed with unexcepted error");
             error(err);
-            return reject(err);
+            reject(err);
+            return process.exit();
           }
           resolve(true);
         });
@@ -38,7 +39,8 @@ module.exports = function(pluginName, targetFilePath){
           if(err){
             error("remote plugin download failed with unexcepted error");
             error(err);
-            return reject(err);
+            reject(err);
+            return process.exit();
           }
           resolve(true);
         });
