@@ -35,6 +35,18 @@ module.exports = async function(pluginName){
     cache.setGlobal("gitlabToken", gitlabToken);
   }
 
+  if(pluginSourceGit === "github" && !cache.getGlobal("githubToken")){
+    const { githubToken } = await prompt({
+      type: "input",
+      name: "githubToken",
+      message: COMMON.REQUIRED_INPUT_GITHUB_PAT
+    });
+
+    if(!githubToken && githubToken.length < 5) return warn(PLUGIN.PLUGIN_LIST_COMMAND_INTERRUPTED);
+
+    cache.setGlobal("githubToken", githubToken);
+  }
+
   // 如果输入插件名称，但是插件又不存在，则不允许操作
   if(pluginName && !checkPluginExist(pluginName))
     return warn(PLUGIN.PLUGIN_UPDATE_NOEXIST_PLUGIN+pluginName);
@@ -90,6 +102,7 @@ module.exports = async function(pluginName){
 
     // 直接升级单体插件
     const getSignPlugin = one(pluginsChoicesList, item=>item.pluginName === pluginName);
+
     if(pluginName && getSignPlugin){
       await pluginInstall(pluginName, true);
       return info(`${("["+pluginName+"]").bold} update to latest version ${("["+getSignPlugin.newVersion+"]").white}`);

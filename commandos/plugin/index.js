@@ -1,18 +1,25 @@
 const { prompt } = require('enquirer');
 const struct = require('ax-struct-js');
+const fs = require('fs');
 const fse = require('fs-extra');
+const colors = require('colors');
+const path = require('path');
 const paths = require('../../core/utils/paths');
 const PLUGIN = require('../../dict/commandos/PLUGIN');
+const { warn } = require('../../core/utils/std');
 
 const useInstall = require('./install');
 const useUninstall = require('./uninstall');
 const useList = require('./list');
 const useUpdate = require('./update');
+const useHelp = require('./help');
+
 const { prefixAbcJSON } = require('../../core/utils/abc');
 const getTargetEntryJS = require('../../core/common/pre/getTargetEntry');
 const createContext = require('../../core/common/aop/createContext');
 
 const has = struct.has();
+const slice = struct.slice();
 
 const useCommandosList = [
   'install',
@@ -22,7 +29,9 @@ const useCommandosList = [
   'list',
   'all',
   'update',
-  'upgrade'
+  'upgrade',
+  'help',
+  'info'
 ];
 
 const useCurrentCommandosList = [
@@ -30,6 +39,7 @@ const useCurrentCommandosList = [
   'uninstall',
   'list',
   'update',
+  'help'
 ];
 
 const useCommandosAlias = {
@@ -40,37 +50,71 @@ const useCommandosAlias = {
   list: useList,
   all: useList,
   update: useUpdate,
-  upgrade: useUpdate
+  upgrade: useUpdate,
+  info: useHelp,
+  help: useHelp
 };
 
 const pluginCommand = async function(use, pluginName){
-  let result;
   let useCommand = use;
   // extend command in project create by plugin
   const isExtendCommand = prefixAbcJSON ? getTargetEntryJS(prefixAbcJSON.type , `extend/${use}.js`, true) : null;
 
   if(isExtendCommand){
-    result = await isExtendCommand(createContext(),[]);
+    // 直接执行
+    await isExtendCommand(createContext(),[]);
+
   }else{
-    if(!useCommand || !has(useCommandosList, useCommand)){
+    let exCommandsAlias = {};
+    let useCommandosListPrefix = slice(useCommandosList);
+    let useCurrentCommandosListPrefix = slice(useCurrentCommandosList);
+
+    // 获取额外的命令
+    if(prefixAbcJSON && prefixAbcJSON.type){
+      let exCommands = fs.readdirSync(path.join(paths.pluginsUsagePath,'extend'));
+
+      if(exCommands && exCommands.length){
+        exCommands = exCommands.filter(name=>name[0] !== ".").forEach(name=>{
+          const commandName = (name.replace(/\.[\w\W\s\S]*$/, ""));
+          const exCommand = (commandName+" [Ex]").yellow.bold;
+
+          exCommandsAlias[exCommand] = getTargetEntryJS(prefixAbcJSON.type, `extend/${name}`, true);
+          exCommandsAlias[commandName] = exCommandsAlias[exCommand];
+
+          useCommandosListPrefix.push(commandName);
+          useCurrentCommandosListPrefix.push(exCommand);
+        });
+      }
+    }
+
+    if(!useCommand || !has(useCommandosListPrefix, useCommand)){
       // 没有找到对应的命令
       const { command } = await prompt({
         type: "select",
         name: "command",
         message: PLUGIN.PLUGIN_SELECT_COMMAND_TYPE,
-        choices: useCurrentCommandosList
+        choices: useCurrentCommandosListPrefix
       });
 
       useCommand = command;
     }
 
-    const getCommand = useCommandosAlias[useCommand];
-    await fse.ensureDir(paths.pluginsPath);
-    result = await getCommand(pluginName);
+    if(useCommandosAlias[useCommand]){
+      const getCommand = useCommandosAlias[useCommand];
+      await fse.ensureDir(paths.pluginsPath);
+      await getCommand(pluginName);
+
+    }else if(exCommandsAlias[useCommand]){
+      const getExCommand = exCommandsAlias[useCommand];
+      await getExCommand(createContext(),[]);
+
+    }else{
+      warn("can not exec command inside [plugin]");
+    }
+
   }
 
   process.exit();
-  return result;
 };
 
 module.exports = pluginCommand;

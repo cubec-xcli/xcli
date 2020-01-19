@@ -14,8 +14,10 @@ const currentPublicPath = path.join(currentPath, prefixAbcJSON ? prefixAbcJSON.p
 const cliRootPath = path.resolve(__dirname, "../../../");
 // 缓存文件 的位置
 const cacheFilePath = path.resolve(cliRootPath, '.cache');
+
 // plugins 目录的位置
 const pluginsPath = path.resolve(cliRootPath, 'plugins');
+const pluginsUsagePath = prefixAbcJSON ? path.resolve(cliRootPath, `plugins/${prefixAbcJSON.type}`) : null;
 const pluginsBuiltinPath = path.resolve(cliRootPath, 'builtinplugins');
 
 const paths = {
@@ -27,6 +29,7 @@ const paths = {
   cliRootPath,
   cacheFilePath,
   pluginsPath,
+  pluginsUsagePath,
   pluginsBuiltinPath,
 };
 

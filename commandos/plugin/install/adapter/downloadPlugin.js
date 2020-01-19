@@ -14,7 +14,9 @@ const parsePluginDownloadUrl = function(pluginName){
   }else if(pluginSourceGit === "gitlab"){
     return `${pluginSourceGit}:${pluginSourceGitPath}:${pluginSourceGroup}/${pluginName}#master`;
   }
+
   warn("plugin install unknown gitSource options");
+
   return false;
 };
 
@@ -24,7 +26,9 @@ module.exports = function(pluginName, targetFilePath){
 
   if(url && targetFilePath){
     return new Promise((resolve, reject) => {
+
       if(pluginSourceGit === "github"){
+
         download(url, targetFilePath, function(err){
           if(err){
             error("remote plugin download failed with unexcepted error");
@@ -34,7 +38,9 @@ module.exports = function(pluginName, targetFilePath){
           }
           resolve(true);
         });
+
       }else if(pluginSourceGit === "gitlab"){
+
         download(url, targetFilePath, { clone: true }, function(err){
           if(err){
             error("remote plugin download failed with unexcepted error");
@@ -44,6 +50,7 @@ module.exports = function(pluginName, targetFilePath){
           }
           resolve(true);
         });
+
       }else{
         return reject(new TypeError("unknown git source type"));
       }

@@ -1,5 +1,6 @@
 const fs = require('fs');
 const { fork } = require('child_process');
+const struct = require('ax-struct-js');
 const path = require('path');
 const paths = require('../../core/utils/paths');
 const { prefixAbcJSON } = require('../../core/utils/abc');
@@ -9,17 +10,50 @@ const DEV = require('../../dict/commandos/DEV');
 const packageAutoInstall = require('../../core/common/pre/packageAutoInstall');
 const checkAbcJSONFormat = require('../../core/common/pre/checkAbcJSONFormat');
 const getTargetEntryJS = require('../../core/common/pre/getTargetEntry');
+const getAotPluginSource = require('../../core/common/pre/getAotPluginSource');
 
-const devCommand = function(command){
+const xcliPluginSourceConfig = getAotPluginSource();
+const compare = require('../plugin/list/compare');
+
+const eq = struct.eq();
+
+const devCommand = async function(command){
   if(checkAbcJSONFormat()){
     const isDebugMode = command ? !!command.debug : false;
     const devServerJS = path.resolve(__dirname, "childprocess/devServer.js");
     const devServer = getTargetEntryJS(prefixAbcJSON.type, "devServer.js");
 
-    if(devServer && !isDebugMode) packageAutoInstall();
-
     // 是否存在对应的插件
     if(devServer){
+      const pluginAbcxJSON = require(path.resolve(paths.pluginsUsagePath, 'abcx.json'));
+      const pluginSource = pluginAbcxJSON['plugin-source'];
+      const pluginPathstats = fs.lstatSync(paths.pluginsUsagePath);
+
+      // 可以拿到插件，并且插件不是调试状态
+      if(
+        !pluginPathstats.isSymbolicLink() &&
+        pluginSource &&
+        eq(pluginSource, xcliPluginSourceConfig)){
+
+        let compareResult;
+
+        // 检测版本非必须操作
+        try{
+          compareResult = await compare(pluginAbcxJSON["plugin-version"], prefixAbcJSON.type);
+
+          if(compareResult &&
+            compareResult.needUpdate &&
+            compareResult.newVersion){
+            info(`${"[Plugin Update Request]".bold} ${("["+prefixAbcJSON.type+"]").red.bold} ${"A new version".green} ${("["+compareResult.newVersion+"]").yellow.bold} ${"is available!".green}`);
+          }
+
+        }catch(e){
+          //eslint-disable
+        }
+      }
+
+      if(devServer && !isDebugMode) packageAutoInstall();
+
       info(DEV.INFO_DEVSERVER_LOGXCLIVERSION);
 
       // fork 子进程
@@ -32,6 +66,7 @@ const devCommand = function(command){
       });
     }
   }
+
 };
 
 module.exports = devCommand;

@@ -33,6 +33,7 @@ module.exports = async function(currentVersion, pluginName, isLinked=false, isDi
   }else if(!isLinked){
     if(pluginSourceGit === "github"){
       abcxJSONSource = `${domain}/${pluginSourceGroup}/${pluginName}/master/abcx.json`;
+
     }else if(pluginSourceGit === "gitlab"){
       // abcxJSONSource = `${domain}/${pluginSourceGroup}/${pluginName}/raw/master/abcx.json`;
       // console.log(abcxJSONSource);
@@ -91,8 +92,8 @@ module.exports = async function(currentVersion, pluginName, isLinked=false, isDi
       plugin: pluginName,
       isLinked,
       text: compareResult ?
-      (`[Plugin] `.bold + pluginName.bold.red + ` ${currentVersion}` + ` - [ new version ${onlineVersion} ]`.green.bold) :
-      (`[Plugin] `.bold + pluginName.bold.red + ` ${currentVersion}`),
+      (`[Plugin] `.bold + pluginName.bold.red + ` ${currentVersion}` + ` - [ New Version ${onlineVersion} ]`.green.bold) :
+      (`[Plugin] `.bold + pluginName.bold.red + ` ${currentVersion} `),
       newVersion: onlineVersion,
       needUpdate: compareResult
     };

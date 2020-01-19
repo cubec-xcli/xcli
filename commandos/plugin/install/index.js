@@ -1,5 +1,6 @@
 const fs = require('fs');
 const fse = require('fs-extra');
+const struct = require('ax-struct-js');
 const util = require('util');
 const colors = require('colors');
 const { execSync } = require('child_process');
@@ -10,6 +11,7 @@ const cache = require('../../../core/utils/cache');
 const { warn, loading, error } = require('../../../core/utils/std');
 const checkPluginAbcxJSONFormat = require('../../../core/common/pre/checkPluginAbcxJSONFormat');
 const downloadPlugin = require('./adapter/downloadPlugin');
+const fetchRemotePluginsList = require('./adapter/fetchRemotePluginsList');
 const getAotPluginSource = require('../../../core/common/pre/getAotPluginSource');
 const { pluginSourceGit, pluginSourceGitPath, pluginSourceGroup } = getAotPluginSource();
 
@@ -18,23 +20,17 @@ const PLUGIN = require('../../../dict/commandos/PLUGIN');
 
 let tempId = 0;
 
+const _values = struct.values();
+const _each = struct.each("array");
+const _size = struct.size();
+
 // Install Plugin
 module.exports = async function(pluginName, forceReinstall=false){
   let plugin = pluginName;
   const pluginsDir = path.resolve(paths.cliRootPath, 'plugins');
 
-  // 要求输入插件名称
-  if(!plugin){
-    const { newPlugin } = await prompt({
-      type: "Input",
-      name: "newPlugin",
-      message: PLUGIN.PLUGIN_INSTALL_PLUGINNAME_REQUIRED
-    });
-    plugin = newPlugin;
-    if(!plugin) return warn(`[plugin] ${plugin.bold} install interrupted`);
-  }
-
-  // gitLab should get PAT
+  // 没有token则需要强制输入token
+  // gitlab should get PAT
   if(pluginSourceGit === "gitlab" && !cache.getGlobal("gitlabToken")){
     const { gitlabToken } = await prompt({
       type: "input",
@@ -45,6 +41,58 @@ module.exports = async function(pluginName, forceReinstall=false){
     if(!gitlabToken && gitlabToken.length < 5) return warn(PLUGIN.PLUGIN_LIST_COMMAND_INTERRUPTED);
 
     cache.setGlobal("gitlabToken", gitlabToken);
+  }
+
+
+  // 没有token则需要强制输入token
+  // github should get PAT
+  if(pluginSourceGit === "github" && !cache.getGlobal("githubToken")){
+    const { githubToken } = await prompt({
+      type: "input",
+      name: "githubToken",
+      message: COMMON.REQUIRED_INPUT_GITHUB_PAT
+    });
+
+    if(!githubToken && githubToken.length < 5) return warn(PLUGIN.PLUGIN_LIST_COMMAND_INTERRUPTED);
+
+    cache.setGlobal("githubToken", githubToken);
+  }
+
+
+  if(!plugin){
+    const pluginList = await fetchRemotePluginsList();
+
+    if(_size(pluginList)){
+      const choiceMapping = {};
+      const choiceList = _values(pluginList, "description");
+
+      _each(pluginList, function(item){
+        choiceMapping[item.description] = item.name;
+      });
+
+      const { pluginDesc } = await prompt({
+        type: "AutoComplete",
+        choices: choiceList,
+        name: "pluginDesc",
+        message: PLUGIN.PLUGIN_INSTALL_CHOICE_PLUGINNAME,
+        required: true,
+      });
+
+      plugin = choiceMapping[pluginDesc];
+
+    }else{
+      // 要求输入插件名称
+      warn("can not get remote plugin list, request input plugin name");
+
+      const { newPlugin } = await prompt({
+        type: "Input",
+        name: "newPlugin",
+        required: true,
+        message: PLUGIN.PLUGIN_INSTALL_PLUGINNAME_REQUIRED
+      });
+
+      plugin = newPlugin;
+    }
   }
 
   const newPluginPath = path.resolve(pluginsDir, plugin);

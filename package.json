@@ -8,6 +8,10 @@
   "bin": {
     "xcli": "cli.js"
   },
+  "engines": {
+    "node": ">=10.0.0",
+    "npm": ">=6.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cubec-xcli/xcli.git"
@@ -21,7 +25,7 @@
     "compare-versions": "^3.5.1",
     "date-fns": "^2.9.0",
     "download-git-repo": "^3.0.2",
-    "enquirer": "^2.3.2",
+    "enquirer": "^2.3.4",
     "eslint": "^6.8.0",
     "fs-extra": "^8.1.0",
     "glob": "^7.1.6",
@@ -30,10 +34,12 @@
     "jest": "^24.9.0",
     "jest-cli": "^24.9.0",
     "lodash": "^4.17.15",
+    "marked": "^0.8.0",
+    "marked-terminal": "^4.0.0",
     "open": "^7.0.0",
     "ora": "^4.0.3",
     "semver": "^7.1.1",
     "simple-git": "^1.129.0",
-    "stylelint": "^12.0.1"
+    "stylelint": "^13.0.0"
   }
 }

@@ -1,31 +1,28 @@
 const fs = require('fs');
-const fse = require('fs-extra');
 const path = require('path');
 const struct = require('ax-struct-js');
 const { prompt } = require('enquirer');
 const paths = require('../../../core/utils/paths');
-const { info, warn } = require('../../../core/utils/std');
+const { prefixAbcJSON } = require('../../../core/utils/abc');
+const { warn } = require('../../../core/utils/std');
 
 const cool = struct.cool();
-const each = struct.each();
-const noop = struct.noop();
 const PLUGIN = require('../../../dict/commandos/PLUGIN');
 
 module.exports = async function(pluginName){
-  let plugin = pluginName;
+  let plugin = pluginName || prefixAbcJSON.type;
   const pluginsDir = paths.pluginsPath;
 
   if(!plugin){
     const getAllPlugins = fs.readdirSync(pluginsDir).filter(name=>name[0]!==".");
     const pluginListMap = {};
 
-    // 收集选择列表
     const choices = getAllPlugins.map(function(pluginFolder){
       const pluginPath = path.resolve(pluginsDir, pluginFolder);
       const pluginAbcxJSON = require(path.resolve(pluginPath, 'abcx.json'));
-      const fsstats = fs.lstatSync(pluginPath);
 
-      if(fsstats.isSymbolicLink() || !fsstats.isDirectory()) return false;
+      // const fsstats = fs.lstatSync(pluginPath);
+      // if(fsstats.isSymbolicLink() || !fsstats.isDirectory()) return false;
 
       const value = `${'[Plugin]'.bold} ${pluginFolder.bold.red} ${("["+pluginAbcxJSON["plugin-version"]+"]").green} - [${pluginAbcxJSON["plugin-description"]||""}]`;
 
@@ -37,35 +34,36 @@ module.exports = async function(pluginName){
 
     // 批量选择需要卸载的插件
     const { pluginSelect } = await prompt({
-      type: 'multiselect',
+      type: 'autocomplete',
       name: "pluginSelect",
-      message: PLUGIN.PLUGIN_UNINSTALL_SELECT_REQUIRED,
+      message: PLUGIN.PLUGIN_HELP_SELECT_REQUIRED,
       choices,
     });
 
-    plugin = pluginSelect.map(plugin=>pluginListMap[plugin]);
-  }else{
-    plugin = [plugin];
+    plugin = pluginListMap[pluginSelect];
   }
 
-  // 存在需要移除的插件
-  if(plugin.length){
-    each(plugin, function(pluginFolder){
-      const pluginPath = path.resolve(pluginsDir, pluginFolder);
+  if(plugin){
+    const getPluginPath = path.resolve(paths.pluginsPath, plugin);
+    const getPluginHelpFile =
+      fs.existsSync(path.resolve(getPluginPath, "README.md")) ?
+      fs.readFileSync(path.resolve(getPluginPath, "README.md"), 'utf-8') :
+      "";
 
-      if(fs.existsSync(pluginPath)){
-        const fsstats = fs.lstatSync(pluginPath);
-        // 如果是link file 则不删除
-        if(!fsstats.isSymbolicLink()) fse.remove(pluginPath, noop);
-      }
+    if(!getPluginHelpFile)
+      return warn("can not find plugin help README.md");
+
+    const marked = require('marked');
+    const TerminalRenderer = require('marked-terminal');
+
+    // render markdown
+    marked.setOptions({
+      // Define custom renderer
+      renderer: new TerminalRenderer()
     });
 
-    info(PLUGIN.PLUGIN_UNINSTALL_SUCCESSED);
-
-    return true;
+    return console.log(marked(getPluginHelpFile));
   }
 
-  warn(PLUGIN.PLUGIN_UNINSTALL_NOPLUGINS_SELECTED);
-
-  return false;
+  return warn("can not find plugin help README.md");
 };
