@@ -67,9 +67,6 @@ const getTargetEntryJS = function(type, entryFileName, notWarn=false){
   const localPluginsPath = path.resolve(paths.currentPath, `node_modules/${type}`);
   const existLocalPlugin = fs.existsSync(localPluginsPath);
 
-  const builtinPluginsPath = path.resolve(paths.cliRootPath, `builtinplugins/${type}`);
-  const existBuiltinPlugin = fs.existsSync(builtinPluginsPath);
-
   // 寻找目标
   // 优先从xcli插件包中获取入口文件
   if(existPlugin){
@@ -79,29 +76,6 @@ const getTargetEntryJS = function(type, entryFileName, notWarn=false){
   }else if(existLocalPlugin){
     filePath = getEntryFromLocalPlugins(localPluginsPath, type, entryFileName, notWarn);
 
-  // 如果本地项目也不存在，尝试寻找内置的插件模块 [MPA, SPA]
-  }else if(existBuiltinPlugin){
-    filePath = path.resolve(builtinPluginsPath, entryFileName);
-
-    // 如果内置包也没有, 则无提示
-    if(!fs.existsSync(filePath)){
-      filePath = null;
-      if(!notWarn) warn(`${type} not exist implement for aop invoking`);
-
-    }else{
-      // 如果存在内置包，则帮忙检测有没有安装node模块
-      const existNodeModules = fs.existsSync(path.resolve(builtinPluginsPath, 'node_modules'));
-
-      if(!existNodeModules){
-        const install = loading(`${"[xcli]".green.bold} prepare plugin ${("["+type+"]").red.bold}`);
-        execSync("npm install", { cwd: builtinPluginsPath, stdio: "inherit" });
-        install.succeed();
-
-        // 强制创建node_modules;
-        fse.ensureDirSync(path.resolve(builtinPluginsPath, 'node_modules'));
-      }
-    }
-
   // 都没有找到，则提示尝试安装插件
   }else{
     filePath = null;
@@ -110,7 +84,6 @@ const getTargetEntryJS = function(type, entryFileName, notWarn=false){
 
   // 获取对应的入口，执行返回
   if(filePath) target = require(filePath);
-
 
   return target;
 };
