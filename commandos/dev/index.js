@@ -64,6 +64,7 @@ const devCommand = async function(command){
         childDevProcess.kill('SIGINT');
         childDevProcess = fork(devServerJS, [isDebugMode, true], { stdio: 'inherit' });
       });
+
     }
   }
 

@@ -18,7 +18,6 @@ const cacheFilePath = path.resolve(cliRootPath, '.cache');
 // plugins 目录的位置
 const pluginsPath = path.resolve(cliRootPath, 'plugins');
 const pluginsUsagePath = prefixAbcJSON ? path.resolve(cliRootPath, `plugins/${prefixAbcJSON.type}`) : null;
-const pluginsBuiltinPath = path.resolve(cliRootPath, 'builtinplugins');
 
 const paths = {
   currentPath,
@@ -30,7 +29,6 @@ const paths = {
   cacheFilePath,
   pluginsPath,
   pluginsUsagePath,
-  pluginsBuiltinPath,
 };
 
 module.exports = paths;

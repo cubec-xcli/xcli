@@ -2,6 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const struct = require('ax-struct-js');
+const datefns = require('date-fns');
 const colors = require('colors');
 
 const paths = require('../../utils/paths');
@@ -20,6 +21,10 @@ const _isObj = struct.type("object");
 const _paramParse = struct.param("parse");
 const _merge = struct.merge();
 const _size = struct.size();
+
+const getResponseTime = function(){
+  return `[${datefns.format(new Date(), "HH:mm:ss")}]`.yellow;
+};
 
 // 异步函数handler
 const asyncHandler = fn => (req, res, next, param, query) =>
@@ -148,7 +153,7 @@ module.exports = function() {
     // tap cache
     if(tapcache){
 
-      if(config.debug) debug(`${"[mock server]".bold} route match => ${(url).green.bold} ${'cache'.yellow}`);
+      if(config.debug) debug(`${"[mock server]".bold} ${getResponseTime()} route match => ${(url).green.bold} ${'cache'.yellow}`);
 
       if(_isFn(tapcache.find.action)){
         return (asyncHandler(tapcache.find.action))(req, res, tapcache.param, _paramParse(url), next);
@@ -211,7 +216,7 @@ module.exports = function() {
       if(actions[matchPath]){
         const find = actions[matchPath];
 
-        if(config.debug) debug(`${"[mock server]".bold} route match => ${(url).green.bold}`);
+        if(config.debug) debug(`${"[mock server]".bold} ${getResponseTime()} route match => ${(url).green.bold}`);
 
         routerCache[requestPath] = { find, param: _isFn(find.action) ? _combined(find.param, paramValue) : {} };
 

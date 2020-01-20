@@ -32,13 +32,16 @@ const callCreate = async function(create, projectName, initProjectPath){
     if(isString(action)){
       const gitRepoUrl = action;
       download(gitRepoUrl, projectName, initProjectPath);
+
       return true;
+
     }else if(isFunction(action)){
       action(createContext({
         projectName,
         projectRoot: paths.currentPath,
         createPath: initProjectPath
       }), [projectName]);
+
       return true;
     }
 

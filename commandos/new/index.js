@@ -19,6 +19,7 @@ const merge = struct.merge();
 const newCommand = async function(projectFolder){
   const fsreaddir = util.promisify(fs.readdir);
   const fswriteFile = util.promisify(fs.writeFile);
+
   const projectPath = path.resolve(paths.currentPath, projectFolder || "");
   const abcJSONPath = path.resolve(projectPath, "abc.json");
   const abcxJSONPath = path.resolve(projectPath, "abcx.json");
@@ -26,14 +27,14 @@ const newCommand = async function(projectFolder){
   // new Project abc.json
   // or new XCLI Plugin with abcx.json
   const typesMap = {
-    "[XCLI] new Project" : "project",
-    "[XCLI] new XCLI Plugin [development]" : "plugin"
+    "[XCLI CORE] New Project (新项目)" : "project",
+    "[XCLI CORE] New XCLI Plugin [development] (新插件)" : "plugin"
   };
 
   const { typeChoice } = await prompt({
     type: "select",
     name: "typeChoice",
-    message: "[XCLI] [new] select init type project",
+    message: "[XCLI CORE] [new] select init type project",
     choices: keys(typesMap)
   });
 
@@ -43,41 +44,44 @@ const newCommand = async function(projectFolder){
   if(type === "project"){
     // if exist abc.json
     if(fs.existsSync(abcJSONPath))
-      return warn('abc.json already exist in current project folder '+projectPath.bold);
+      return warn('[XCLI CORE] abc.json already exist in current project folder '+projectPath.bold);
 
     // input project name
     const { projectName } = await prompt({
       type: "input",
       name: "projectName",
       required: true,
-      message: "[XCLI] [new] project name",
+      message: "[XCLI CORE] [new] project name",
       initial: (projectFolder||"").split("/")[0],
     });
 
     const choicesPlugin = {};
-    let builtinplugins = await fsreaddir(path.resolve(paths.cliRootPath, "builtinplugins"));
-    let plugins = await fsreaddir(path.resolve(paths.cliRootPath, "plugins"));
 
-    builtinplugins = builtinplugins.map(plugin=>{
-      const name = `${"[Plugin] [BuiltIn]".bold.red} ${plugin}`;
+    let plugins = await fsreaddir(paths.pluginsPath);
+
+    plugins = plugins.filter(plugin=>plugin[0] !== ".").map(plugin=>{
+      const pluginPathDir = path.resolve(paths.pluginsPath, plugin);
+      const getPluginPath = fs.lstatSync(pluginPathDir);
+      const getPluginAbcxJSON = require(path.resolve(pluginPathDir, "abcx.json"));
+      const namePrefix = getPluginPath.isSymbolicLink() ? "[linked]".green.bold : `[${getPluginAbcxJSON["plugin-version"]}]`.yellow;
+
+      const name = `${"[Plugin]".bold} ${namePrefix} ${plugin.red.bold}`;
       choicesPlugin[name] = plugin;
+
       return name;
     });
 
-    plugins = plugins.map(plugin=>{
-      const name = `${"[Plugin]".bold.yellow} ${plugin}`;
-      choicesPlugin[name] = plugin;
-      return name;
-    });
+    choicesPlugin["NO-SELECT"] = "NO-SELECT";
 
     // input plugin for use
     let { pluginType } = await prompt({
       type: "autocomplete",
       name: "pluginType",
-      message: "[XCLI] [new] project use plugin:type in xcli",
+      message: "[XCLI CORE] [new] project use plugin:type in xcli",
       limit: 10,
       choices: ["NO-SELECT"].concat(keys(choicesPlugin))
     });
+
     pluginType = choicesPlugin[pluginType];
 
     if(pluginType === "NO-SELECT"){
@@ -85,17 +89,20 @@ const newCommand = async function(projectFolder){
         type: "input",
         name: "customPluginType",
         required: true,
-        message: "[XCLI] [new] input project use custom plugin:type",
+        message: "[XCLI CORE] [new] input project use custom plugin:type",
       });
+
       pluginType = customPluginType;
     }
+
+    // console.log("pluginType", pluginType);
 
     // input plugin package manager
     const { projectPackageManager } = await prompt({
       type: "autocomplete",
       name: "projectPackageManager",
       required: true,
-      message: "[XCLI] [new] project package manager",
+      message: "[XCLI CORE] [new] project package manager",
       choices: ["npm", "yarn"]
     });
 
@@ -110,7 +117,7 @@ const newCommand = async function(projectFolder){
 
     await fswriteFile(abcJSONPath, JSON.stringify(abcJSON, null, 2));
 
-    info("init project abc.json completed");
+    info("[XCLI CORE] init project abc.json completed");
 
     // 如果存在对应的插件
     if(checkPluginExist(pluginType, true)){
@@ -120,29 +127,33 @@ const newCommand = async function(projectFolder){
         const { needCreate } = await prompt({
           type: "confirm",
           name: "needCreate",
-          message: "find initial create template by " + ("["+pluginType+"]").bold.red + ". need create template together?"
+          message: "[XCLI CORE] find initial create actions by plugin " + ("["+pluginType+"]").bold.red + ". need create plugin template together?"
         });
 
-        if(needCreate) await callCreate(createImplement, null, projectPath);
+        if(needCreate)
+          await callCreate(createImplement, null, projectPath);
       }
 
       // console.log(process.cwd());
     }
 
-    return info("init project completed use plugin " + ("["+ pluginType +"]").red.bold);
+    info("[XCLI CORE] init project completed use plugin " + ("["+ pluginType +"]").red.bold);
+    info("[XCLI CORE] init project path: "+projectPath.red.bold);
+
+    return;
 
   // create new plugin
   }else if(type === "plugin"){
     // if exist abc.json
     if(fs.existsSync(abcxJSONPath))
-      return warn('abcx.json already exist in current project folder '+projectPath.bold);
+      return warn('[XCLI CORE] abcx.json already exist in current project folder '+projectPath.bold);
 
     // input plugin name
     const { pluginName } = await prompt({
       type: "input",
       name: "pluginName",
       required: true,
-      message: "[XCLI] [new] plugin name (suggest: [name]-xcli-plugin)",
+      message: `[XCLI CORE] [new] plugin name (suggest: ${"[name]-xcli-plugin".red})`,
       initial: (projectFolder||"").split("/")[0],
     });
 
@@ -151,7 +162,7 @@ const newCommand = async function(projectFolder){
       type: "autocomplete",
       name: "pluginPackageManager",
       required: true,
-      message: "[XCLI] [new] plugin package manager",
+      message: "[XCLI CORE] [new] plugin package manager",
       choices: ["npm", "yarn"]
     });
 
@@ -173,11 +184,12 @@ const newCommand = async function(projectFolder){
       await fswriteFile(abcxJSONPath, JSON.stringify(abcxJSON, null, 2));
 
       initLoading.succeed("remote download plugin template completed");
-      info("init plugin completed "+("["+pluginName+"]").bold.red);
+      info("[XCLI CORE] init plugin completed "+("["+pluginName+"]").bold.red);
+      info("[XCLI CORE] init plugin template path: "+ projectPath.bold.red);
     });
   }
 
-  return error("no init type select unexpected");
+  return error("[XCLI CORE] no init type select unexpected");
 };
 
 module.exports = newCommand;

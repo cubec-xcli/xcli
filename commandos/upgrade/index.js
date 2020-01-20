@@ -33,19 +33,6 @@ const upgradeCommand = function(version){
           package_loading.succeed(UPGRADE.UPGRADE_PROCESS_CORE_PACKAGE+" completed");
         }
 
-//         // 升级内置插件包的 package
-//         const builtinPluginsPaths = await fsreaddir(paths.pluginsBuiltinPath);
-
-//         if(builtinPluginsPaths.length){
-//           const builtinplugins_loading = loading(UPGRADE.UPGRADE_PROCESS_BUILTIN_PACKAGE);
-
-//           await Promise.all(builtinPluginsPaths.map(function(btPlugin){
-//             const btPluginPath = path.resolve(paths.pluginsBuiltinPath, btPlugin);
-//             return cexec(`npm install`, { cwd: btPluginPath, stdio: 'inherit' });
-//           }));
-
-//           builtinplugins_loading.succeed(UPGRADE.UPGRADE_PROCESS_BUILTIN_PACKAGE+" completed");
-//         }
       }
     }
 

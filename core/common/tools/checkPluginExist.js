@@ -8,7 +8,6 @@ module.exports = function(pluginType, findBuiltIn=false){
 
   const pluginsPath = fs.existsSync(path.resolve(paths.pluginsPath, pluginType));
   const localPluginsPath = fs.existsSync(path.resolve(paths.currentPath, `node_modules/${pluginType}`));
-  const builtinPluginsPath = fs.existsSync(path.resolve(paths.pluginsBuiltinPath, pluginType));
 
-  return pluginsPath || localPluginsPath || builtinPluginsPath;
+  return pluginsPath || localPluginsPath;
 };
