@@ -10,7 +10,7 @@ const cool = struct.cool();
 const PLUGIN = require('../../../dict/commandos/PLUGIN');
 
 module.exports = async function(pluginName){
-  let plugin = pluginName || prefixAbcJSON.type;
+  let plugin = pluginName || (prefixAbcJSON ? prefixAbcJSON.type : null);
   const pluginsDir = paths.pluginsPath;
 
   if(!plugin){
@@ -21,10 +21,11 @@ module.exports = async function(pluginName){
       const pluginPath = path.resolve(pluginsDir, pluginFolder);
       const pluginAbcxJSON = require(path.resolve(pluginPath, 'abcx.json'));
 
-      // const fsstats = fs.lstatSync(pluginPath);
-      // if(fsstats.isSymbolicLink() || !fsstats.isDirectory()) return false;
+      const fsstats = fs.lstatSync(pluginPath);
+      const prefixVersion = (fsstats.isSymbolicLink() && fsstats.isDirectory()) ?
+        "[linked]".green : ("["+pluginAbcxJSON["plugin-version"]+"]").yellow;
 
-      const value = `${'[Plugin]'.bold} ${pluginFolder.bold.red} ${("["+pluginAbcxJSON["plugin-version"]+"]").green} - [${pluginAbcxJSON["plugin-description"]||""}]`;
+      const value = `${'[Plugin]'.bold} ${pluginFolder.bold.red} ${prefixVersion} - [${pluginAbcxJSON["plugin-description"]||""}]`;
 
       pluginListMap[value] = pluginFolder;
 

@@ -106,7 +106,7 @@ module.exports = async function(pluginName, forceReinstall=false){
       const { forceInstall } = await prompt({
         type: "confirm",
         name: "forceInstall",
-        message: `plugin ${plugin.red.bold} already exists, should force reinstall?`
+        message: `plugin ${("["+plugin+"]").red.bold} already exists, should force reinstall?`
       });
 
       if(!forceInstall) return warn(`[plugin] ${plugin.bold} install interrupted`);

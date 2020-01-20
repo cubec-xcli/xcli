@@ -18,6 +18,7 @@ const optimizeCssModulesPlugin = require('./system/optimizeCssModulesPlugin');
 
 // std
 const enquirerSelectKeyMapInfo = require('./std/enquirerSelectKeyMapInfo');
+const enquirerInputKeyMapInfo = require('./std/enquirerInputKeyMapInfo');
 
 module.exports = {
   file: {
@@ -41,6 +42,7 @@ module.exports = {
     optimizeCssModulesPlugin
   },
   std: {
-    enquirerSelectKeyMapInfo
+    enquirerSelectKeyMapInfo,
+    enquirerInputKeyMapInfo
   }
 };

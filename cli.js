@@ -13,6 +13,11 @@ const DESCRIPTION = require('./dict/commandos/DESCRIPTION');
 //   'build',
 //   'publish',
 //   'plugin',
+//      - 'install'
+//      - 'uninstall'
+//      - 'list'
+//      - 'update'
+//      - 'help'
 //   'link',
 //   'unlink',
 //   'upgrade',

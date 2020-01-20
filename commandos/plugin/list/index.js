@@ -65,8 +65,10 @@ module.exports = async function(){
 
   }).filter(cool));
 
-  if(printList.length)
+  if(printList.length){
+    console.log(`${"[Plugin]".bold.red} ${"Local Plugin List:".yellow}`);
     return each(printList, line=>console.log(line.text));
+  }
 
   return warn(PLUGIN.PLUGIN_LIST_NOTPLUGIN_FOUND);
 };

@@ -1,4 +1,5 @@
 const enquirerSelectKeyMapInfo = require('../../core/utils/tools/std/enquirerSelectKeyMapInfo');
+const enquirerInputKeyMapInfo = require('../../core/utils/tools/std/enquirerInputKeyMapInfo');
 
 module.exports = {
   PLUGIN_SELECT_COMMAND_TYPE: "Select the type of command action",
@@ -15,5 +16,5 @@ module.exports = {
   PLUGIN_LIST_NOTPLUGIN_FOUND: "not plugins find install for xcli",
   PLUGIN_INSTALL_PLUGINNAME_REQUIRED: "Input plugin name for remote install",
   PLUGIN_INSATLL_REJECT_UN_ABCXJSON_CHECKER: "the plugin is not standard xcli plugin abcx.json, it can not be install",
-  PLUGIN_INSTALL_CHOICE_PLUGINNAME: "Please select the plugin need to install",
+  PLUGIN_INSTALL_CHOICE_PLUGINNAME: enquirerInputKeyMapInfo("Please select the plugin need to install"),
 };
