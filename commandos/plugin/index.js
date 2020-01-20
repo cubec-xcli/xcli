@@ -68,10 +68,11 @@ const pluginCommand = async function(use, pluginName){
     let exCommandsAlias = {};
     let useCommandosListPrefix = slice(useCommandosList);
     let useCurrentCommandosListPrefix = slice(useCurrentCommandosList);
+    const extendPath = path.resolve(paths.pluginsUsagePath,'extend');
 
     // 获取额外的命令
-    if(prefixAbcJSON && prefixAbcJSON.type){
-      let exCommands = fs.readdirSync(path.join(paths.pluginsUsagePath,'extend'));
+    if(prefixAbcJSON && prefixAbcJSON.type && fs.existsSync(extendPath)){
+      let exCommands = fs.readdirSync(extendPath);
 
       if(exCommands && exCommands.length){
         exCommands = exCommands.filter(name=>name[0] !== ".").forEach(name=>{
