@@ -18,10 +18,10 @@
   },
   "dependencies": {
     "ax-struct-js": "^5.0.0",
-    "axios": "^0.19.1",
+    "axios": "^0.19.2",
     "browser-sync": "^2.26.7",
     "colors": "^1.4.0",
-    "commander": "^4.1.0",
+    "commander": "^4.1.1",
     "compare-versions": "^3.5.1",
     "date-fns": "^2.9.0",
     "download-git-repo": "^3.0.2",
@@ -31,15 +31,15 @@
     "glob": "^7.1.6",
     "http-proxy-middleware": "^0.20.0",
     "ip": "^1.1.5",
-    "jest": "^24.9.0",
-    "jest-cli": "^24.9.0",
+    "jest": "^25.1.0",
+    "jest-cli": "^25.1.0",
     "lodash": "^4.17.15",
     "marked": "^0.8.0",
     "marked-terminal": "^4.0.0",
-    "open": "^7.0.0",
+    "open": "^7.0.2",
     "ora": "^4.0.3",
-    "semver": "^7.1.1",
-    "simple-git": "^1.130.0",
+    "semver": "^7.1.2",
+    "simple-git": "^1.131.0",
     "stylelint": "^13.0.0"
   }
 }
