@@ -40,6 +40,6 @@
     "ora": "^4.0.3",
     "semver": "^7.1.2",
     "simple-git": "^1.131.0",
-    "stylelint": "^13.0.0"
+    "stylelint": "^13.1.0"
   }
 }
