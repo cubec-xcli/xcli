@@ -1,7 +1,7 @@
 const colors = require('colors');
 const struct = require('ax-struct-js');
 const bs = require('browser-sync');
-const proxy = require('http-proxy-middleware');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 const { isFunction } = require('lodash');
 // const { ip } = require('../../core/utils/os');
 const { prompt } = require('enquirer');
@@ -41,7 +41,7 @@ const testCommand = async function(command){
       return builder(createContext({ buildEntry }), [], function(){
         const previewBS = bs.create();
         const proxyConfig = prefixAbcJSON.devServer.proxy;
-        const proxyMiddlewares = keys(proxyConfig).map(uri=>proxy(uri, proxyConfig[uri]));
+        const proxyMiddlewares = keys(proxyConfig).map(uri=>createProxyMiddleware(uri, proxyConfig[uri]));
 
         return previewBS.init({
           // host: ip,
