@@ -21,7 +21,7 @@ const devCommand = async function(command){
   if(checkAbcJSONFormat()){
     const isDebugMode = command ? !!command.debug : false;
     const devServerJS = path.resolve(__dirname, "childprocess/devServer.js");
-    const devServer = getTargetEntryJS(prefixAbcJSON.type, "devServer.js");
+    const devServer = await getTargetEntryJS(prefixAbcJSON.type, "devServer.js");
 
     // 是否存在对应的插件
     if(devServer){
@@ -44,7 +44,7 @@ const devCommand = async function(command){
           if(compareResult &&
             compareResult.needUpdate &&
             compareResult.newVersion){
-            info(`${"[Plugin Update Request]".bold} ${("["+prefixAbcJSON.type+"]").red.bold} ${"A new version".green} ${("["+compareResult.newVersion+"]").yellow.bold} ${"is available!".green}`);
+            info(`${"[Plugin Update Request]".bold} ${("["+prefixAbcJSON.type+"]").red.bold} ${"a new version".green.bold} ${("["+compareResult.newVersion+"]").yellow.bold} ${"is available! run".green} ${"[xcli plugin update]".yellow.bold} ${"for you need".green}`);
           }
 
         }catch(e){

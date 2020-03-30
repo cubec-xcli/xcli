@@ -121,7 +121,7 @@ const newCommand = async function(projectFolder){
 
     // 如果存在对应的插件
     if(checkPluginExist(pluginType, true)){
-      const createImplement = getTargetEntryJS(pluginType, "create.js", true);
+      const createImplement = await getTargetEntryJS(pluginType, "create.js", true);
 
       if(createImplement){
         const { needCreate } = await prompt({

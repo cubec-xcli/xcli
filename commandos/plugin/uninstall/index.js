@@ -8,7 +8,7 @@ const { info, warn } = require('../../../core/utils/std');
 
 const cool = struct.cool();
 const each = struct.each();
-const noop = struct.noop();
+
 const PLUGIN = require('../../../dict/commandos/PLUGIN');
 
 module.exports = async function(pluginName){
@@ -48,15 +48,16 @@ module.exports = async function(pluginName){
     plugin = [plugin];
   }
 
-  // 存在需要移除的插件
   if(plugin.length){
     each(plugin, function(pluginFolder){
       const pluginPath = path.resolve(pluginsDir, pluginFolder);
 
       if(fs.existsSync(pluginPath)){
         const fsstats = fs.lstatSync(pluginPath);
+
         // 如果是link file 则不删除
-        if(!fsstats.isSymbolicLink()) fse.remove(pluginPath, noop);
+        if(!fsstats.isSymbolicLink())
+          fse.removeSync(pluginPath);
       }
     });
 

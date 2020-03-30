@@ -1,20 +1,18 @@
 const fs = require('fs');
 const fse = require('fs-extra');
 const path = require('path');
-const { execSync } = require('child_process');
 const colors = require('colors');
+const { execSync } = require('child_process');
 const paths = require('../../utils/paths');
-const { loading, info, error, warn } = require('../../utils/std');
+const { loading } = require('../../utils/std');
 
 const checkPluginAbcxJSONFormat = require('./checkPluginAbcxJSONFormat');
-const installPlugin = require('../../../commandos/plugin/install');
 
 // 从安装插件获取
-const getEntryFromPlugins = function(pluginsPath, type, fileName, notWarn){
+const getEntryFromPlugins = function(pluginsPath, type, fileName){
   const targetFilePath = path.resolve(pluginsPath, fileName);
 
   if(!fs.existsSync(targetFilePath)){
-    if(!notWarn) warn(`${type} not exist implement for aop invoking`);
     return null;
   }
 
@@ -39,11 +37,10 @@ const getEntryFromPlugins = function(pluginsPath, type, fileName, notWarn){
 };
 
 // 从项目本地的node_modules中获取插件
-const getEntryFromLocalPlugins = function(localPluginsPath, type, fileName, notWarn){
+const getEntryFromLocalPlugins = function(localPluginsPath, type, fileName){
   const targetFilePath = path.resolve(localPluginsPath, fileName);
 
   if(!fs.existsSync(targetFilePath)){
-    if(!notWarn) warn(`${type} not exist implement for aop invoking`);
     return null;
   }
 
@@ -56,7 +53,7 @@ const getEntryFromLocalPlugins = function(localPluginsPath, type, fileName, notW
 
 
 // 获取包的入口AOP文件
-const getTargetEntryJS = async function(type, entryFileName, notWarn=false){
+const getTargetEntryJSWithoutCheckInstallSync = function(type, entryFileName){
   let filePath;
   let target = null;
 
@@ -72,24 +69,15 @@ const getTargetEntryJS = async function(type, entryFileName, notWarn=false){
   // 寻找目标
   // 优先从xcli插件包中获取入口文件
   if(existPlugin){
-    filePath = getEntryFromPlugins(pluginsPath, type, entryFileName, notWarn);
+    filePath = getEntryFromPlugins(pluginsPath, type, entryFileName);
 
   // 其次从项目的node_modules下寻找插件
   }else if(existLocalPlugin){
-    filePath = getEntryFromLocalPlugins(localPluginsPath, type, entryFileName, notWarn);
+    filePath = getEntryFromLocalPlugins(localPluginsPath, type, entryFileName);
 
   // 都没有找到，则尝试安装插件
   }else{
-    // filePath = null;
-    const installSuccess = await installPlugin(type, true);
-
-    if(installSuccess){
-      info(`download init ${type.bold} plugin success`);
-      filePath = getEntryFromPlugins(pluginsPath, type, entryFileName, notWarn);
-    }else{
-      if(!notWarn) warn(`can not find type mode [${type.bold}], try install plugin "${type.bold}" self`);
-      filePath = null;
-    }
+    filePath = null;
   }
 
   // 获取对应的入口，返回可执行的AOP入口
@@ -98,4 +86,4 @@ const getTargetEntryJS = async function(type, entryFileName, notWarn=false){
   return target;
 };
 
-module.exports = getTargetEntryJS;
+module.exports = getTargetEntryJSWithoutCheckInstallSync;

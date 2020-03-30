@@ -39,7 +39,7 @@ const publishCommand = async function(mode, command){
 
   if(prefixAbcJSON){
     const isDebugMode = command ? !!command.debug : false;
-    const publish = getTargetEntryJS(prefixAbcJSON.type, "publish.js");
+    const publish = await getTargetEntryJS(prefixAbcJSON.type, "publish.js");
 
     if(publish && !isDebugMode) packageAutoInstall();
 

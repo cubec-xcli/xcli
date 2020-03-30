@@ -17,7 +17,7 @@ const size = struct.size();
 const createCommand = async function(projectName){
   if(checkAbcJsonFormat()){
     const initProjectPath = path.resolve(paths.currentPath, projectName||"");
-    let create = getTargetEntryJS(prefixAbcJSON.type, "create.js");
+    let create = await getTargetEntryJS(prefixAbcJSON.type, "create.js");
 
     if(isFunction(create))
       create = create(createContext(), []);

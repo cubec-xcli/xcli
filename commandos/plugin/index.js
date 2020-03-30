@@ -16,6 +16,7 @@ const useHelp = require('./help');
 
 const { prefixAbcJSON } = require('../../core/utils/abc');
 const getTargetEntryJS = require('../../core/common/pre/getTargetEntry');
+const getTargetEntryJSWithoutCheckInstall = require('../../core/common/pre/getTargetEntryWithoutCheckInstall');
 const createContext = require('../../core/common/aop/createContext');
 
 const has = struct.has();
@@ -58,7 +59,7 @@ const useCommandosAlias = {
 const pluginCommand = async function(use, pluginName){
   let useCommand = use;
   // extend command in project create by plugin
-  const isExtendCommand = prefixAbcJSON ? getTargetEntryJS(prefixAbcJSON.type , `extend/${use}.js`, true) : null;
+  const isExtendCommand = prefixAbcJSON ? await getTargetEntryJS(prefixAbcJSON.type , `extend/${use}.js`, true) : null;
 
   if(isExtendCommand){
     // 直接执行
@@ -79,7 +80,7 @@ const pluginCommand = async function(use, pluginName){
           const commandName = (name.replace(/\.[\w\W\s\S]*$/, ""));
           const exCommand = (commandName+" [Ex]").yellow.bold;
 
-          exCommandsAlias[exCommand] = getTargetEntryJS(prefixAbcJSON.type, `extend/${name}`, true);
+          exCommandsAlias[exCommand] = getTargetEntryJSWithoutCheckInstall(prefixAbcJSON.type, `extend/${name}`);
           exCommandsAlias[commandName] = exCommandsAlias[exCommand];
 
           useCommandosListPrefix.push(commandName);
@@ -119,3 +120,4 @@ const pluginCommand = async function(use, pluginName){
 };
 
 module.exports = pluginCommand;
+

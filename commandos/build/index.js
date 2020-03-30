@@ -23,7 +23,7 @@ const buildCommand = async function(mode, command){
   if(prefixAbcJSON){
     let buildEntry = mode;
     const isDebugMode = command ? !!command.debug : false;
-    const builder = getTargetEntryJS(prefixAbcJSON.type, "build.js");
+    const builder = await getTargetEntryJS(prefixAbcJSON.type, "build.js");
     const existsOutputDir = fs.existsSync(paths.currentOutputPath);
     const buildOptions = _keys(prefixAbcJSON.define);
 
@@ -37,9 +37,11 @@ const buildCommand = async function(mode, command){
       buildEntry = entry;
     }
 
-    if(existsOutputDir) await fse.remove(paths.currentOutputPath);
+    if(existsOutputDir)
+      await fse.remove(paths.currentOutputPath);
 
-    if(builder && !isDebugMode) packageAutoInstall();
+    if(builder && !isDebugMode)
+      packageAutoInstall();
 
     if(isFunction(builder)){
       const presetMsg = `${'[xcli]'.bold} ${('['+prefixAbcJSON.type+']').red.bold} ${('['+packageJSON.name+']').green.bold} `;

@@ -9,15 +9,19 @@ const COMMON = require('../../../dict/commandos/COMMON');
 const DEV = require('../../../dict/commandos/DEV');
 
 const args = parseArgs(process.argv.slice(2));
-const devServer = getTargetEntryJS(prefixAbcJSON.type, "devServer.js");
 
-if(isFunction(devServer)){
-  const presetMsg = `${'[xcli]'.bold} ${('['+prefixAbcJSON.type+']').red.bold} ${('['+packageJSON.name+']').green.bold} `;
-  info(presetMsg + `${"version".bold} ${packageJSON.version}`.green);
-  info(presetMsg + `${DEV.INFO_DEVSERVER_PRESTART}`.green);
-  devServer(createContext(), args);
-}else{
-  error(COMMON.ERROR_CANNOT_FIND_AOPSCRIPT_IMPLEMENT+` ${"devServer".bold}`);
-  throw new Error(COMMON.ERROR_CANNOT_FIND_AOPSCRIPT_IMPLEMENT);
-  process.exit(0);
-}
+(async function(){
+  const devServer = await getTargetEntryJS(prefixAbcJSON.type, "devServer.js");
+
+  if(isFunction(devServer)){
+    const presetMsg = `${'[xcli]'.bold} ${('['+prefixAbcJSON.type+']').red.bold} ${('['+packageJSON.name+']').green.bold} `;
+    info(presetMsg + `${"version".bold} ${packageJSON.version}`.green);
+    info(presetMsg + `${DEV.INFO_DEVSERVER_PRESTART}`.green);
+    devServer(createContext(), args);
+  }else{
+    error(COMMON.ERROR_CANNOT_FIND_AOPSCRIPT_IMPLEMENT+` ${"devServer".bold}`);
+    throw new Error(COMMON.ERROR_CANNOT_FIND_AOPSCRIPT_IMPLEMENT);
+    return process.exit(0);
+  }
+})();
+

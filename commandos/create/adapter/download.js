@@ -45,7 +45,8 @@ const gitDownloadAdapter = async function(gitRepoUrl, projectName, initProjectPa
     needClear = confirm.clear;
   }
 
-  if(hasUnexpected && needClear) fse.removeSync(initProjectPath);
+  if(hasUnexpected && needClear)
+    fse.removeSync(initProjectPath);
 
   if((hasUnexpected && needClear) || !hasUnexpected){
     return projectName ?

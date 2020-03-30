@@ -23,7 +23,7 @@ const testCommand = async function(command){
 
   if(prefixAbcJSON){
     const isUnitMode = command ? !!command.unit : false;
-    const builder = getTargetEntryJS(prefixAbcJSON.type, "build.js");
+    const builder = await getTargetEntryJS(prefixAbcJSON.type, "build.js");
     const buildOptions = keys(prefixAbcJSON.define);
     let buildEntry = "";
 
