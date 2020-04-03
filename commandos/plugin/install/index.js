@@ -123,6 +123,7 @@ module.exports = async function(pluginName, forceReinstall=false){
   // 先移除，然后保证temp 存在
   await fse.remove(createTempDir);
   await fse.ensureDir(createTempDir);
+
   const downloadStatus = await downloadPlugin(plugin, createTempDir);
 
   // 下载完成后。需要严格检测插件是否符合xcli的规范

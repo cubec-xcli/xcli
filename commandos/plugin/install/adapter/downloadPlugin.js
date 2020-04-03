@@ -50,7 +50,8 @@ module.exports = function(pluginName, targetFilePath){
         });
 
       }else{
-        return reject(new TypeError("unknown git source type"));
+        error(new TypeError("unknown git source type"));
+        resolve(false);
       }
     });
   }
