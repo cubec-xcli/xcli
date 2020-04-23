@@ -31,15 +31,15 @@
     "glob": "^7.1.6",
     "http-proxy-middleware": "^1.0.3",
     "ip": "^1.1.5",
-    "jest": "^25.3.0",
-    "jest-cli": "^25.3.0",
+    "jest": "^25.4.0",
+    "jest-cli": "^25.4.0",
     "lodash": "^4.17.15",
-    "marked": "^0.8.2",
+    "marked": "^1.0.0",
     "marked-terminal": "^4.0.0",
     "open": "^7.0.3",
-    "ora": "^4.0.3",
-    "semver": "^7.2.2",
+    "ora": "^4.0.4",
+    "semver": "^7.3.2",
     "simple-git": "^1.132.0",
-    "stylelint": "^13.3.2"
+    "stylelint": "^13.3.3"
   }
 }

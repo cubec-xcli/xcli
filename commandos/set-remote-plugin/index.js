@@ -12,6 +12,7 @@ const setRemotePluginCommand = async function(configFile){
     const file = path.resolve(paths.currentPath, configFile);
 
     if(fs.existsSync(file)){
+
       try {
         newConfig = require(file);
         newConfig = JSON.parse(JSON.stringify(newConfig));
@@ -19,6 +20,7 @@ const setRemotePluginCommand = async function(configFile){
         error("config file is not JSON standard format");
         return error(e);
       }
+
       // check config
       if(
         !newConfig.pluginSourceGit ||

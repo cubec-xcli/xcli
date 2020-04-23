@@ -21,12 +21,14 @@ const parsePluginDownloadUrl = function(pluginName){
 };
 
 module.exports = function(pluginName, targetFilePath){
+
   const url = parsePluginDownloadUrl(pluginName);
   // console.log(url);
 
   if(url && targetFilePath){
     return new Promise((resolve, reject) => {
 
+      // github 下载
       if(pluginSourceGit === "github"){
 
         download(url, targetFilePath, function(err){
@@ -38,6 +40,7 @@ module.exports = function(pluginName, targetFilePath){
           resolve(true);
         });
 
+      // gitlab 下载
       }else if(pluginSourceGit === "gitlab"){
 
         download(url, targetFilePath, { clone: true }, function(err){

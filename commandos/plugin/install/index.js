@@ -1,11 +1,12 @@
 const fs = require('fs');
 const fse = require('fs-extra');
-const struct = require('ax-struct-js');
 const util = require('util');
 const colors = require('colors');
+const struct = require('ax-struct-js');
 const { execSync } = require('child_process');
 const path = require('path');
 const { prompt } = require('enquirer');
+
 const paths = require('../../../core/utils/paths');
 const cache = require('../../../core/utils/cache');
 const { warn, loading, error } = require('../../../core/utils/std');
